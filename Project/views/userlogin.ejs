@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= locals.title ? title:"Login" %></title>
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <style>
+      body {
+        background-color: #011425;
+        font-family: "Lato", Arial, sans-serif;
+      }
+
+      .login-container {
+        max-width: 400px;
+        margin: auto;
+        margin-top: 100px;
+        height: 80vh;
+      }
+
+      .login-form {
+        background-color: #1f4959;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        height: 80vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+      }
+      @media (max-width: 576px) {
+        .login-form {
+          height: auto;
+        }
+      }
+      .login-heading {
+        color: white;
+        font-weight: bold;
+      }
+      .login-button {
+        background-color: #000000;
+        color: white;
+      }
+      .signup-text {
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .signup-text a {
+        color: #000000;
+      }
+      .forgot {
+        color: #000000;
+      }
+      .email {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid white;
+        color: white;
+      }
+      .email:active,
+      .email:focus {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid white;
+        color: white;
+      }
+      .password {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid white;
+        color: white;
+      }
+      .password:active,
+      .password:focus {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid white;
+        color: white;
+      }
+      .form-control:focus {
+        border-color: inherit;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+      }
+      .welcome {
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .info {
+        color: rgba(255, 255, 255, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container login-container">
+      <div class="row">
+        <div class="col-md-12 login-form">
+          <h2 class="text-center login login-heading">LOGIN</h2>
+          <h3 class="text-center mb-0 welcome">Welcome</h3>
+          <p class="text-center info mt-0">
+            Sign in by entering the information below
+          </p>
+          <% if (locals.alert) { %>
+          <div class="alert alert-danger text-center m-3" id="error">
+            <%= locals.alert %>
+          </div>
+          <% } %> <% if (locals.logout) { %>
+          <div class="alert alert-danger text-center m-3" id="error">
+            <%= locals.logout %>
+          </div>
+          <% } %>
+          <form action="/login" method="post">
+            <div class="form-group">
+              <input
+                type="text"
+                class="form-control email"
+                name="email"
+                id="contact-email"
+                placeholder="Enter your email"
+                onkeyup="validateEmail()"
+              />
+              <span
+                id="email-error"
+                style="font-size: 14px; margin-top: -20px"
+              ></span>
+            </div>
+            <div class="form-group">
+              <input
+                type="password"
+                class="form-control password"
+                name="password"
+                id="contact-password"
+                placeholder="Enter your password"
+                onkeyup="validatePassword()"
+              />
+              <span
+                id="password-error"
+                style="font-size: 14px; margin-top: -20px"
+              ></span>
+            </div>
+            <div class="form-group">
+              <a href="#" class="float-right forgot mb-1">Forgot Password?</a>
+            </div>
+            <button
+              type="submit"
+              class="btn btn-block login-button"
+              onclick="return validateForm()"
+            >
+              Login
+            </button>
+            <span id="submit-error" style="font-size: 14px"></span>
+          </form>
+          <p class="mt-3 text-center signup-text">
+            Don't have an account? <a href="/usersignup">Sign Up</a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <script>
+      setTimeout(() => {
+        document.getElementById("error").style.display = "none";
+      }, 3000);
+      setTimeout(() => {
+        document.getElementById("error").style.display = "none";
+      }, 3000);
+
+      var emailError = document.getElementById("email-error");
+      var passwordError = document.getElementById("password-error");
+      var submitError = document.getElementById("submit-error");
+
+      function validateEmail() {
+        var email = document.getElementById("contact-email").value.trim();
+
+        if (email.length == 0) {
+          emailError.innerHTML = "Email is required";
+          emailError.style.color = "red";
+          return false;
+        }
+        if (!email.match(/^[A-Za-z\._\-[0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$/)) {
+          emailError.innerHTML = "Email is invalid";
+          emailError.style.color = "red";
+          return false;
+        }
+        emailError.innerHTML = "Valid";
+        emailError.style.color = "green";
+        return true;
+      }
+      function validatePassword() {
+        var password = document.getElementById("contact-password").value.trim();
+
+        if (password.length === 0) {
+          passwordError.innerHTML = "Password is required";
+          passwordError.style.color = "red";
+          return false;
+        }
+
+        // Check if the password contains any spaces
+        if (password.includes(" ")) {
+          passwordError.innerHTML = "Password should not contain spaces";
+          passwordError.style.color = "red";
+          return false;
+        }
+
+        // Basic password validation: Requires at least 8 characters
+        if (password.length < 5) {
+          passwordError.innerHTML = "Password must be at least 5 characters";
+          passwordError.style.color = "red";
+          return false;
+        }
+
+        passwordError.innerHTML = "Valid";
+        passwordError.style.color = "green";
+        return true;
+      }
+      function validateForm() {
+        if (!validateEmail() || !validatePassword()) {
+          submitError.style.display = "block";
+          submitError.innerHTML = "Please enter all the fields to submit ";
+          submitError.style.color = "red";
+          setTimeout(function () {
+            submitError.style.display = "none";
+          }, 3000);
+          return false;
+        }
+      }
+    </script>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

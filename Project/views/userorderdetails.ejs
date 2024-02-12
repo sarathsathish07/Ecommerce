@@ -1,0 +1,101 @@
+<%- include('userheader') %>
+<style>
+    .btn.btn-md {
+        padding: 0.5rem 0.95rem;
+        font-weight: 500;
+        background-color: #088178;
+        color: #ffffff;
+    }
+
+    .btn.btn-md {
+        padding: 0.5rem 0.95rem;
+        font-weight: 500;
+        background-color: #088178;
+        color: #ffffff;
+    }
+
+    /* Progress bar styles */
+    .progress {
+        height: 25px;
+        margin-bottom: 20px;
+    }
+
+    .progress-bar {
+        background-color: #088178;
+    }
+</style>
+
+
+<section class="user-account spad">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3 col-md-4">
+              <div class="account-sidebar text-center">
+                <div class="sidebar-header">
+                    <h4>User Account</h4>
+                </div>
+                <ul class="account-menu">
+                    <li><a href="/useraccount">Account Details</a></li>
+                    <li class="active"><a href="/useraddress">Addresses</a></li>
+                    <li><a href="/userorders">Orders</a></li>
+                    <li><a href="#wishlist">Wishlist</a></li>
+                    <li><a href="#logout">Logout</a></li>
+                </ul>
+            </div>  
+            </div>
+
+            <!-- Content -->
+            <div class="col-lg-9 col-md-8" style="margin-top: 50px;">
+                <section id="user-address" class="account-section">
+                    <!-- Orders List Section -->
+                    
+                    <h2><b>Order Details</b></h2>
+                    <div class="progress">
+                      <div  <% /* eslint-disable css-propertyvalueexpected */ %>  class="progress-bar" role="progressbar" style="width: <%= progressPercentage %>%; background-color: <%= progressColor %>;" aria-valuenow="<%= progressPercentage %>" aria-valuemin="0" aria-valuemax="100"> Order <%= order.status %></div>
+                  </div>
+                       
+                    <div class="table-responsive text-center">
+                      <table class="table">
+                          <thead>
+                              <tr>
+                                  <th width="40%">Product</th>
+                                  <th width="20%">Unit Price</th>
+                                  <th width="20%">Quantity</th>
+                                  <th width="20%" class="text-end">Total</th>
+                                 
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <% order.items.forEach(item => { %>
+                                <tr>
+                                  <td>
+                                   
+                                      <div class="left">
+                                        <img src="/static/<%= item.product.images[0] %>" width="40" height="40" class="img-xs" alt="Item"><br>
+                                        <%= item.product.productTitle %>
+                                      </div>
+                                      
+                                    
+                                  </td>
+                                  <td> <%= item.price %> </td>
+                                  <td> <%= item.quantity %> </td>
+                                  
+                                  <td class="text-end"> <%= item.price * item.quantity %> </td>
+                                  
+                                </tr>
+                              <% }); %>
+                            </tbody>
+                      </table>
+                  </div> <!-- table-responsive //end -->
+                             <!-- card end// -->
+                            </section>  <!-- Orders List Section end// -->
+                </div>
+            
+        </div>
+    </div>
+</section>
+
+
+
+<%- include('userfooter') %>

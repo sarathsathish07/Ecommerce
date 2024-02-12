@@ -1,0 +1,288 @@
+<%- include('adminheader') %>
+<body>
+  <div class="screen-overlay"></div>
+  <aside class="navbar-aside" id="offcanvas_aside">
+    <div class="aside-top">
+      <a href="index.html" class="brand-wrap">
+        <p style="font-size: 20px; font-weight: bold">Admin</p>
+      </a>
+      <div>
+        <button class="btn btn-icon btn-aside-minimize">
+          <i class="text-muted material-icons md-menu_open"></i>
+        </button>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu-aside">
+        <li class="menu-item">
+          <a class="menu-link" href="/dashboard">
+            <i class="icon material-icons md-home"></i>
+            <span class="text">Dashboard</span>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a class="menu-link" href="/userlist">
+            <i class="icon material-icons md-person"></i>
+            <span class="text">Users</span>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a class="menu-link" href="/productlist">
+            <i class="icon material-icons md-shopping_bag"></i>
+            <span class="text">Products</span>
+          </a>
+        </li>
+        <li class="menu-item active">
+          <a class="menu-link" href="/categories">
+            <i class="icon material-icons md-store"></i>
+            <span class="text">Categories</span>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a class="menu-link" href="/orders">
+            <i class="icon material-icons md-store"></i>
+            <span class="text">Orders</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+  <main class="main-wrap">
+    <header class="main-header navbar">
+      <div class="col-search">
+        <form class="searchform">
+          <div class="input-group">
+            <input
+              list="search_terms"
+              type="text"
+              class="form-control"
+              placeholder="Search term"
+            />
+            <button class="btn btn-light bg" type="button">
+              <i class="material-icons md-search"></i>
+            </button>
+          </div>
+          <datalist id="search_terms">
+            <option value="Products"></option>
+            <option value="New orders"></option>
+            <option value="Apple iphone"></option>
+            <option value="Ahmed Hassan"></option>
+          </datalist>
+        </form>
+      </div>
+      <div class="col-nav">
+        <button
+          class="btn btn-icon btn-mobile me-auto"
+          data-trigger="#offcanvas_aside"
+        >
+          <i class="material-icons md-apps"></i>
+        </button>
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link btn-icon" href="#">
+              <i class="material-icons md-notifications animation-shake"></i>
+              <span class="badge rounded-pill">3</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link btn-icon darkmode" href="#">
+              <i class="material-icons md-nights_stay"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="requestfullscreen nav-link btn-icon"
+              ><i class="material-icons md-cast"></i
+            ></a>
+          </li>
+          <li class="dropdown nav-item">
+            <a
+              class="dropdown-toggle"
+              data-bs-toggle="dropdown"
+              href="#"
+              id="dropdownLanguage"
+              aria-expanded="false"
+              ><i class="material-icons md-public"></i
+            ></a>
+            <div
+              class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="dropdownLanguage"
+            >
+              <a class="dropdown-item text-brand" href="#"
+                ><img
+                  src="/static/assets/imgs/theme/flag-us.png"
+                  alt="English"
+                />English</a
+              >
+              <a class="dropdown-item" href="#"
+                ><img
+                  src="assets/imgs/theme/flag-fr.png"
+                  alt="Français"
+                />Français</a
+              >
+              <a class="dropdown-item" href="#"
+                ><img
+                  src="assets/imgs/theme/flag-jp.png"
+                  alt="Français"
+                />日本語</a
+              >
+              <a class="dropdown-item" href="#"
+                ><img
+                  src="assets/imgs/theme/flag-cn.png"
+                  alt="Français"
+                />中国人</a
+              >
+            </div>
+          </li>
+          <li class="dropdown nav-item">
+            <a
+              class="dropdown-toggle"
+              data-bs-toggle="dropdown"
+              href="#"
+              id="dropdownAccount"
+              aria-expanded="false"
+            >
+              <img
+                class="img-xs rounded-circle"
+                src="/static/assets/imgs/people/avatar2.jpg"
+                alt="User"
+            /></a>
+            <div
+              class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="dropdownAccount"
+            >
+              <a class="dropdown-item" href="#"
+                ><i class="material-icons md-perm_identity"></i>Edit Profile</a
+              >
+              <a class="dropdown-item" href="#"
+                ><i class="material-icons md-settings"></i>Account Settings</a
+              >
+              <a class="dropdown-item" href="#"
+                ><i class="material-icons md-account_balance_wallet"></i
+                >Wallet</a
+              >
+              <a class="dropdown-item" href="#"
+                ><i class="material-icons md-receipt"></i>Billing</a
+              >
+              <a class="dropdown-item" href="#"
+                ><i class="material-icons md-help_outline"></i>Help center</a
+              >
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item text-danger" href="/adminlogout"
+                ><i class="material-icons md-exit_to_app"></i>Logout</a
+              >
+            </div>
+          </li>
+        </ul>
+      </div>
+    </header>
+    <section class="content-main">
+      <div class="content-header">
+        <div>
+          <h2 class="content-title card-title">Add Categories</h2>
+          <p>Add a category</p>
+          <% if (locals.alert) { %>
+          <div class="alert alert-danger text-center m-3" id="error">
+            <%= locals.alert %>
+          </div>
+          <% } %>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="row" style="justify-content: center">
+            <div class="col-md-3">
+              <form action="/addcategories" method="post">
+                <div class="mb-4">
+                  <label for="product_name" class="form-label">Name</label>
+                  <input
+                    type="text"
+                    placeholder="Type here"
+                    name="category"
+                    class="form-control"
+                    id="product_name"
+                    onkeyup="validateName()"
+                  />
+                  <span
+                    id="name-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span>
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label">Description</label>
+                  <textarea
+                    placeholder="Type here"
+                    name="description"
+                    class="form-control"
+                    id="product_description"
+                    onkeyup="validateDescription()"
+                  ></textarea>
+                  <span
+                    id="description-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span>
+                </div>
+                <div class="d-grid">
+                  <button
+                    class="btn btn-primary"
+                    onclick="return validateForm()"
+                  >
+                    Create category</button
+                  ><br />
+                  <span
+                    id="submit-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script>
+    setTimeout(() => {
+      document.getElementById("error").style.display = "none";
+    }, 3000);
+    var nameError = document.getElementById("name-error");
+    var descriptionError = document.getElementById("description-error");
+    var submitError = document.getElementById("submit-error");
+
+    function validateName() {
+      var name = document.getElementById("product_name").value.trim();
+      if (name.length === 0) {
+        nameError.innerHTML = "Product name is required";
+        nameError.style.color = "red";
+        return false;
+      }
+      nameError.innerHTML = "Valid";
+      nameError.style.color = "green";
+      return true;
+    }
+    function validateDescription() {
+      var desc = document.getElementById("product_description").value.trim();
+      if (desc.length === 0) {
+        descriptionError.innerHTML = "Description is required";
+        descriptionError.style.color = "red";
+        return false;
+      }
+      descriptionError.innerHTML = "Valid";
+      descriptionError.style.color = "green";
+      return true;
+    }
+    function validateForm() {
+      if (!validateName() || !validateDescription()) {
+        submitError.style.display = "block";
+        submitError.innerHTML = "Please enter all the fields to submit ";
+        submitError.style.color = "red";
+        setTimeout(function () {
+          submitError.style.display = "none";
+        }, 3000);
+        return false;
+      }
+    }
+  </script>
+
+  <%- include('adminfooter') %>
+</body>

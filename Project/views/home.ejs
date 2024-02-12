@@ -1,0 +1,325 @@
+<%- include('userheader') %>
+<!-- Hero Section Begin -->
+
+  <div class="container-fluid gx-0" style="background-color: #232323;">
+    
+    <div class="content-home">
+      <div class="row content-home2">
+        <div class="col-lg-6 col-md-6">
+          
+            <img
+              src="/static//img/2150887424.jpg"
+              class="img-home"
+              alt="headphone"
+            />
+          
+        </div>
+        <div class="col-lg-6 col-md-6">
+          <div class="box-container2">
+            <h1 class="home-heading">
+              Your Premier Destination for 
+              <span class="home-span">Football Accessories</span>
+            </h1>
+
+            <div class="btn-home">
+              <a href="/shop" class="home-links">Buy Now</a>
+              <a href="/shop" class="home-links btn-2">Explore</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Hero Section End -->
+
+<!-- Banner Section Begin -->
+<section class="banner spad">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-7 offset-lg-4">
+        <div class="banner__item">
+          <div class="banner__item__pic">
+            <img
+              src="/static/img/Real_away_2.webp"
+              alt=""
+              style="width: 380px; height: 400px"
+            />
+          </div>
+          <div class="banner__item__text">
+            <h2>Football Jerseys</h2>
+            <a href="/shop">Shop now</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="banner__item banner__item--middle">
+          <div class="banner__item__pic">
+            <img
+              src="/static/img/NM_0.png"
+              alt=""
+              style="width: 400px; height: 420px"
+            />
+          </div>
+          <div class="banner__item__text">
+            <h2>Football Boots</h2>
+            <a href="/shop">Shop now</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <div class="banner__item banner__item--last">
+          <div class="banner__item__pic">
+            <img
+              src="/static/img/f4_0.png"
+              alt=""
+              style="width: 390px; height: 420px"
+            />
+          </div>
+          <div class="banner__item__text">
+            <h2>Footballs</h2>
+            <a href="/shop">Shop now</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Banner Section End -->
+
+<!-- Product Section Begin -->
+<section class="product spad">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <ul class="filter__controls">
+          <li class="active" data-filter="*">Best Sellers</li>
+          <li data-filter=".new-arrivals">New Arrivals</li>
+          <li data-filter=".hot-sales">Hot Sales</li>
+        </ul>
+      </div>
+    </div>
+    <div class="row product__filter">
+      <% products.forEach(product => { %> <% let categoryClass = ''; %> <% if
+      (product.isBestSeller) { categoryClass = 'best-sellers'; } else if
+      (product.isNewArrival) { categoryClass = 'new-arrivals'; } else if
+      (product.isHotSale) { categoryClass = 'hot-sales'; } %>
+
+      <div
+        class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix <%= categoryClass %>"
+      >
+        <div class="product__item">
+          <div class="product__item__pic set-bg">
+            <img
+              src="/static/<%= product.images[0]     %>"
+              alt=""
+              style="width: 240px; height: 250px"
+            />
+
+            <ul class="product__hover">
+              <li>
+                <a href="#"><img src="/static/img/heart.png" alt="" /></a>
+              </li>
+            </ul>
+          </div>
+          <div class="product__item__text">
+            <h6><%= product.productTitle %></h6>
+            <a href="#" class="add-cart" onclick="addcart('<%= product._id %>')">+ Add To Cart</a>
+            <a href="/productdetails/<%= product._id %>" class="view-details"
+              >+ View Details</a
+            >
+            <div class="rating">
+              <% for (let i = 0; i < product.rating; i++) { %>
+              <i class="fa fa-star"></i>
+              <% } %> <% for (let i = 0; i < 5 - product.rating; i++) { %>
+              <i class="fa fa-star-o"></i>
+              <% } %>
+            </div>
+            <h5>Rs <%= product.price %></h5>
+          </div>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
+
+<!-- Product Section End -->
+
+<!-- Categories Section Begin -->
+<section class="categories spad">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-3">
+        <div class="categories__text">
+          <h2>
+            Performance<br />
+            <span>Traction</span> <br />Comfort
+          </h2>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="categories__hot__deal">
+          <img src="/static/img/NP_0.png" alt="" />
+          <div class="hot__deal__sticker">
+            <span>Sale Of</span>
+            <h5>Rs 2300</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 offset-lg-1">
+        <div class="categories__deal__countdown">
+          <span>Deal Of The Week</span>
+          <h2>Nike Phantom Luna 2 Elite Boots</h2>
+          <div class="categories__deal__countdown__timer" id="countdown">
+            <div class="cd-item">
+              <span>3</span>
+              <p>Days</p>
+            </div>
+            <div class="cd-item">
+              <span>1</span>
+              <p>Hours</p>
+            </div>
+            <div class="cd-item">
+              <span>50</span>
+              <p>Minutes</p>
+            </div>
+            <div class="cd-item">
+              <span>18</span>
+              <p>Seconds</p>
+            </div>
+          </div>
+          <a href="#" class="primary-btn">Shop now</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Categories Section End -->
+
+<!-- Footer Section Begin -->
+<footer class="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="footer__about">
+          <div class="footer__logo">
+            <a href="#"><img src="img/footer-logo.png" alt="" /></a>
+          </div>
+          <p>
+            The customer is at the heart of our unique business model, which
+            includes design.
+          </p>
+          <a href="#"><img src="img/payment.png" alt="" /></a>
+        </div>
+      </div>
+      <div class="col-lg-2 offset-lg-1 col-md-3 col-sm-6">
+        <div class="footer__widget">
+          <h6>Shopping</h6>
+          <ul>
+            <li><a href="#">Clothing Store</a></li>
+            <li><a href="#">Trending Shoes</a></li>
+            <li><a href="#">Accessories</a></li>
+            <li><a href="#">Sale</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-2 col-md-3 col-sm-6">
+        <div class="footer__widget">
+          <h6>Shopping</h6>
+          <ul>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Payment Methods</a></li>
+            <li><a href="#">Delivary</a></li>
+            <li><a href="#">Return & Exchanges</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-3 offset-lg-1 col-md-6 col-sm-6">
+        <div class="footer__widget">
+          <h6>NewLetter</h6>
+          <div class="footer__newslatter">
+            <p>
+              Be the first to know about new arrivals, look books, sales &
+              promos!
+            </p>
+            <form action="#">
+              <input type="text" placeholder="Your email" />
+              <button type="submit"><span class="icon_mail_alt"></span></button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <div class="footer__copyright__text">
+          
+          <p>
+            Copyright ©
+            <script>
+              document.write(new Date().getFullYear());
+            </script>
+            2020 All rights reserved | This template is made with
+            <i class="fa fa-heart-o" aria-hidden="true"></i> by
+            <a href="https://colorlib.com" target="_blank">Colorlib</a>
+          </p>
+         
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+<!-- Footer Section End -->
+
+<!-- Search Begin -->
+<div class="search-model">
+  <div class="h-100 d-flex align-items-center justify-content-center">
+    <div class="search-close-switch">+</div>
+    <form class="search-model-form">
+      <input type="text" id="search-input" placeholder="Search here....." />
+    </form>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  function addcart(_id) {
+    event.preventDefault();
+    $.ajax({
+      url: `/check-stock/${_id}`,
+      type: "GET",
+      success: function (response) {
+        console.log(response);
+        if (response.success) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Added to cart successfully!',
+            showConfirmButton: true,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = '/add-to-cart/' + _id;
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Product is out of stock',
+            showConfirmButton: true,
+          });
+        }
+      },
+      error: function () {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error occurred',
+          text: 'Failed to check stock availability',
+          showConfirmButton: true,
+        });
+      }
+    });
+  }
+</script>
+
+
+ <%- include('userfooter') %>

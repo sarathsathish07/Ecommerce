@@ -1,0 +1,286 @@
+
+   
+<%- include('userheader') %>
+
+
+
+
+
+<!-- User Account Section Begin -->
+<section class="user-account spad">
+  <div class="container-fluid">
+      <div class="row">
+          <!-- Sidebar -->
+          <div class="col-lg-3 col-md-4">
+              <div class="account-sidebar">
+                  <div class="sidebar-header">
+                      <h4>User Account</h4>
+                  </div>
+                  <ul class="account-menu">
+                      <li><a href="/useraccount">Account Details</a></li>
+                      <li class="active"><a href="/useraddress">Addresses</a></li>
+                      <li><a href="/userorders">Orders</a></li>
+                      <li><a href="#wishlist">Wishlist</a></li>
+                      <li><a href="#logout">Logout</a></li>
+                  </ul>
+              </div>
+          </div>
+
+          <!-- Content -->
+          <div class="col-lg-7 col-md-8">
+              <div class="account-content">
+                  <!-- Address Section -->
+
+                  <!-- Add Address Form -->
+                  <section id="add-address" class="account-section mt-5">
+                      <h2><b>Add Address</b></h2>
+                      <form action="/addAddress" method="POST">
+                          <div class="form-group">
+                              <label for="addressLine1">Address Line 1:</label>
+                              <input type="text" id="addressLine1" name="addressLine1" class="form-control" onkeyup="validateLine1()">
+                              <span
+                    id="line1-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span>
+                          </div>
+
+                          <div class="form-group">
+                              <label for="addressLine2">Address Line 2:</label>
+                              <input type="text" id="addressLine2" name="addressLine2" class="form-control" onkeyup="validateLine2()">
+                              <span
+                    id="line2-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span>
+                          </div>
+
+                          <div class="form-group">
+                              <label for="city">City:</label>
+                              <input type="text" id="city" name="city" class="form-control" onkeyup="validateCity()">
+                              <span
+                    id="city-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span>
+                          </div>
+
+                          <div class="form-group">
+                              <label for="state">State:</label>
+                              <input type="text" id="state" name="state" class="form-control" onkeyup="validateState()">
+                              <span
+                    id="state-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span>
+                          </div>
+
+                          <div class="form-group">
+                              <label for="postalCode">Postal Code:</label>
+                              <input type="text" id="postalCode" name="postalCode" class="form-control" onkeyup="validatePost()">
+                              <span
+                    id="postalcode-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span>
+                          </div>
+
+                          <div class="form-group">
+                              <label for="country">Country:</label>
+                              <input type="text" id="country" name="country" class="form-control" onkeyup="validateCountry()">
+                              <span
+                    id="country-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span>
+                          </div>
+
+                   
+
+                          <div class="text-center">
+                              <button type="submit" class="btn" style="background-color: #1f4959; color: white;"  onclick="return validateForm()">Add Address</button>
+                              <span id="submit-error" style="font-size: 14px"></span>
+                          </div>
+                      </form>
+                  </section>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+<!-- User Account Section End -->
+
+
+
+
+
+
+<!-- Footer Section Begin -->
+
+<footer class="footer">
+  <div class="container">
+      <div class="row">
+          <div class="col-lg-3 col-md-6 col-sm-6">
+              <div class="footer__about">
+                  <div class="footer__logo">
+                      <a href="#"><img src="img/footer-logo.png" alt=""></a>
+                  </div>
+                  <p>The customer is at the heart of our unique business model, which includes design.</p>
+                  <a href="#"><img src="img/payment.png" alt=""></a>
+              </div>
+          </div>
+          <div class="col-lg-2 offset-lg-1 col-md-3 col-sm-6">
+              <div class="footer__widget">
+                  <h6>Shopping</h6>
+                  <ul>
+                      <li><a href="#">Clothing Store</a></li>
+                      <li><a href="#">Trending Shoes</a></li>
+                      <li><a href="#">Accessories</a></li>
+                      <li><a href="#">Sale</a></li>
+                  </ul>
+              </div>
+          </div>
+          <div class="col-lg-2 col-md-3 col-sm-6">
+              <div class="footer__widget">
+                  <h6>Shopping</h6>
+                  <ul>
+                      <li><a href="#">Contact Us</a></li>
+                      <li><a href="#">Payment Methods</a></li>
+                      <li><a href="#">Delivary</a></li>
+                      <li><a href="#">Return & Exchanges</a></li>
+                  </ul>
+              </div>
+          </div>
+          <div class="col-lg-3 offset-lg-1 col-md-6 col-sm-6">
+              <div class="footer__widget">
+                  <h6>NewLetter</h6>
+                  <div class="footer__newslatter">
+                      <p>Be the first to know about new arrivals, look books, sales & promos!</p>
+                      <form action="#">
+                          <input type="text" placeholder="Your email">
+                          <button type="submit"><span class="icon_mail_alt"></span></button>
+                      </form>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-lg-12 text-center">
+              <div class="footer__copyright__text">
+                 
+                  <p>Copyright ©
+                      <script>
+                          document.write(new Date().getFullYear());
+                      </script>2020
+                      All rights reserved | This template is made with <i class="fa fa-heart-o"
+                      aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                  </p>
+                  
+              </div>
+          </div>
+      </div>
+  </div>
+</footer>
+<!-- Footer Section End -->
+
+<!-- Search Begin -->
+<div class="search-model">
+  <div class="h-100 d-flex align-items-center justify-content-center">
+      <div class="search-close-switch">+</div>
+      <form class="search-model-form">
+          <input type="text" id="search-input" placeholder="Search here.....">
+      </form>
+  </div>
+</div>
+<!-- Search End -->
+<script>
+    var line1Error = document.getElementById("line1-error");
+    var line2Error = document.getElementById("line2-error");
+    var cityError = document.getElementById("city-error");
+    var stateError = document.getElementById("state-error");
+    var postalcodeError = document.getElementById("postalcode-error");
+    var countryError = document.getElementById("country-error");
+    var submitError = document.getElementById("submit-error");
+
+    function validateLine1() {
+        var name = document.getElementById("addressLine1").value.trim();
+        if (name.length === 0) {
+            line1Error.innerHTML = "This field is required";
+            line1Error.style.color = "red";
+          return false;
+        }
+        line1Error.innerHTML = "Valid";
+        line1Error.style.color = "green";
+        return true;
+      }
+    function validateLine2() {
+        var name = document.getElementById("addressLine2").value.trim();
+        if (name.length === 0) {
+            line2Error.innerHTML = "This field is required";
+            line2Error.style.color = "red";
+          return false;
+        }
+        line2Error.innerHTML = "Valid";
+        line2Error.style.color = "green";
+        return true;
+      }
+    function validateCity() {
+        var name = document.getElementById("city").value.trim();
+        if (name.length === 0) {
+            cityError.innerHTML = "This field is required";
+            cityError.style.color = "red";
+          return false;
+        }
+        cityError.innerHTML = "Valid";
+        cityError.style.color = "green";
+        return true;
+      }
+    function validateState() {
+        var name = document.getElementById("state").value.trim();
+        if (name.length === 0) {
+            stateError.innerHTML = "This field is required";
+            stateError.style.color = "red";
+          return false;
+        }
+        stateError.innerHTML = "Valid";
+        stateError.style.color = "green";
+        return true;
+      }
+    function validatePost() {
+        var name = document.getElementById("postalCode").value.trim();
+        if (name.length === 0 || isNaN(name)) {
+            postalcodeError.innerHTML = "This field is required and must be a number";
+            postalcodeError.style.color = "red";
+          return false;
+        }
+        postalcodeError.innerHTML = "Valid";
+        postalcodeError.style.color = "green";
+        return true;
+      }
+      
+    function validateCountry() {
+        var name = document.getElementById("country").value.trim();
+        if (name.length === 0) {
+            countryError.innerHTML = "This field is required";
+            countryError.style.color = "red";
+          return false;
+        }
+        countryError.innerHTML = "Valid";
+        countryError.style.color = "green";
+        return true;
+      }
+      function validateForm() {
+        if (
+          !validateLine1() ||
+          !validateLine2() ||
+          !validateCity() ||
+          !validateState() ||
+          !validatePost() ||
+          !validateCountry() 
+         
+        ) {
+          submitError.style.display = "block";
+          submitError.innerHTML = "Please enter all the fields to submit ";
+          submitError.style.color = "red";
+          setTimeout(function () {
+            submitError.style.display = "none";
+          }, 3000);
+          return false;
+        }
+      }
+</script>
+<%- include('userfooter') %>

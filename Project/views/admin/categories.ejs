@@ -1,0 +1,334 @@
+<%- include('adminheader') %>
+
+<body>
+  <div class="screen-overlay"></div>
+  <aside class="navbar-aside" id="offcanvas_aside">
+    <div class="aside-top">
+      <a href="index.html" class="brand-wrap">
+        <p style="font-size: 20px; font-weight: bold">Admin</p>
+      </a>
+      <div>
+        <button class="btn btn-icon btn-aside-minimize">
+          <i class="text-muted material-icons md-menu_open"></i>
+        </button>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu-aside">
+        <li class="menu-item">
+          <a class="menu-link" href="/dashboard">
+            <i class="icon material-icons md-home"></i>
+            <span class="text">Dashboard</span>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a class="menu-link" href="/userlist">
+            <i class="icon material-icons md-person"></i>
+            <span class="text">Users</span>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a class="menu-link" href="/productlist">
+            <i class="icon material-icons md-shopping_bag"></i>
+            <span class="text">Products</span>
+          </a>
+        </li>
+        <li class="menu-item active">
+          <a class="menu-link" href="/categories">
+            <i class="icon material-icons md-store"></i>
+            <span class="text">Categories</span>
+          </a>
+        </li>
+        <li class="menu-item ">
+          <a class="menu-link" href="/orders">
+            <i class="icon material-icons md-store"></i>
+            <span class="text">Orders</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+  <main class="main-wrap">
+    <header class="main-header navbar">
+      <div class="col-search">
+        <form class="searchform">
+          <div class="input-group">
+            <input
+              list="search_terms"
+              type="text"
+              class="form-control"
+              placeholder="Search term"
+            />
+            <button class="btn btn-light bg" type="button">
+              <i class="material-icons md-search"></i>
+            </button>
+          </div>
+          <datalist id="search_terms">
+            <option value="Products"></option>
+            <option value="New orders"></option>
+            <option value="Apple iphone"></option>
+            <option value="Ahmed Hassan"></option>
+          </datalist>
+        </form>
+      </div>
+      <div class="col-nav">
+        <button
+          class="btn btn-icon btn-mobile me-auto"
+          data-trigger="#offcanvas_aside"
+        >
+          <i class="material-icons md-apps"></i>
+        </button>
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link btn-icon" href="#">
+              <i class="material-icons md-notifications animation-shake"></i>
+              <span class="badge rounded-pill">3</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link btn-icon darkmode" href="#">
+              <i class="material-icons md-nights_stay"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="requestfullscreen nav-link btn-icon"
+              ><i class="material-icons md-cast"></i
+            ></a>
+          </li>
+          <li class="dropdown nav-item">
+            <a
+              class="dropdown-toggle"
+              data-bs-toggle="dropdown"
+              href="#"
+              id="dropdownLanguage"
+              aria-expanded="false"
+              ><i class="material-icons md-public"></i
+            ></a>
+            <div
+              class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="dropdownLanguage"
+            >
+              <a class="dropdown-item text-brand" href="#"
+                ><img
+                  src="/static/assets/imgs/theme/flag-us.png"
+                  alt="English"
+                />English</a
+              >
+              <a class="dropdown-item" href="#"
+                ><img
+                  src="assets/imgs/theme/flag-fr.png"
+                  alt="Français"
+                />Français</a
+              >
+              <a class="dropdown-item" href="#"
+                ><img
+                  src="assets/imgs/theme/flag-jp.png"
+                  alt="Français"
+                />日本語</a
+              >
+              <a class="dropdown-item" href="#"
+                ><img
+                  src="assets/imgs/theme/flag-cn.png"
+                  alt="Français"
+                />中国人</a
+              >
+            </div>
+          </li>
+          <li class="dropdown nav-item">
+            <a
+              class="dropdown-toggle"
+              data-bs-toggle="dropdown"
+              href="#"
+              id="dropdownAccount"
+              aria-expanded="false"
+            >
+              <img
+                class="img-xs rounded-circle"
+                src="/static/assets/imgs/people/avatar2.jpg"
+                alt="User"
+            /></a>
+            <div
+              class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="dropdownAccount"
+            >
+              <a class="dropdown-item" href="#"
+                ><i class="material-icons md-perm_identity"></i>Edit Profile</a
+              >
+              <a class="dropdown-item" href="#"
+                ><i class="material-icons md-settings"></i>Account Settings</a
+              >
+              <a class="dropdown-item" href="#"
+                ><i class="material-icons md-account_balance_wallet"></i
+                >Wallet</a
+              >
+              <a class="dropdown-item" href="#"
+                ><i class="material-icons md-receipt"></i>Billing</a
+              >
+              <a class="dropdown-item" href="#"
+                ><i class="material-icons md-help_outline"></i>Help center</a
+              >
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item text-danger" href="/adminlogout"
+                ><i class="material-icons md-exit_to_app"></i>Logout</a
+              >
+            </div>
+          </li>
+        </ul>
+      </div>
+    </header>
+    <section class="content-main">
+      <div class="content-header">
+        <div>
+          <h2 class="content-title card-title">Categories</h2>
+          <p>Add, edit or delete a category</p>
+        </div>
+        <div>
+          <a href="/addcategories" class="btn btn-primary btn-sm rounded"
+            >Add Category</a
+          >
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-12">
+              <% if (locals.message) { %>
+              <div
+                class="alert alert-dismissible fade show alert-<%= message.type %>"
+                role="alert"
+              >
+                <button
+                  class="btn-close"
+                  type="button"
+                  data-bs-dismiss="alert"
+                  aria-label="Close"
+                ></button>
+                <strong><%= message.message %></strong>
+              </div>
+              <% } %>
+              <div class="table-responsive">
+                <% if (categories != '') { %>
+                <table class="table table-striped text-center">
+                  <thead>
+                    <tr class="table-dark">
+                      <th>ID</th>
+                      <th>Category</th>
+                      <th>Description</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                      <th>Details</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% categories.forEach((row,index) => { %>
+                    <tr class="align-middle">
+                      <td><%= index + 1 %></td>
+                      <td><%= row.category %></td>
+                      <td><%= row.description %></td>
+                      <td>
+                        <% if(row.isListed == false){ %>
+                        <span class="text-danger">UnListed</span>
+                        <% }else{ %>
+                        <span class=" text-success">Listed</span>
+                        <% } %>
+                      </td>
+                      <td>
+                        <% if (row.isListed==false) { %>
+                        <a
+                          href="#"
+                          class="btn btn-sm font-sm rounded btn-brand"
+                          onclick="confirmList('<%= row._id %>')"
+                        >
+                          <i class="material-icons md-edit"></i> List
+                        </a>
+                        <% } else { %>
+                        <a
+                          href="#"
+                          class="btn btn-sm font-sm rounded btn-brand"
+                          onclick="confirmUnlist('<%= row._id %>')"
+                        >
+                          <i class="material-icons md-edit"></i> UnList
+                        </a>
+                        <% } %>
+                      </td>
+                      <td>
+                        <a
+                          href="/edit/<%= row._id %>"
+                          class="btn btn-sm font-sm rounded btn-brand"
+                        >
+                          <i class="material-icons md-edit"></i> Edit
+                        </a>
+                        
+                      </td>
+                    </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+                <% }else{ %>
+                <h1 class="text-center text-secondary mt-5">
+                  No categories found in the database
+                </h1>
+
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pagination-area mt-30 mb-50">
+        <div class="d-flex justify-content-center">
+       
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-start">
+    <% for(let i = 1; i <= totalPages; i++) { %>
+      <li class="page-item <%= currentPage == i ? 'active' : '' %>">
+        <a class="page-link" href="/categories?page=<%= i %>"><%= i %></a>
+      </li>
+    <% } %>
+  </ul>
+</nav>
+
+        
+      </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function confirmList(categoryId) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You want to list this category?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, list it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          
+          window.location.href = "/list/" + categoryId;
+        }
+      });
+    }
+
+    function confirmUnlist(categoryId) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You want to unlist this category?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, unlist it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+       
+          window.location.href = "/unlist/" + categoryId;
+        }
+      });
+    }
+    
+  </script>
+    <%- include('adminfooter') %>
+  

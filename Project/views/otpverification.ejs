@@ -1,0 +1,171 @@
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title><%= locals.title ? title:"OTP Verification" %></title>
+      <!-- Bootstrap CSS -->
+      <link
+        rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      />
+
+      <link
+        href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap"
+        rel="stylesheet"
+      />
+      <!-- Custom CSS -->
+      <style>
+        body {
+          background-color: #011425;
+          font-family: "Lato", Arial, sans-serif;
+        }
+
+        .login-container {
+          max-width: 400px;
+          margin: auto;
+          margin-top: 100px;
+          height: 80vh;
+        }
+
+        .login-form {
+          background-color: #1f4959;
+          padding: 20px;
+          border-radius: 10px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          height: 60vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-evenly;
+        }
+        @media (max-width: 576px) {
+          .login-form {
+            height: auto;
+          }
+        }
+        .login-heading {
+          color: white;
+          font-weight: bold;
+        }
+        .login-button {
+          background-color: #000000;
+          color: white;
+        }
+        .signup-text {
+          color: rgba(255, 255, 255, 0.5);
+        }
+        .signup-text a {
+          color: #000000;
+        }
+        .forgot {
+          color: #000000;
+        }
+        .otp {
+          background: transparent;
+          border: none;
+          border-bottom: 1px solid white;
+          color: white;
+        }
+        .otp:active,
+        .otp:focus {
+          background: transparent;
+          border: none;
+          border-bottom: 1px solid white;
+          color: white;
+        }
+
+        .form-control:focus {
+          border-color: inherit;
+          -webkit-box-shadow: none;
+          box-shadow: none;
+        }
+        .welcome {
+          color: rgba(255, 255, 255, 0.5);
+        }
+        .info {
+          color: rgba(255, 255, 255, 0.5);
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container login-container">
+        <div class="row">
+          <div class="col-md-12 login-form">
+            <h2 class="text-center login login-heading">Verify OTP</h2>
+            <% if (locals.alert) { %>
+            <div class="alert alert-danger text-center m-3" id="error">
+              <%= locals.alert %>
+            </div>
+            <% } %>
+            <form action="/verifyotp" method="post">
+              <div class="form-group">
+                <input type="hidden" name="email" value="<%= email %>" />
+                <input
+                  type="text"
+                  class="form-control otp"
+                  id="otp"
+                  name="otp"
+                  placeholder="Enter OTP"
+                />
+              </div>
+              <div class="form-group" id="timerSection">
+               
+              </div>
+              <button type="submit" class="btn btn-block login-button">
+                Verify
+              </button>
+            </form>
+            <div class="form-group" id="resendSection" style="display: none;">
+              <form action="/resendotp" method="post" id="resendForm">
+                <input type="hidden" name="email" value="<%= email %>" />
+                <button type="submit" class="forgot mb-1" style="background: none; border-radius: 5px;" id="resendLink">Resend OTP</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+      
+
+      <!-- Bootstrap JS and dependencies -->
+      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+      
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          let timeRemaining = 10000; // 1 minute in milliseconds
+      
+          function updateTimer() {
+            const timerSection = document.getElementById("timerSection");
+            const timerElement = document.createElement("p");
+      
+            if (timerSection && timerElement) {
+              if (timeRemaining > 0) {
+                const minutes = Math.floor(timeRemaining / 60000);
+                const seconds = Math.floor((timeRemaining % 60000) / 1000);
+                timerElement.textContent = `Resend OTP in ${minutes}:${seconds}`;
+                timeRemaining -= 1000;
+              } else {
+                timerElement.textContent = ""; // Clear the timer when the time is up
+                const resendSection = document.getElementById("resendSection");
+                if (resendSection) {
+                  resendSection.style.display = "block"; // Display the resend section
+                }
+              }
+              timerSection.innerHTML = ""; // Clear previous timer
+              timerSection.appendChild(timerElement);
+            }
+          }
+      
+          setInterval(updateTimer, 1000);
+        });
+      </script>
+      
+      
+      
+      
+      
+    </body>
+  </html>

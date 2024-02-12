@@ -1,0 +1,53 @@
+<%- include('userheader') %>
+
+<style>
+ 
+  .thank-you-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 80vh; 
+    text-align: center;
+  }
+
+  .thank-you-content {
+    max-width: 600px; 
+    margin: auto; 
+  }
+
+  .thank-you-content h2 {
+    font-size: 24px; 
+    margin-bottom: 10px;
+  }
+
+  .thank-you-content p {
+    font-size: 18px; 
+    margin-bottom: 20px;
+  }
+
+  .thank-you-content .site-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #000000;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+
+  .thank-you-content .site-btn:hover {
+    background-color: #0056b3; 
+  }
+</style>
+
+<!-- Thank You Content -->
+<div class="thank-you-container">
+  <div class="thank-you-content">
+    <h2>Thank you for shopping!</h2>
+    <p>Your order has been placed successfully.</p>
+    <a href="/shop" class="site-btn">Back to Shopping</a>
+  </div>
+</div>
+
+<%- include('userfooter') %>

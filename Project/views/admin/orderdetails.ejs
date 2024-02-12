@@ -1,0 +1,281 @@
+<%- include('adminheader') %>
+
+<body>
+    <div class="screen-overlay"></div>
+    <aside class="navbar-aside" id="offcanvas_aside">
+        <div class="aside-top">
+            <a href="index.html" class="brand-wrap">
+                <p style="font-size: 20px; font-weight: bold">Admin</p>
+            </a>
+            <div>
+                <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
+            </div>
+        </div>
+        <nav>
+            <ul class="menu-aside">
+                <li class="menu-item ">
+                    <a class="menu-link" href="/dashboard">
+                      <i class="icon material-icons md-home"></i>
+                      <span class="text">Dashboard</span>
+                    </a>
+                  </li>
+                  <li class="menu-item">
+                    <a class="menu-link" href="/userlist">
+                      <i class="icon material-icons md-person"></i>
+                      <span class="text">Users</span>
+                    </a>
+                  </li>
+                  <li class="menu-item">
+                    <a class="menu-link" href="/productlist">
+                      <i class="icon material-icons md-shopping_bag"></i>
+                      <span class="text">Products</span>
+                    </a>
+                  </li>
+                  <li class="menu-item">
+                    <a class="menu-link" href="/categories">
+                      <i class="icon material-icons md-store"></i>
+                      <span class="text">Categories</span>
+                    </a>
+                  </li>
+                  <li class="menu-item active">
+                    <a class="menu-link" href="/orders">
+                      <i class="icon material-icons md-store"></i>
+                      <span class="text">Orders</span>
+                    </a>
+                  </li>
+  
+            </ul>
+            <hr>
+            
+            <br>
+            <br>
+        </nav>
+    </aside>
+    <main class="main-wrap">
+        <header class="main-header navbar">
+            <div class="col-search">
+                <form class="searchform">
+                    <div class="input-group">
+                        <input list="search_terms" type="text" class="form-control" placeholder="Search term">
+                        <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
+                    </div>
+                    <datalist id="search_terms">
+                        <option value="Products">
+                        <option value="New orders">
+                        <option value="Apple iphone">
+                        <option value="Ahmed Hassan">
+                    </datalist>
+                </form>
+            </div>
+            <div class="col-nav">
+                <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"> <i class="material-icons md-apps"></i> </button>
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link btn-icon" href="#">
+                            <i class="material-icons md-notifications animation-shake"></i>
+                            <span class="badge rounded-pill">3</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="requestfullscreen nav-link btn-icon"><i class="material-icons md-cast"></i></a>
+                    </li>
+                    <li class="dropdown nav-item">
+                        <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownLanguage" aria-expanded="false"><i class="material-icons md-public"></i></a>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLanguage">
+                            <a class="dropdown-item text-brand" href="#"><img src="assets/imgs/theme/flag-us.png" alt="English">English</a>
+                            <a class="dropdown-item" href="#"><img src="assets/imgs/theme/flag-fr.png" alt="Français">Français</a>
+                            <a class="dropdown-item" href="#"><img src="assets/imgs/theme/flag-jp.png" alt="Français">日本語</a>
+                            <a class="dropdown-item" href="#"><img src="assets/imgs/theme/flag-cn.png" alt="Français">中国人</a>
+                        </div>
+                    </li>
+                    <li class="dropdown nav-item">
+                        <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false"> <img class="img-xs rounded-circle" src="assets/imgs/people/avatar2.jpg" alt="User"></a>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                            <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit Profile</a>
+                            <a class="dropdown-item" href="#"><i class="material-icons md-settings"></i>Account Settings</a>
+                            <a class="dropdown-item" href="#"><i class="material-icons md-account_balance_wallet"></i>Wallet</a>
+                            <a class="dropdown-item" href="#"><i class="material-icons md-receipt"></i>Billing</a>
+                            <a class="dropdown-item" href="#"><i class="material-icons md-help_outline"></i>Help center</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-danger" href="#"><i class="material-icons md-exit_to_app"></i>Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </header>
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Order Details</h2>
+                    <p>Details for Order ID: 3453012</p>
+                </div>
+            </div>
+            <div class="card">
+                <header class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 col-md-6 mb-lg-0 mb-15">
+                            <span>
+                                <i class="material-icons md-calendar_today"></i> <b><%= order.orderDate %></b>
+                            </span> <br>
+                        
+                        </div>
+                    </div>
+                </header> 
+                <div class="card-body">
+                    <div class="row mb-50 mt-20 order-info-wrap">
+                        <div class="col-md-4">
+                            <article class="icontext align-items-start">
+                                <span class="icon icon-sm rounded-circle bg-primary-light">
+                                    <i class="text-primary material-icons md-person"></i>
+                                </span>
+                                <div class="text">
+                                    <h6 class="mb-1">Customer</h6>
+                                    <p class="mb-1">
+                                        <%= order.billingDetails.name %> <br>
+                                        <%= order.billingDetails.email %> <br>
+                                        <%= order.billingDetails.phone %>
+                                    </p>
+                                   
+                                </div>
+                            </article>
+                        </div> 
+                        <div class="col-md-4">
+                            <article class="icontext align-items-start">
+                                <span class="icon icon-sm rounded-circle bg-primary-light">
+                                    <i class="text-primary material-icons md-local_shipping"></i>
+                                </span>
+                                <div class="text">
+                                    <h6 class="mb-1">Status</h6>
+                                    <p class="mb-1">
+                                        <select class="form-select d-inline-block mb-lg-0 mb-15 mw-200" id="statusSelect">
+                                            <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                                            <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                                            <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                                            <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                        </select>
+                                    </p>
+
+                                </div>
+                            </article>
+                        </div> 
+                        <div class="col-md-4">
+                            <article class="icontext align-items-start">
+                                <span class="icon icon-sm rounded-circle bg-primary-light">
+                                    <i class="text-primary material-icons md-place"></i>
+                                </span>
+                                <div class="text">
+                                    <h6 class="mb-1">Deliver to</h6>
+                                    <p class="mb-1">
+                                        City: <%= order.billingDetails.city %> <br>
+                                        Address: <%= order.billingDetails.addressLine1 %> <br>
+                                        Postal Code: <%= order.billingDetails.postalCode %> <br>
+                                        Country: <%= order.billingDetails.country %>
+                                    </p>
+                                    
+                                </div>
+                            </article>
+                        </div> 
+                    </div> 
+                    <div class="row">
+                        <div class="col-lg-7">
+                            <div class="table-responsive text-center">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th width="40%">Product</th>
+                                            <th width="20%">Unit Price</th>
+                                            <th width="20%">Quantity</th>
+                                            <th width="20%" class="text-end">Total</th>
+                                           
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% order.items.forEach(item => { %>
+                                          <tr>
+                                            <td>
+                                              <a class="itemside" href="#">
+                                                <div class="left">
+                                                  <img src="/static/<%= item.product.images[0] %>" width="40" height="40" class="img-xs" alt="Item">
+                                                </div>
+                                                <div class="info"> <%= item.product.productTitle %> </div>
+                                              </a>
+                                            </td>
+                                            <td> <%= item.price %> </td>
+                                            <td> <%= item.quantity %> </td>
+                                            
+                                            <td class="text-end"> <%= item.price * item.quantity %> </td>
+                                            
+                                          </tr>
+                                        <% }); %>
+                                      </tbody>
+                                </table>
+                            </div> 
+                            <a class="btn btn-primary" href="page-orders-tracking.html">View Order Tracking</a>
+                        </div> 
+                        <div class="col-lg-1"></div>
+                        <div class="col-lg-4">
+                            <div class="box shadow-sm bg-light">
+                                <h6 class="mb-15">Payment info</h6>
+                                <p>
+                                    <%= order.paymentMethod %>
+                                </p>
+                            </div>
+                           
+                        </div> 
+                    </div>
+                </div> 
+            </div> 
+        </section> 
+        <footer class="main-footer font-xs">
+            <div class="row pb-30 pt-15">
+                <div class="col-sm-6">
+                    <script>
+                    document.write(new Date().getFullYear())
+                    </script> ©, Evara - HTML Ecommerce Template .
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-sm-end">
+                        All rights reserved
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+    
+    <script>
+        document.getElementById('statusSelect').addEventListener('change', function() {
+            
+            const selectedStatus = this.value;
+           
+            const orderId = '<%= order._id %>';
+
+            fetch('/updateStatus', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ orderId, selectedStatus })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to update status');
+                }
+                return response.json();
+            })
+            .then(data => {
+                
+                console.log('Status updated successfully:', data);
+               
+            })
+            .catch(error => {
+                
+                console.error('Error updating status:', error);
+            });
+        });
+    </script>
+    
+    
+    <%- include('adminfooter') %>
