@@ -88,24 +88,30 @@
                                 <li>Total <span>Rs <%= totalPrice %></span></li>
                             </ul>
                             <div class="checkout__input__checkbox">
-                                    <label for="payment">
-                                        Cash on Delivery
-                                        <input type="checkbox" id="payment" name="paymentMethod">
-                                        <span class="checkmark"></span>
-                                        <span
-                    id="check-error"
-                    style="font-size: 14px; margin-top: -5px"
-                  ></span>
-                                    </label>
-                                </div>
+                                <label for="payment-cod">
+                                    Cash on Delivery
+                                    <input type="checkbox" id="payment-cod" name="paymentMethod" value="Cash on Delivery">
+                                    <span class="checkmark"></span>
+                                    
+                                </label>
+                            </div>
+                            <div class="checkout__input__checkbox">
+                                <label for="payment-razorpay">
+                                    Razorpay
+                                    <input type="checkbox" id="payment-razorpay" name="paymentMethod" value="Razorpay">
+                                    <span class="checkmark"></span>
+                                    <span id="check-error" style="font-size: 14px; margin-top: -5px"></span>
+                                </label>
+                            </div>
+                            
                                 <% if (userAddress) { %>
                                     <input type="hidden" name="addressID" value="<%= userAddress._id %>">
                                 <% } %>
                                 
                                 <input type="hidden" name="cartItems" value="<%= JSON.stringify(cartItems) %>">
-                                <input type="hidden" name="totalPrice" value="<%= totalPrice %>">
+                                <input type="hidden" id="totalPrice" name="totalPrice" value="<%= totalPrice %>">
 
-                                <button type="submit" onclick="return validateForm()" class="site-btn">PLACE ORDER</button>
+                                <button type="submit" class="site-btn">PLACE ORDER</button>
                             
                         </div>
                     </div>
@@ -200,17 +206,34 @@
         var checkError = document.getElementById('check-error');
         
         function validateForm() {
-            const paymentCheckbox = document.getElementById('payment');
-            if (!paymentCheckbox.checked) {
-                checkError.style.display = "block";
-                checkError.innerHTML = "Please select the payment method";
-                checkError.style.color = "red";
-                setTimeout(function () {
-                    checkError.style.display = "none";
-                }, 3000);
+            const paymentCODCheckbox = document.getElementById('payment-cod');
+    const paymentRazorpayCheckbox = document.getElementById('payment-razorpay');
+
+    if (paymentCODCheckbox.checked && paymentRazorpayCheckbox.checked) {
+       
+        checkError.style.display = "block";
+        checkError.innerHTML = "Please select only one payment method";
+        checkError.style.color = "red";
+        setTimeout(function () {
+            checkError.style.display = "none";
+        }, 3000);
+        return false;
+    } else if (!paymentCODCheckbox.checked && !paymentRazorpayCheckbox.checked) {
+        
+        checkError.style.display = "block";
+        checkError.innerHTML = "Please select a payment method";
+        checkError.style.color = "red";
+        setTimeout(function () {
+            checkError.style.display = "none";
+        }, 3000);
+        return false;
+            } else {
+             if(paymentRazorpayCheckbox.checked) {
+                const totalPrice = document.getElementById('totalPrice').value;
+                window.location.href = `/razorpay-checkout`; 
                 return false;
             } else {
-                // If payment method is selected, show SweetAlert confirmation
+                
                 Swal.fire({
                     title: 'Are you sure?',
                     text: 'Do you want to place the order?',
@@ -221,19 +244,28 @@
                     confirmButtonText: 'Yes, place order'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // If user confirms, submit the form
+                        console.log("8");
                         document.querySelector('form').submit();
                     }
                 });
-                return false; // Prevent form submission
+                return false; 
             }
         }
+    }
+    document.querySelector('form').addEventListener('submit', function(event) {
+    // Prevent default form submission
+    event.preventDefault();
+    
+    // Call the validateForm() function
+    validateForm();
+});
+
     </script>
     
     
     <script>
         function setDefaultAddress(addressId) {
-            // AJAX request to update the server-side data
+          
             fetch('/setDefaultAddress', {
                 method: 'POST',
                 headers: {

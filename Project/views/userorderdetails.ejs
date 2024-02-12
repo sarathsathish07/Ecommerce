@@ -52,9 +52,26 @@
                     
                     <h2><b>Order Details</b></h2>
                     <div class="progress">
-                      <div  <% /* eslint-disable css-propertyvalueexpected */ %>  class="progress-bar" role="progressbar" style="width: <%= progressPercentage %>%; background-color: <%= progressColor %>;" aria-valuenow="<%= progressPercentage %>" aria-valuemin="0" aria-valuemax="100"> Order <%= order.status %></div>
-                  </div>
+                      <div   class="progress-bar" role="progressbar" style="width: <%= progressPercentage %>%; background-color: <%= progressColor %>;" aria-valuenow="<%= progressPercentage %>" aria-valuemin="0" aria-valuemax="100"> Order <%= order.status %></div>
+                   
+                    </div>
+                    <div class="mb-4" style="display: flex; justify-content: space-evenly;">
+                    <div class="text">
+                        <h6 class="mb-1"><b>Customer</b></h6>
+                        <p class="mb-1">
+                            <%= order.billingDetails.name %> <br>
+                            <%= order.billingDetails.email %> <br>
+                            <%= order.billingDetails.phone %>
+                        </p>
                        
+                    </div>
+                    <div class="text">
+                        <h6 ><b>Payment info</b></h6>
+                        <p>
+                            <%= order.paymentMethod %>
+                        </p>
+                    </div>
+                </div>
                     <div class="table-responsive text-center">
                       <table class="table">
                           <thead>
@@ -89,13 +106,13 @@
                       </table>
                   </div> <!-- table-responsive //end -->
                              <!-- card end// -->
-                            </section>  <!-- Orders List Section end// -->
-                </div>
+                </section>  <!-- Orders List Section end// -->
+            </div>
             
         </div>
     </div>
 </section>
 
-
+<!-- Footer and Search section codes remain unchanged -->
 
 <%- include('userfooter') %>

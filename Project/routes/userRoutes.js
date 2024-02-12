@@ -32,7 +32,7 @@ router.post('/editAddress/:addressId',isUser, userController.posteditAddress);
 router.post('/deleteAddress/:addressId',isUser, userController.deleteAddress);
 
 
-
+router.get('/razorpay-checkout',isUser,userController.razorpayCheckout)
 
 
 router.get("/logout",isUser, userController.logout);

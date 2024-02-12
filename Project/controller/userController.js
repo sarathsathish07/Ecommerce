@@ -305,7 +305,7 @@ const userController = {
   getProductDetailsPage: async (req, res,next) => {
     try {
       const id = req.params.id;
-      console.log();
+      console.log(id);
       const product = await Product.findById(id).exec();
 
       if (!product) {
@@ -703,7 +703,7 @@ const userController = {
 
   placeOrder: async (req, res,next) => {
     try {
-      const { addressID, totalPrice } = req.body;
+      const { addressID, totalPrice, paymentMethod } = req.body;
 
       const cartItems = Array.from(JSON.parse(req.body.cartItems));
 
@@ -712,7 +712,7 @@ const userController = {
       const selectedAddress = address.addresses.find((a) =>
         addressID.includes(a._id.toString())
       );
-      console.log("Selected address:", selectedAddress);
+      
 
       const user = await User.findById(address.userID);
 
@@ -735,7 +735,7 @@ const userController = {
           phone: user.phone,
           email: user.email,
         },
-        paymentMethod: "Cash on Delivery",
+        paymentMethod: paymentMethod,
       });
 
       await order.save();
@@ -750,6 +750,36 @@ const userController = {
       next(err);
     }
   },
+  razorpayCheckout:async(req, res) => {
+    try {
+      const userId = req.session.userID;
+
+      const addresses = await Address.findOne({ userID: userId });
+
+      let defaultAddress = null;
+      if (addresses && addresses.addresses && addresses.addresses.length > 0) {
+        defaultAddress = addresses.addresses.find(
+          (address) => address.isDefault
+        );
+      }
+
+      const userCart = await Cart.findOne({ userID: userId })
+        .populate("items.product")
+        .exec();
+
+      res.render("razorpaycheckout", {
+        title: "Razorpay Checkout",
+        addresses: addresses,
+        user: req.session.user,
+        userAddress: defaultAddress,
+        cartItems: userCart.items,
+        totalPrice: userCart.totalPrice,
+      });
+    } catch (err) {
+      next(err);
+    }
+   
+},
 
   thankYou: (req, res,next) => {
     try {
