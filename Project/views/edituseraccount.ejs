@@ -150,98 +150,90 @@
 
 <script>
      var nameError = document.getElementById("name-error");
-      var emailError = document.getElementById("email-error");
       var phoneError = document.getElementById("phone-error");
       var submitError = document.getElementById("submit-error");
 
-      function validateName() {
-        var name = document.getElementById("name").value.trim();
-
-        if (name.length === 0) {
-          nameError.innerHTML = "Name is required";
-          nameError.style.color = "red";
-          return false;
-        }
-
-        // Check if the name starts with a space
-        if (name[0] === " ") {
-          nameError.innerHTML = "Name should not start with a space";
-          nameError.style.color = "red";
-          return false;
-        }
-
-        // Check if the name contains only alphabets
-        if (name.match(/^[0-9]+$/)) {
-          nameError.innerHTML = "Alphabets only";
-          nameError.style.color = "red";
-          return false;
-        }
-
-        // Check if the name contains alphabets separated by a space
-        if (!name.match(/^[A-Za-z]*\s{1}[A-Za-z]*$/)) {
-          nameError.innerHTML = "Write full name";
-          nameError.style.color = "red";
-          return false;
-        }
-
-        nameError.innerHTML = "Valid";
-        nameError.style.color = "green";
-        return true;
-      }
-      function validateEmail() {
-        var email = document.getElementById("email").value.trim();
-
-        if (email.length == 0) {
-          emailError.innerHTML = "Email is required";
-          emailError.style.color = "red";
-          return false;
-        }
-        if (!email.match(/^[A-Za-z\._\-[0-9]*[@][A-Za-z]*[\.][a-z]{2,4}$/)) {
-          emailError.innerHTML = "Email is invalid";
-          emailError.style.color = "red";
-          return false;
-        }
-        emailError.innerHTML = "Valid";
-        emailError.style.color = "green";
-        return true;
-      }
-
-      function validatePhone() {
-        var phone = document.getElementById("phone").value.trim();
-
-        if (phone.length == 0) {
-          phoneError.innerHTML = "Phone number is required";
-          phoneError.style.color = "red";
-          return false;
-        }
-
-
-        if (!phone.match(/^[0-9]{10}$/)) {
-          phoneError.innerHTML = "Invalid phone number";
-          phoneError.style.color = "red";
-          return false;
-        }
-
-        phoneError.innerHTML = "Valid";
-        phoneError.style.color = "green";
-        return true;
-      }
+      
       function validateForm() {
-        if (
-          !validateName() ||
-          !validateEmail() ||
-          !validatePhone() 
-          
-        ) {
-          submitError.style.display = "block";
-          submitError.innerHTML = "Please enter all the fields to submit ";
-          submitError.style.color = "red";
-          setTimeout(function () {
-            submitError.style.display = "none";
-          }, 3000);
-          return false;
-        }
-      }
+  var name = document.getElementById("name").value.trim();
+  var phone = document.getElementById("phone").value.trim();
+  var existingPassword = document.getElementById("existingpassword").value.trim();
+  var newPassword = document.getElementById("newpassword").value.trim();
+  var confirmPassword = document.getElementById("confirmpassword").value.trim();
+
+  // Validation for name
+  if (name.length === 0) {
+    nameError.innerHTML = "Name is required";
+    nameError.style.color = "red";
+    return false;
+  }
+
+  // Check if the name starts with a space
+  if (name[0] === " ") {
+    nameError.innerHTML = "Name should not start with a space";
+    nameError.style.color = "red";
+    return false;
+  }
+
+  // Check if the name contains only alphabets
+  if (name.match(/^[0-9]+$/)) {
+    nameError.innerHTML = "Alphabets only";
+    nameError.style.color = "red";
+    return false;
+  }
+
+  // Check if the name contains alphabets separated by a space
+  if (!name.match(/^[A-Za-z]*\s{1}[A-Za-z]*$/)) {
+    nameError.innerHTML = "Write full name";
+    nameError.style.color = "red";
+    return false;
+  }
+
+  nameError.innerHTML = "Valid";
+  nameError.style.color = "green";
+
+  // Validation for phone number
+  if (phone.length === 0) {
+    phoneError.innerHTML = "Phone number is required";
+    phoneError.style.color = "red";
+    return false;
+  }
+
+  if (!phone.match(/^[6-9][0-9]{9}$/)) {
+    phoneError.innerHTML = "Invalid phone number";
+    phoneError.style.color = "red";
+    return false;
+  }
+
+  phoneError.innerHTML = "Valid";
+  phoneError.style.color = "green";
+
+  // Validation for existing password
+  if (existingPassword) {
+    if (!newPassword || !confirmPassword) {
+      submitError.innerHTML = "Please enter new password and confirm password";
+      submitError.style.color = "red";
+      return false;
+    }
+
+    if (newPassword !== confirmPassword) {
+      submitError.innerHTML = "New password and confirm password do not match";
+      submitError.style.color = "red";
+      return false;
+    }
+
+    // Validation for new password strength
+    if (newPassword.length < 8 || !/[a-zA-Z]/.test(newPassword) || !/\d/.test(newPassword) || !/[!@#$%^&*(),.?":{}|<>]/.test(newPassword)) {
+      submitError.innerHTML = "Password must be at least 8 characters <br> Password must contain at least one letter <br> Password must contain at least one number <br> Password must contain at least one special character";
+      submitError.style.color = "red";
+      return false;
+    }
+  }
+
+  // All validations passed
+  return true;
+}
+
 </script>
 
 <%- include('userfooter') %>
