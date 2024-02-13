@@ -241,9 +241,10 @@
                     name="price"
                     class="form-control"
                     id="product_price"
+                    value="<%= product.price %>"
                     onkeyup="validatePrice()"
                   >
-                  <%= product.price %>
+                  
                   <span
                     id="price-error"
                     style="font-size: 14px; margin-top: -20px"
@@ -259,11 +260,12 @@
                       type="text"
                       placeholder="Stock value"
                       name="stock"
-                      value="<%= product.stock %>"
+                      value="  <%= product.stock %>"
                       class="form-control"
                       id="product_stock"
                       onkeyup="validateStock()" 
                   />
+                
                   <span id="stock-error" style="font-size: 14px; margin-top: -20px"></span> 
               </div>
                 <div class="mb-4">

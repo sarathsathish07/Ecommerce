@@ -37,9 +37,9 @@ const categoryController = {
   },
   postAddCategories: async (req, res,next) => {
     try {
-      const existingCategory = await Category.findOne({
-        category: req.body.category,
-      });
+      const categoryName = req.body.category.toLowerCase();
+
+       const existingCategory = await Category.findOne({ category: { $regex: new RegExp('^' + categoryName + '$', 'i') } });
       if (existingCategory) {
         res.render("admin/addcategories", {
           title: "Add Category",
@@ -84,22 +84,30 @@ const categoryController = {
   postEditCategories: async (req, res,next) => {
     try {
       const id = req.params.id;
-      const result = await Category.findByIdAndUpdate(id, {
+      const newCategoryName = req.body.category.toLowerCase();
+      const category = await Category.findById(id).exec();
+   
+    const existingCategory = await Category.findOne({ category: { $regex: new RegExp('^' + newCategoryName + '$', 'i') }, _id: { $ne: id } });
+    if (existingCategory) {
+      res.render("admin/editcategories", {
+        title: "Add Category",
+        alert: "Category already exists",
+        category: category
+      });
+    } else {
+    await Category.findByIdAndUpdate(id, {
         category: req.body.category,
         description: req.body.description,
       }).exec();
 
-      if (!result) {
-        res.json({ message: "Category not found", type: "danger" });
-        return;
-      }
 
       req.session.message = {
         type: "success",
         message: "Category updated successfully",
       };
       res.redirect("/categories");
-    } catch (err) {
+    } 
+  }catch (err) {
       next(err);
     }
   },

@@ -180,6 +180,11 @@
         <div>
           <h2 class="content-title card-title">Edit Categories</h2>
           <p>Edit a category</p>
+          <% if (locals.alert) { %>
+            <div class="alert alert-danger text-center m-3" id="error">
+              <%= locals.alert %>
+            </div>
+            <% } %>
         </div>
       </div>
       <div class="card">
