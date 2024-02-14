@@ -106,7 +106,7 @@ const cartController = {
                 if (action === "increment") {
                     if (cartItem.quantity < maxQuantity) {
                         cartItem.quantity += 1;
-                        cartItem.price = cartItem.quantity * cartItem.product.price;
+                        cartItem.price =  cartItem.product.price;
 
                         userCart.totalPrice = userCart.items.reduce(
                             (total, item) => total + item.price * item.quantity,
@@ -128,7 +128,7 @@ const cartController = {
                     }
                 } else if (action === "decrement" && cartItem.quantity > 1) {
                     cartItem.quantity -= 1;
-                    cartItem.price = cartItem.quantity * cartItem.product.price;
+                    cartItem.price =  cartItem.product.price;
 
                     userCart.totalPrice = userCart.items.reduce(
                         (total, item) => total + item.price * item.quantity,
