@@ -33,9 +33,6 @@ admin_router.get("/edit/:id",isAdmin, categoryController.getEditCategories);
 admin_router.post("/update/:id",isAdmin, categoryController.postEditCategories);
 
 
-
-
-
 admin_router.get("/adminlogout",isAdmin, adminController.getAdminLogout);
 
 admin_router.get("/block/:userId", isAdmin,adminController.blockUser);

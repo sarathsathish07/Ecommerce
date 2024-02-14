@@ -242,9 +242,6 @@
       try {
           const perPage = 9;
           const page = req.query.page || 1;
-
-        
-
           const products1 = await Product.find({ isPublished: true }).populate("category");
 
           const filteredProducts = products1.filter(
