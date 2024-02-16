@@ -29,7 +29,7 @@
       try {
         const data = await User.findOne({ email: req.body.email });
 
-        if (!data) {
+        if (!data) {  
           res.render("usersignup", {
             title: "Signup",
             signup: "Account Doesn't Exist, Please signup",
@@ -211,9 +211,7 @@
 
         const user = await User.findOne({ email: userEmail });
 
-        if (!user) {
-          return res.status(404).json({ message: "User not found" });
-        }
+        
 
         // OTP generation
         const newOTP = randomstring.generate({
@@ -697,7 +695,7 @@
 
     placeOrder: async (req, res,next) => {
       try {
-        const { addressID, totalPrice, paymentMethod } = req.body;
+        const { addressID, totalPrice, paymentMethod, paymentStatus} = req.body;
 
         const cartItems = Array.from(JSON.parse(req.body.cartItems));
 
@@ -730,6 +728,7 @@
             email: user.email,
           },
           paymentMethod: paymentMethod,
+          paymentStatus: paymentStatus,
         });
 
         await order.save();

@@ -107,7 +107,7 @@
                                 <% if (userAddress) { %>
                                     <input type="hidden" name="addressID" value="<%= userAddress._id %>">
                                 <% } %>
-                                
+                                <input type="hidden" id="paymentMethod" name="paymentStatus" value="Paid">
                                 <input type="hidden" name="cartItems" value="<%= JSON.stringify(cartItems) %>">
                                 <input type="hidden" id="totalPrice" name="totalPrice" value="<%= totalPrice %>">
 
@@ -229,9 +229,48 @@
         return false;
             } else {
              if(paymentRazorpayCheckbox.checked) {
-                const totalPrice = document.getElementById('totalPrice').value;
-                window.location.href = `/razorpay-checkout`; 
-                return false;
+                
+                initiateRazorpayPayment();
+        function initiateRazorpayPayment() {
+          const user = {
+                name: "<%= user.name %>",
+                email: "<%= user.email %>",
+                phone: "<%= user.phone %>"
+            };
+            console.log(user);
+            
+            const totalPriceInput = document.getElementById('totalPrice');
+        const totalPrice = totalPriceInput ? parseInt(totalPriceInput.value) : 0;
+
+         
+            var options = {
+                key: "rzp_test_PkGwc5wn6qCei0", 
+                amount: totalPrice * 100, 
+                currency: 'INR',
+                name: 'Your Company Name',
+                description: 'Purchase Description',
+                image: 'https://example.com/logo.png', 
+                handler: function (response) {
+                  
+                    document.querySelector('form').submit();
+                  
+                },
+                
+                prefill: {
+                  name: user.name,
+                  email: user.email,
+                  contact: user.phone
+                },
+                theme: {
+                    color: '#3399cc'
+                }
+            };
+            var rzp = new Razorpay(options);
+            rzp.open();
+        }
+            
+        
+
             } else {
                 
                 Swal.fire({

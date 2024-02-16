@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const path = require("path");
 const session = require("express-session");
 const nocache = require("nocache");
+const sharp = require('sharp');
 
 app.use(nocache());
 
@@ -26,7 +27,9 @@ app.use(express.urlencoded({ extended: true }));
 //setting view engine
 app.set("view engine", "ejs");
 
+
 // miidleware to serve static files
+app.use('/temp', express.static('temp'));
 app.use("/static", express.static(path.join(__dirname, "public")));
 
 //middleware to handle session

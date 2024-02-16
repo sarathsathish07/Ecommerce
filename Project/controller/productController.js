@@ -1,6 +1,7 @@
 const Product = require("../models/products");
 const Category = require("../models/category");
-
+const sharp = require("sharp");
+const fs = require('fs')
 const multer = require("multer");
 
 const storage = multer.diskStorage({
@@ -78,9 +79,6 @@ const productController = {
     try {
       let allCategories = await Category.find();
 
-      const uniqueCategories = [
-        ...new Set(allCategories.map((category) => category.category)),
-      ];
 
       res.render("admin/addproduct", {title: "Add Products", categories: allCategories });
     } catch (err) {
@@ -116,6 +114,7 @@ const productController = {
       next(err);
     }
   },
+  
   unpublishProduct: async (req, res,next) => {
     try {
       const id = req.params.id;

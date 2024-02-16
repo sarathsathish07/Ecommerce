@@ -1,6 +1,13 @@
 const mongoose = require("mongoose");
 
 const OrderSchema = new mongoose.Schema({
+  trackingId:{
+    type:String,
+    default:function(){
+       return Math.floor(100000 + Math.random() * 900000).toString();
+    },
+    unique:true
+ },
   userID: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -46,6 +53,10 @@ const OrderSchema = new mongoose.Schema({
   paymentMethod: {
     type: String,
     required: true,
+  },
+  paymentStatus: {
+    type: String,
+    default:"Pending"
   },
   orderDate: {
     type: Date,

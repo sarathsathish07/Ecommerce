@@ -6,13 +6,15 @@ const isLoggedAdmin = require('../middleware/adminlogged')
 const adminController = require("../controller/adminController");
 const categoryController = require("../controller/categoryController");
 const productController = require("../controller/productController");
+const dashController = require("../controller/dashboardController");
 
 admin_router.use(nocache());
   
 admin_router.get("/adminlogin",isLoggedAdmin, adminController.getAdminLogin);
 admin_router.post("/submit", adminController.postAdminLogin);
 
-admin_router.get("/dashboard",isAdmin, adminController.getDashboard);
+admin_router.get("/dashboard",isAdmin, dashController.getDashboard);
+admin_router.get("/fetchdashboard",isAdmin, dashController.fetchDashboard);
 
 admin_router.get("/userlist",isAdmin, adminController.getUsers);
 admin_router.get("/userlist/:page",isAdmin,adminController.getUsersPagination);
@@ -50,6 +52,7 @@ admin_router.get("/orderdetails/:id",isAdmin, adminController.getOrderDetailsPag
 
 admin_router.post("/updateStatus",isAdmin, adminController.updateStatus);
 
-
+admin_router.post('/generate-report',adminController.generateReport)
+admin_router.get('/report',adminController.report)
 
 module.exports = admin_router;
