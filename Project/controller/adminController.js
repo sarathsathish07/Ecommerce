@@ -1,7 +1,6 @@
   const User = require("../models/users");
   const Product = require("../models/products");
   const Order = require("../models/orders");  
-  const PDFDocument = require('pdfkit');
   const fs = require('fs')
   const pdf = require('html-pdf');
 
@@ -38,19 +37,28 @@
       }
     },
     
-    getUsers: async (req, res,next) => {
+    getUsers: async (req, res, next) => {
       const perPage = 5;
       const page = req.query.page || 1;
       try {
-        const totalUsers = await User.countDocuments();
-
+        const totalUsers = await User.aggregate([
+          {
+            $group: {
+              _id: null,
+              count: { $sum: 1 }
+            }
+          }
+        ]);
+    
+        const totalCount = totalUsers.length > 0 ? totalUsers[0].count : 0;
+    
         const users = await User.find()
           .skip(perPage * page - perPage)
           .limit(perPage)
           .exec();
-
-        const totalPages = Math.ceil(totalUsers / perPage);
-
+    
+        const totalPages = Math.ceil(totalCount / perPage);
+    
         res.render("admin/userlist", {
           title: "Users",
           users: users,
@@ -62,21 +70,41 @@
         next(err);
       }
     },
+    
 
-    getUsersPagination: async (req, res,next) => {
+    getUsersPagination: async (req, res, next) => {
       const perPage = 5;
-      const page = req.query.page || 1;
-
+      const page = parseInt(req.query.page) || 1;
+    
       try {
-        const totalUsers = await User.countDocuments();
-
-        const users = await User.find()
-          .skip(perPage * page - perPage)
-          .limit(perPage)
-          .exec();
-
-        const totalPages = Math.ceil(totalUsers / perPage);
-
+        const result = await User.aggregate([
+          {
+            $facet: {
+              totalCount: [
+                {
+                  $group: {
+                    _id: null,
+                    count: { $sum: 1 }
+                  }
+                }
+              ],
+              users: [
+                { $skip: perPage * page - perPage },
+                { $limit: perPage }
+              ]
+            }
+          },
+          {
+            $unwind: "$totalCount" 
+          }
+        ]);
+    
+        const totalCount = result[0].totalCount.count;
+    
+        const totalPages = Math.ceil(totalCount / perPage);
+    
+        const users = result[0].users;
+    
         res.render("admin/userlist", {
           title: "Users",
           users: users,
@@ -88,6 +116,7 @@
         next(err);
       }
     },
+    
 
     blockUser: async (req, res,next) => {
       try {
@@ -117,19 +146,21 @@
       }
     },
 
-    getOrders: async (req, res,next) => {
+    getOrders: async (req, res, next) => {
       const perPage = 5;
       const page = req.query.page || 1;
+    
       try {
         const totalOrders = await Order.countDocuments();
-
-        const orders = await Order.find()
-          .skip(perPage * page - perPage)
-          .limit(perPage)
-          .exec();
-
+    
+        const orders = await Order.aggregate([
+          { $sort: { orderDate: -1 } },
+          { $skip: perPage * page - perPage },
+          { $limit: perPage }
+        ]);
+    
         const totalPages = Math.ceil(totalOrders / perPage);
-
+    
         res.render("admin/orderlist", {
           title: "Orders",
           orders: orders,
@@ -141,21 +172,23 @@
         next(err);
       }
     },
+    
 
-    getOrdersPagination: async (req, res,next) => {
+    getOrdersPagination: async (req, res, next) => {
       const perPage = 5;
       const page = req.query.page || 1;
-
+    
       try {
         const totalOrders = await Order.countDocuments();
-
-        const orders = await Order.find()
-          .skip(perPage * page - perPage)
-          .limit(perPage)
-          .exec();
-
+    
+        const orders = await Order.aggregate([
+          { $sort: { orderDate: -1 } },
+          { $skip: perPage * page - perPage },
+          { $limit: perPage }
+        ]);
+    
         const totalPages = Math.ceil(totalOrders / perPage);
-
+    
         res.render("admin/orderlist", {
           title: "Orders",
           orders: orders,
@@ -167,6 +200,7 @@
         next(err);
       }
     },
+    
 
     getOrderDetailsPage: async (req, res,next) => {
       try {

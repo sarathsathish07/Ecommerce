@@ -47,7 +47,7 @@ admin_router.get("/unpublish/:id",isAdmin, productController.unpublishProduct);
 admin_router.get("/publish/:id",isAdmin, productController.publishProduct);
 
 admin_router.get("/orders",isAdmin, adminController.getOrders);
-admin_router.get("/orderlist/:page",isAdmin, adminController.getOrdersPagination);
+admin_router.get("/orders/:page",isAdmin, adminController.getOrdersPagination);
 admin_router.get("/orderdetails/:id",isAdmin, adminController.getOrderDetailsPage);
 
 admin_router.post("/updateStatus",isAdmin, adminController.updateStatus);

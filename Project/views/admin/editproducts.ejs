@@ -431,16 +431,21 @@
       }
 
       function validatePrice() {
-        var price = document.getElementById("product_price").value.trim();
-        if (price.length === 0 || isNaN(price)) {
-          priceError.innerHTML = "Price is required and must be a number";
-          priceError.style.color = "red";
-          return false;
-        }
-        priceError.innerHTML = "Valid";
-        priceError.style.color = "green";
-        return true;
-      }
+    var price = document.getElementById("product_price").value.trim();
+    var priceError = document.getElementById("price_error");
+
+    if (price.length === 0 || isNaN(price) || parseFloat(price) <= 0) {
+        priceError.innerHTML = "Price is required and must be a positive number";
+        priceError.style.color = "red";
+        return false;
+    }
+
+    priceError.innerHTML = "Valid";
+    priceError.style.color = "green";
+    return true;
+}
+
+
       function validateImage() {
         var image = document.getElementById("product_image").value;
         if (image.length === 0) {

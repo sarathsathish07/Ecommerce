@@ -22,20 +22,43 @@ const upload = multer({
 });
 
 const productController = {
-  getProducts: async (req, res,next) => {
+  getProducts: async (req, res, next) => {
     try {
-      const perPage = 5;
+      const perPage = 2;
       const page = req.query.page || 1;
 
-      const totalProducts = await Product.countDocuments();
+      const totalProducts = await Product.aggregate([
+        {
+          $group: {
+            _id: null,
+            count: { $sum: 1 }
+          }
+        }
+      ]);
 
-      const products = await Product.find()
-        .populate("category")
-        .skip(perPage * page - perPage)
-        .limit(perPage)
-        .exec();
+      const totalProductsCount = totalProducts.length > 0 ? totalProducts[0].count : 0;
 
-      const totalPages = Math.ceil(totalProducts / perPage);
+      const products = await Product.aggregate([
+        {
+          $skip: perPage * page - perPage
+        },
+        {
+          $limit: perPage
+        },
+        {
+          $lookup: {
+            from: "categories",
+            localField: "category",
+            foreignField: "_id",
+            as: "category"
+          }
+        },
+        {
+          $unwind: "$category"
+        }
+      ]);
+
+      const totalPages = Math.ceil(totalProductsCount / perPage);
 
       res.render("admin/productlist", {
         title: "Products",
@@ -49,19 +72,32 @@ const productController = {
     }
   },
 
-  getProductsPagination: async (req, res,next) => {
+  getProductsPagination: async (req, res, next) => {
     try {
-      const perPage = 5;
+      const perPage = 2;
       const page = req.query.page || 1;
+      
+      const totalProducts = await Product.aggregate([
+        {
+          $group: {
+            _id: null,
+            count: { $sum: 1 }
+          }
+        }
+      ]);
+      
+      const totalProductsCount = totalProducts.length > 0 ? totalProducts[0].count : 0;
+      
+      const products = await Product.aggregate([
+        {
+          $skip: perPage * page - perPage
+        },
+        {
+          $limit: perPage
+        }
+      ]);
 
-      const totalProducts = await Product.countDocuments();
-
-      const products = await Product.find()
-        .skip(perPage * page - perPage)
-        .limit(perPage)
-        .exec();
-
-      const totalPages = Math.ceil(totalProducts / perPage);
+      const totalPages = Math.ceil(totalProductsCount / perPage);
 
       res.render("admin/productlist", {
         title: "Products",

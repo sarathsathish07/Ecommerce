@@ -4,6 +4,7 @@
   const Order = require("../models/orders");
   const Address = require("../models/address");
   const bcrypt = require("bcrypt");
+  const mongoose = require('mongoose');
   const nodemailer = require("nodemailer");
   const randomstring = require("randomstring");
   const saltPassword = 10;
@@ -72,23 +73,23 @@
 
     getHome: async (req, res, next) => {
       try {
-        const products = await Product.find({ isPublished: true }).populate(
-          "category"
-        );
-
-        const filteredProducts = products.filter(
-          (product) => product.category.isListed
-        );
-
-        res.render("home", {
-          title: "Home",
-          user: req.session.user,
-          products: filteredProducts,
-        });
+          const products = await Product.aggregate([
+              { $match: { isPublished: true } },
+              { $lookup: { from: "categories", localField: "category", foreignField: "_id", as: "category" } },
+              { $unwind: "$category" },
+              { $match: { "category.isListed": true } }
+          ]);
+  
+          res.render("home", {
+              title: "Home",
+              user: req.session.user,
+              products: products,
+          });
       } catch (err) {
-        next(err);
+          next(err);
       }
-    },
+  },
+  
 
     getSignupPage: (req, res,next) => {
       try {
@@ -238,71 +239,87 @@
     },
     shopPage: async (req, res, next) => {
       try {
-          const perPage = 9;
+          const perPage = 2;
           const page = req.query.page || 1;
-          const products1 = await Product.find({ isPublished: true }).populate("category");
-
-          const filteredProducts = products1.filter(
-              (product) => product.category.isListed
-          );
-
-          const startIndex = perPage * (page - 1);
-          const endIndex = startIndex + perPage;
-          const products = filteredProducts.slice(startIndex, endIndex);
-
-          const totalPages = Math.ceil(filteredProducts.length / perPage);
-
+  
+          const products = await Product.aggregate([
+              { $match: { isPublished: true } },
+              { $lookup: { from: "categories", localField: "category", foreignField: "_id", as: "category" } },
+              { $unwind: "$category" },
+              { $match: { "category.isListed": true } },
+              { $skip: perPage * (page - 1) },
+              { $limit: perPage }
+          ]);
+  
+          const totalProducts = await Product.aggregate([
+              { $match: { isPublished: true } },
+              { $lookup: { from: "categories", localField: "category", foreignField: "_id", as: "category" } },
+              { $unwind: "$category" },
+              { $match: { "category.isListed": true } },
+              { $count: "count" }
+          ]);
+  
+          const totalPages = Math.ceil(totalProducts[0].count / perPage);
+  
           res.render("shop", {
               title: "Shop",
               products: products,
               totalPages: totalPages,
               currentPage: page,
               perPage: perPage,
-              user:req.session.user
+              user: req.session.user
           });
       } catch (err) {
           next(err);
       }
   },
+  
 
-    getShopPagination: async (req, res, next) => {
-      try {
-          const perPage = 9;
-          const page = req.query.page || 1;
+  getShopPagination: async (req, res, next) => {
+    try {
+        const perPage = 2;
+        const page = req.query.page || 1;
 
-        
+        const aggregatePipeline = [
+            { $match: { isPublished: true } },
+            { $lookup: { from: "categories", localField: "category", foreignField: "_id", as: "category" } },
+            { $unwind: "$category" },
+            { $match: { "category.isListed": true } },
+            { $project: { _id: 1, title: 1, price: 1, category: "$category.name" } }, 
+            { $skip: perPage * (page - 1) },
+            { $limit: perPage }
+        ];
 
-          const products1 = await Product.find({ isPublished: true }).populate("category");
+        const products = await Product.aggregate(aggregatePipeline);
 
-          const filteredProducts = products1.filter(
-              (product) => product.category.isListed
-          );
+        const totalProductsCount = await Product.countDocuments({ isPublished: true });
+        const totalPages = Math.ceil(totalProductsCount / perPage);
 
-          const startIndex = perPage * (page - 1);
-          const endIndex = startIndex + perPage;
-          const products = filteredProducts.slice(startIndex, endIndex);
-
-          const totalPages = Math.ceil(filteredProducts.length / perPage);
-
-          res.render("shop", {
-              title: "Shop",
-              products: products,
-              totalPages: totalPages,
-              currentPage: page,
-              perPage: perPage,
-              user:req.session.user
-          });
-      } catch (err) {
+        res.render("shop", {
+            title: "Shop",
+            products: products,
+            totalPages: totalPages,
+            currentPage: page,
+            perPage: perPage,
+            user: req.session.user
+        });
+    } catch (err) {
         next(err);
-      }
-    },
+    }
+},
 
     getProductDetailsPage: async (req, res,next) => {
       try {
-        const id = req.params.id;
+       
+        const id = new mongoose.Types.ObjectId(req.params.id);
         console.log(id);
-        const product = await Product.findById(id).exec();
-
+       
+        const product = await Product.aggregate([
+          {
+            $match:{_id:id}
+          }
+        ])
+        console.log(product);
         if (!product) {
           res.redirect("/");
           return;
@@ -310,37 +327,66 @@
 
         res.render("productdetails", {
           title: "Product Details",
-          product: product,
+          product: product[0],
           user: req.session.user,
         });
       } catch (err) {
         next(err);
       }
     },
-    userAccount: async (req, res,next) => {
-      const userId = req.session.userID;
-      try {
-        const userdetails = await User.findOne({ _id: userId });
+   
 
+userAccount: async (req, res, next) => {
+  const userId = new mongoose.Types.ObjectId(req.session.userID);
+  
+  try {
+    const userdetails = await User.aggregate([
+      {
+        $match: { _id:userId }
+      },
       
+    ]);
 
-    
-        res.render("useraccount", {title: "User Account", userdetails, user: req.session.user });
-      } catch (err) {
-        next(err);
+    if (userdetails.length === 0) {
+      res.redirect("/");
+      return;
+    }
+
+    res.render("useraccount", {
+      title: "User Account",
+      userdetails: userdetails[0], 
+      user: req.session.user
+    });
+  } catch (err) {
+    next(err);
+  }
+},
+
+geteditUserAccountPage: async (req, res, next) => {
+  try {
+    const userId = new mongoose.Types.ObjectId(req.session.userID);
+
+    const userdetails = await User.aggregate([
+      {
+        $match: { _id: userId }
       }
-    },
-    geteditUserAccountPage: async (req, res,next) => {
-      try {
-        const userId = req.session.userID;
+    ]);
 
-        const userdetails = await User.findOne({ _id: userId });
+    if (userdetails.length === 0) {
+      res.redirect("/");
+      return;
+    }
 
-        res.render("edituseraccount", {title: " Edit User Account", userdetails, user: req.session.user });
-      } catch (error) {
-        next(err);
-      }
-    },
+    res.render("edituseraccount", {
+      title: "Edit User Account",
+      userdetails: userdetails[0],
+      user: req.session.user
+    });
+  } catch (err) {
+    next(err);
+  }
+},
+
 
     posteditUserAccount: async (req, res,next) => {
       try {
@@ -418,17 +464,24 @@
       }
     },
 
-    userAddress: async (req, res,next) => {
-      const userId = req.session.userID;
+    userAddress: async (req, res, next) => {
+      const userId = new mongoose.Types.ObjectId(req.session.userID);
+      console.log(userId);
       try {
-        const addresses = await Address.find({ userID: userId });
+        const addresses = await Address.aggregate([
+          {
+            $match: { userID: userId }
+          }
+         
+        ]);
         console.log(addresses);
-
-        res.render("useraddress", { title: "User Address",addresses, user: req.session.user });
+    
+        res.render("useraddress", { title: "User Address", addresses, user: req.session.user });
       } catch (err) {
         next(err);
       }
     },
+    
 
     addAddressPage: (req, res,next) => {
       try {
@@ -589,14 +642,19 @@
       }
   },
 
-    userOrders: async (req, res,next) => {
-      try {
-        const orders = await Order.find();
-        res.render("userorders", { orders, user: req.session.user });
-      } catch (err) {
-        next(err);
-      }
-    },
+  userOrders: async (req, res, next) => {
+    try {
+      const userId = new mongoose.Types.ObjectId(req.session.userID); 
+      const orders = await Order.aggregate([
+        { $match: { userID: userId } },
+        { $sort: { orderDate: -1 } },
+      ]);
+      res.render("userorders", { orders, user: req.session.user });
+    } catch (err) {
+      next(err);
+    }
+  },
+  
 
     userOrderCancel: async (req, res,next) => {
       const orderId = req.params.orderId;

@@ -39,48 +39,38 @@
       const ordersCountByMonth = await Order.aggregate([
         {
           $project: {
-            month: { $month: { date: '$orderDate' } }, 
-          },
+            yearMonth: {
+              $dateToString: {
+                format: "%Y-%m",
+                date: "$orderDate"
+              }
+            }
+          }
         },
         {
           $group: {
-            _id: '$month',
-            count: { $sum: 1 },
-          },
+            _id: "$yearMonth",
+            count: { $sum: 1 }
+          }
         },
         {
-          $sort: { _id: 1 },
-        },
+          $sort: { _id: 1 }
+        }
       ]);
-      
-     
-
-      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      
-      const ordersCountByMonthWithNames = months.map(month => {
-        const entry = ordersCountByMonth.find(item => item._id === months.indexOf(month) + 1);
-        return {
-            month: month,
-            count: entry ? entry.count : 0,
-        };
-    });
-    
-
-    
   
+      const labels = ordersCountByMonth.map(val => val._id);
+      const count = ordersCountByMonth.map(val => val.count);
   
-      const labels = ordersCountByMonthWithNames.map((val) => val.month)
-      const count = ordersCountByMonthWithNames.map((val) => val.count)
-
-      
       return {
         labels: labels,
         count: count
-      }
+      };
     } catch (error) {
-      console.log('Error retrieving orders in graph function:', error.message);
+      console.log('Error retrieving orders in monthgraph function:', error.message);
+      throw error; 
     }
   }
+  
   async function yeargraph() {
     try {
       const ordersCountByYear = await Order.aggregate([

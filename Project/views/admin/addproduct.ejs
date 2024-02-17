@@ -308,8 +308,7 @@
                     style="font-size: 14px; margin-top: -20px"
                   ></span>
                 </div>
-                <div id="main-img-preview"></div>
-                <canvas id="image-canvas" ></canvas>
+               
                 <div class="mb-4">
                   <label>
                     <input type="checkbox" name="isBestSeller" /> Best Seller
@@ -340,61 +339,7 @@
     </section>
   </main>
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
-  <script>
-    function initializeCropper(imageInput, previewContainer) {
-      console.log('Initializing Cropper...');
-      const files = imageInput.files;
-
-      if (files && files.length > 0) {
-        console.log('Files selected:', files);
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          console.log('FileReader loaded');
-          const img = new Image();
-          img.src = e.target.result;
-
-          img.onload = function () {
-            console.log('Image loaded');
-            const cropper = new Cropper(img, {
-              aspectRatio: 1,
-              viewMode: 1,
-              crop(event) {
-                console.log('Cropping event:', event.detail);
-                const canvas = document.getElementById('image-canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = event.detail.width;
-                canvas.height = event.detail.height;
-                ctx.drawImage(
-                  event.target,
-                  event.detail.x,
-                  event.detail.y,
-                  event.detail.width,
-                  event.detail.height,
-                  0,
-                  0,
-                  canvas.width,
-                  canvas.height
-                );
-
-                const croppedImage = new Image();
-                croppedImage.src = canvas.toDataURL('image/jpeg');
-                croppedImage.classList.add('img-preview');
-                previewContainer.innerHTML = '';
-                previewContainer.appendChild(croppedImage);
-              },
-            });
-          };
-        };
-        reader.readAsDataURL(files[0]);
-      }
-    }
-
-    document.getElementById('product_image').addEventListener('change', function () {
-      console.log('File input changed');
-      initializeCropper(this, document.getElementById('main-img-preview'));
-    });
-</script>
+  
 
   <script>
     var nameError = document.getElementById("name-error");
@@ -429,16 +374,20 @@
     }
 
     function validatePrice() {
-      var price = document.getElementById("product_price").value.trim();
-      if (price.length === 0 || isNaN(price)) {
-        priceError.innerHTML = "Price is required and must be a number";
+    var price = document.getElementById("product_price").value.trim();
+  
+
+    if (price.length === 0 || isNaN(price) || parseFloat(price) <= 0) {
+        priceError.innerHTML = "Price is required and must be a positive number";
         priceError.style.color = "red";
         return false;
-      }
-      priceError.innerHTML = "Valid";
-      priceError.style.color = "green";
-      return true;
     }
+
+    priceError.innerHTML = "Valid";
+    priceError.style.color = "green";
+    return true;
+}
+
     function validateImage() {
       var image = document.getElementById("product_image").value;
       if (image.length === 0) {

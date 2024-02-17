@@ -226,8 +226,13 @@
                         Swal.fire({
                             title: "Removed!",
                             text: "The item has been successfully removed from your cart.",
-                            icon: "success"
+                            icon: "success",
+                            showConfirmButton: false,
+                            
                         });
+                        setTimeout(() => {
+                               location.reload() 
+                            }, 2000);
                         $(".cart-item[data-id='" + productId + "']").remove();
                         $(".cart__total span").text("Rs " + data.totalPrice);
                     } else {
@@ -278,8 +283,8 @@ $(document).ready(function () {
                     
                         Swal.fire({
                             title: "Maximum Quantity Reached",
-                            text: "You have reached the maximum quantity for this product.",
-                            icon: "info"
+                          
+                            icon: "warning"
                         });
                     } 
                 }

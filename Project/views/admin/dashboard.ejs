@@ -292,7 +292,9 @@
   </div>
     </section>
   </main>
+  
     <!-- content-main end// -->
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
@@ -458,10 +460,8 @@
 
       const parsedYears = JSON.parse(years);
       const parsedCounts = JSON.parse(counts);
-      console.log('parsedYears:', parsedYears);
-console.log('parsedCounts:', parsedCounts);
       const minYear = Math.min(...parsedYears);
-    const maxYear = Math.max(...parsedYears);
+      const maxYear = Math.max(...parsedYears);
 
     const yearsToShow = [];
     for (let i = minYear-3; i <= maxYear+3; i++) {

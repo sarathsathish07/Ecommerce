@@ -3,10 +3,12 @@ const Products = require("../models/products");
 
 const cartController = {
   addToCart: async (req, res,next) => {
+
     try {
       const userId = req.session.userID;
       const productID = req.params.id;
       const quantity = 1;
+      const stock = 1
 
       const product = await Products.findById(productID);
       if (!product || product.stock === 0) {
@@ -51,6 +53,9 @@ const cartController = {
 
         await userCart.save();
       }
+     await Products.findByIdAndUpdate(productID,
+        { $inc: { stock: -stock } }, 
+     {new:true})
     } catch (err) {
       next(err);
     }
@@ -91,6 +96,7 @@ const cartController = {
         const userId = req.session.userID;
         const productId = req.body.productId;
         const action = req.body.action;
+        const stock = 1
 
         let userCart = await Cart.findOne({ userID: userId }).populate('items.product');
 
@@ -104,7 +110,7 @@ const cartController = {
                 const maxQuantity = product.stock;
 
                 if (action === "increment") {
-                    if (cartItem.quantity < maxQuantity) {
+                    if ( maxQuantity != 0) {
                         cartItem.quantity += 1;
                         cartItem.price =  cartItem.product.price;
 
@@ -112,7 +118,9 @@ const cartController = {
                             (total, item) => total + item.price * item.quantity,
                             0
                         );
-
+                      await Products.findByIdAndUpdate(productId,
+                          { $inc: { stock: -stock } }, 
+                          {new:true})
                         await userCart.save();
 
                         return res.json({
@@ -134,7 +142,9 @@ const cartController = {
                         (total, item) => total + item.price * item.quantity,
                         0
                     );
-
+                    const updatedProduct = await Products.findByIdAndUpdate(productId,
+                      { $inc: { stock: +stock } }, 
+                   {new:true})
                     await userCart.save();
 
                     return res.json({
@@ -163,44 +173,40 @@ const cartController = {
 },
 
 
-  deleteCart: async (req, res,next) => {
-    try {
+ deleteCart :async (req, res) => {
+  try {
       const userId = req.session.userID;
       const productId = req.params.id;
-      console.log(userId);
-      console.log(productId);
-
+      
       let userCart = await Cart.findOne({ userID: userId });
-
+      
       if (userCart) {
-        const itemIndex = userCart.items.findIndex(
-          (item) => item.product.toString() === productId.toString()
-        );
-
-        if (itemIndex !== -1) {
-          userCart.items.splice(itemIndex, 1);
-
-          userCart.totalPrice = userCart.items.reduce(
-            (total, item) => total + item.price * item.quantity,
-            0
-          );
-
-          await userCart.save();
-
-          res.json({ success: true, totalPrice: userCart.totalPrice });
-        } else {
-          res.json({
-            success: false,
-            message: "Product not found in the cart",
-          });
-        }
+          const productInCartIndex = userCart.items.findIndex(item => item.product.toString() === productId);
+          
+          if (productInCartIndex !== -1) {
+              const productInCart = userCart.items[productInCartIndex];
+              
+              const updatedProduct = await Products.findByIdAndUpdate(productInCart.product, {
+                  $inc: { stock: productInCart.quantity }
+              }, { new: true });
+              
+             
+              userCart.items.splice(productInCartIndex, 1);
+              userCart.totalPrice = userCart.items.reduce((total, item) => total + item.price * item.quantity, 0);
+              await userCart.save();
+              
+              res.json({ success: true, updatedProduct });
+          } else {
+              res.json({ success: false, message: 'Product not found in the cart' });
+          }
       } else {
-        res.json({ success: false, message: "User cart not found" });
+          res.json({ success: false, message: 'User cart not found' });
       }
-    } catch (err) {
-      next(err);
-    }
-  },
+  } catch (error) {
+      console.error('Error deleting product from cart:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+}
 };
 
 module.exports = cartController;

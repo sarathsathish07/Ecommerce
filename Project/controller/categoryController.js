@@ -2,20 +2,24 @@ const User = require("../models/users");
 const Category = require("../models/category");
 
 const categoryController = {
-  getCategories: async (req, res,next) => {
+  getCategories: async (req, res, next) => {
     try {
       const perPage = 5;
       const page = req.query.page || 1;
-
-      const totalProducts = await Category.countDocuments();
-
-      const categories = await Category.find()
-        .skip(perPage * page - perPage)
-        .limit(perPage)
-        .exec();
-
-      const totalPages = Math.ceil(totalProducts / perPage);
-
+  
+      const totalProducts = await Category.aggregate([
+        { $count: "totalCategories" }
+      ]);
+  
+      const totalCategories = totalProducts.length > 0 ? totalProducts[0].totalCategories : 0;
+  
+      const categories = await Category.aggregate([
+        { $skip: perPage * page - perPage },
+        { $limit: perPage }
+      ]);
+  
+      const totalPages = Math.ceil(totalCategories / perPage);
+  
       res.render("admin/categories", {
         title: "Categories",
         categories: categories,
@@ -27,6 +31,7 @@ const categoryController = {
       next(err);
     }
   },
+  
 
   getAddCategories: (req, res,next) => {
     try {
@@ -134,23 +139,27 @@ const categoryController = {
   },
 
 
-  getCategoryPagination: async (req, res,next) => {
+  getCategoryPagination: async (req, res, next) => {
     try {
       const perPage = 5;
-      const page = req.query.page || 1;
-
-      const totalCategories = await Category.countDocuments();
-
-      const categories = await Category.find()
-        .skip(perPage * page - perPage)
-        .limit(perPage)
-        .exec();
-
-      const totalPages = Math.ceil(totalCategories / perPage);
-
+      const page = parseInt(req.query.page) || 1;
+  
+      const totalCategories = await Category.aggregate([
+        { $count: "totalCategories" }
+      ]);
+  
+      const totalCount = totalCategories.length > 0 ? totalCategories[0].totalCategories : 0;
+  
+      const result = await Category.aggregate([
+        { $skip: perPage * page - perPage },
+        { $limit: perPage }
+      ]);
+  
+      const totalPages = Math.ceil(totalCount / perPage);
+  
       res.render("admin/categories", {
         title: "Categories",
-        categories: categories,
+        categories: result,
         totalPages: totalPages,
         currentPage: page,
         perPage: perPage,
@@ -159,6 +168,7 @@ const categoryController = {
       next(err);
     }
   },
+  
 };
 
 module.exports = categoryController;
