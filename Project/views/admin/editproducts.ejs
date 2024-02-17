@@ -1,5 +1,49 @@
 <%- include('adminheader') %>
+<style>
+  .existing-images .image-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px; 
+}
 
+
+.existing-images .existing-image {
+  width: 90px; 
+  height: 60px;
+}
+
+.existing-images .delete-image-btn {
+ 
+  background-color: transparent;
+  border: none;
+  
+  cursor: pointer;
+  padding: 0;
+}
+.existing-images .image-preview {
+  position: relative;
+}
+
+.existing-images .button-container {
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+}
+
+.existing-images .delete-image-btn,
+.existing-images .replace-image-icon {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+
+</style>
 <body>
   <div class="screen-overlay"></div>
   <aside class="navbar-aside" id="offcanvas_aside">
@@ -284,29 +328,31 @@
                   </select>
                 </div>
                 <!-- Existing Images -->
-            <div class="mb-4">
-              <label class="form-label">Existing Images</label>
-              <div class="existing-images">
-                <% if (product.images && product.images.length > 0) { %>
-                  <% product.images.forEach((imageUrl, index) => { %>
-                    <div>
-                      <img src="/static/<%= imageUrl %>" alt="Existing Image" style="width: 100px; height: auto;">
-                      <input type="file" name="images" style="display: none;" accept="image/*" data-index="<%= index %>">
-                      <input type="hidden" name="existingImages[]" value="<%= imageUrl %>">
-                      <input type="hidden" name="existingImageIndexes[]" value="<%= index %>">
-                      <input type="hidden" name="replacedImageIndex">
+              
+                <div class="mb-4">
+                  <label class="form-label">Existing Images</label>
+                  <div class="existing-images">
+                    <% if (product.images && product.images.length > 0) { %>
+                      <div class="image-container">
+                        <% product.images.forEach((imageUrl, index) => { %>
+                          <div class="image-preview">
+                            <img src="/static/<%= imageUrl %>" alt="Existing Image" class="existing-image">
+                            <div class="button-container">
+                              <i class="fa-solid fa-trash delete-image-btn" data-index="<%= index %>"></i>
+                              <i class="fa-solid fa-repeat replace-image-icon" data-index="<%= index %>"></i>
+                            </div>
+                          </div>
+                        <% }) %>
+                      </div>
+                    <% } else { %>
+                      <p>No existing images</p>
+                    <% } %>
+                  </div>
+                </div>
+                
 
-                      <button type="button" class="replace-image-btn" data-index="<%= index %>">Replace</button>
-                    </div>
-                  <% }) %>
-                <% } else { %>
-                  <p>No existing images</p>
-                <% } %>
-                
-                
-              </div>
-            </div>
-            <% if (!product.images || product.images.length === 0) { %>
+
+              
               <div class="mb-4">
                   <label class="form-label">New Images</label>
                   <input
@@ -316,12 +362,9 @@
                       id="product_image"
                       multiple
                   />
-                  <span
-                      id="image-error"
-                      style="font-size: 14px; margin-top: -20px"
-                  ></span>
+                  <span id="image-error" style="font-size: 14px; margin-top: -20px"></span>
               </div>
-            <% } %>
+              
 
                 <div class="mb-4">
                   <label>
@@ -360,40 +403,83 @@
       
     </section>
   </main>
-    
-    <script>
-   
-      function handleImageReplacement(button) {
-        const parentDiv = button.parentElement;
-        const fileInput = parentDiv.querySelector('input[type="file"]');
-        const index = fileInput.dataset.index;
-        fileInput.click();
-        fileInput.addEventListener('change', function() {
-          const selectedFile = this.files[0];
-          if (selectedFile) {
+  <script>
+    document.querySelectorAll('.replace-image-icon').forEach(icon => {
+      icon.addEventListener('click', function () {
+        const index = this.dataset.index;
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.onchange = function (event) {
+          const file = event.target.files[0];
+          if (file) {
             const reader = new FileReader();
-            reader.onload = function(event) {
-              parentDiv.querySelector('img').src = event.target.result;
+            reader.onload = function (e) {
+              const imagePreview = document.querySelector(`.existing-images .image-container .image-preview:nth-child(${parseInt(index) + 1}) img`);
+              imagePreview.src = e.target.result;
+              updateFileInput(file, index);
             };
-            reader.readAsDataURL(selectedFile);
+            reader.readAsDataURL(file);
           }
-        });
-      }
-    
+        };
+        fileInput.click();
+      });
+    });
   
-      document.querySelectorAll('.replace-image-btn').forEach(button => {
-  button.addEventListener('click', function() {
-    const index = this.dataset.index;
-    const replacedImageIndexes = [index];
-    const replacedImageIndexInput = document.querySelector('input[name="replacedImageIndex"]');
-    replacedImageIndexInput.value = replacedImageIndexes.join(','); 
-    handleImageReplacement(this);
-  });
-});
+    function updateFileInput(file, index) {
+      const fileInput = document.getElementById('product_image');
+      const fileList = new DataTransfer();
+      fileList.items.add(file);
+      fileInput.files = fileList.files;
+    }
+</script>
 
+        <script>
+      
+      window.addEventListener('DOMContentLoaded', function () {
+        const existingImages = document.querySelectorAll('.existing-images img');
+        const fileInput = document.getElementById('product_image');
+        const fileList = new DataTransfer();
 
+        existingImages.forEach(function (image) {
+            const url = image.getAttribute('src');
+            const filename = url.substring(url.lastIndexOf('/') + 1);
+            fetch(url)
+                .then(response => response.blob())
+                .then(blob => {
+                    const file = new File([blob], filename, { type: blob.type });
+                    fileList.items.add(file);
+                    fileInput.files = fileList.files;
+                });
+        });
+    });
 
+    document.querySelectorAll('.delete-image-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const index = this.dataset.index;
+            const parentDiv = this.parentElement;
+            parentDiv.remove(); 
+            updateFileInput();
+        });
+    });
 
+    function updateFileInput() {
+        const fileInput = document.getElementById('product_image');
+        const existingImages = document.querySelectorAll('.existing-images img');
+        const fileList = new DataTransfer();
+
+        existingImages.forEach(function (image) {
+            const url = image.getAttribute('src');
+            const filename = url.substring(url.lastIndexOf('/') + 1);
+            fetch(url)
+                .then(response => response.blob())
+                .then(blob => {
+                    const file = new File([blob], filename, { type: blob.type });
+                    fileList.items.add(file);
+                    fileInput.files = fileList.files;
+                });
+        });
+    }
 
     </script>
     

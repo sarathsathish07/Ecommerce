@@ -199,65 +199,69 @@ const productController = {
   postEditProducts: async (req, res, next) => {
     try {
       const id = req.params.id;
-  
+
       upload.array("images")(req, res, async (err) => {
         if (err) {
           return res.json({ message: err.message, type: "danger" });
         }
-  
-        const existingProduct = await Product.findById(id).exec();
-        if (!existingProduct) {
-          return res.json({ message: "Product not found", type: "danger" });
-        }
-        const existingImages = req.body.existingImages || [];
-        const unchangedImages = new Array(existingImages.length);
 
-        existingImages.forEach((image, index) => {
-          if (!req.body.replacedImageIndex.includes(index.toString())) {
-            unchangedImages[index] = image;
-          }
-        });
-        
-        const newImages = req.files.map((file) => `/img/${file.filename}`);
+        if (req.files && req.files.length > 0) {
+          const images = req.files.map((file) => `/img/${file.filename}`);
 
-        newImages.forEach((image) => {
-          const emptyIndex = unchangedImages.findIndex((value) => !value);
-          if (emptyIndex !== -1) {
-            unchangedImages[emptyIndex] = image;
+          const result = await Product.findByIdAndUpdate(id, {
+            productTitle: req.body.producttitle,
+            description: req.body.description,
+            category: req.body.category,
+            price: req.body.price,
+            stock: req.body.stock,
+            images: images,
+            isBestSeller: req.body.isBestSeller === "on",
+            isNewArrival: req.body.isNewArrival === "on",
+            isHotSale: req.body.isHotSale === "on",
+          }).exec();
+
+          if (!result) {
+            res.json({ message: "Product not found", type: "danger" });
+            return;
           }
-        });
-  
-        
-        let updateData = {
-          productTitle: req.body.producttitle,
-          description: req.body.description,
-          category: req.body.category,
-          price: req.body.price,
-          stock: req.body.stock,
-          isBestSeller: req.body.isBestSeller === "on",
-          isNewArrival: req.body.isNewArrival === "on",
-          isHotSale: req.body.isHotSale === "on",
-          images: unchangedImages, 
-        };
-  
-        
-        const result = await Product.findByIdAndUpdate(id, updateData).exec();
-  
-        if (!result) {
-          return res.json({ message: "Product not found", type: "danger" });
+
+          req.session.message = {
+            type: "success",
+            message: "Product updated successfully",
+            products: result,
+          };
+          res.redirect("/productlist");
+        } else {
+
+
+          const result = await Product.findByIdAndUpdate(id, {
+            productTitle: req.body.producttitle,
+            description: req.body.description,
+            category: req.body.category,
+            price: req.body.price,
+            isBestSeller: req.body.isBestSeller === "on",
+            isNewArrival: req.body.isNewArrival === "on",
+            isHotSale: req.body.isHotSale === "on",
+          }).exec();
+
+          if (!result) {
+            res.json({ message: "Product not found", type: "danger" });
+            return;
+          }
+
+          req.session.message = {
+            type: "success",
+            message: "Product updated successfully",
+          };
+          res.redirect("/productlist");
         }
-  
-        req.session.message = {
-          type: "success",
-          message: "Product updated successfully",
-          products: result,
-        };
-        res.redirect("/productlist");
       });
     } catch (err) {
       next(err);
     }
   },
+
+
   
 
 

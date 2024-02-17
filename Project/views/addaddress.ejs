@@ -38,55 +38,37 @@
                           <div class="form-group">
                               <label for="addressLine1">Address Line 1:</label>
                               <input type="text" id="addressLine1" name="addressLine1" class="form-control" onkeyup="validateLine1()">
-                              <span
-                    id="line1-error"
-                    style="font-size: 14px; margin-top: -20px"
-                  ></span>
+                              <span id="line1-error" style="font-size: 14px; margin-top: -20px"></span>
                           </div>
 
                           <div class="form-group">
                               <label for="addressLine2">Address Line 2:</label>
                               <input type="text" id="addressLine2" name="addressLine2" class="form-control" onkeyup="validateLine2()">
-                              <span
-                    id="line2-error"
-                    style="font-size: 14px; margin-top: -20px"
-                  ></span>
+                              <span id="line2-error" style="font-size: 14px; margin-top: -20px"></span>
                           </div>
 
                           <div class="form-group">
                               <label for="city">City:</label>
                               <input type="text" id="city" name="city" class="form-control" onkeyup="validateCity()">
-                              <span
-                    id="city-error"
-                    style="font-size: 14px; margin-top: -20px"
-                  ></span>
+                              <span id="city-error" style="font-size: 14px; margin-top: -20px"></span>
                           </div>
 
                           <div class="form-group">
                               <label for="state">State:</label>
                               <input type="text" id="state" name="state" class="form-control" onkeyup="validateState()">
-                              <span
-                    id="state-error"
-                    style="font-size: 14px; margin-top: -20px"
-                  ></span>
+                              <span id="state-error" style="font-size: 14px; margin-top: -20px"></span>
                           </div>
 
                           <div class="form-group">
                               <label for="postalCode">Postal Code:</label>
                               <input type="text" id="postalCode" name="postalCode" class="form-control" onkeyup="validatePost()">
-                              <span
-                    id="postalcode-error"
-                    style="font-size: 14px; margin-top: -20px"
-                  ></span>
+                              <span id="postalcode-error" style="font-size: 14px; margin-top: -20px"></span>
                           </div>
 
                           <div class="form-group">
                               <label for="country">Country:</label>
                               <input type="text" id="country" name="country" class="form-control" onkeyup="validateCountry()">
-                              <span
-                    id="country-error"
-                    style="font-size: 14px; margin-top: -20px"
-                  ></span>
+                              <span id="country-error" style="font-size: 14px; margin-top: -20px"></span>
                           </div>
 
                    
@@ -242,7 +224,7 @@
       }
     function validatePost() {
         var name = document.getElementById("postalCode").value.trim();
-        if (name.length === 0 || isNaN(name)) {
+        if (name.length === 0 || isNaN(name) || parseFloat(name) <= 0) {
             postalcodeError.innerHTML = "This field is required and must be a number";
             postalcodeError.style.color = "red";
           return false;

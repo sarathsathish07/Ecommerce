@@ -1,19 +1,20 @@
 
 <%- include('adminheader') %>
 <style>
-  #main-img-preview {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-  }
 
-  .img-preview {
-      max-width: 200px;
-      max-height: 200px;
-      object-fit: cover;
-      border: 1px solid #ddd;
-      margin-bottom: 10px;
-  }
+
+  #image-preview {
+    display: flex; 
+  
+}
+
+.img-preview {
+    width: 100px; 
+    height: auto; 
+    border: 1px solid #ddd;
+    margin-right: 10px; 
+}
+
 </style>
 <body>
   
@@ -301,13 +302,14 @@
                     type="file"
                     multiple
                     
-                    
+                    onchange="previewImages(event)" 
                   />
                   <span
                     id="image-error"
                     style="font-size: 14px; margin-top: -20px"
                   ></span>
                 </div>
+                <div id="image-preview" class="mb-4"></div>
                
                 <div class="mb-4">
                   <label>
@@ -339,7 +341,119 @@
     </section>
   </main>
   
-  
+  <script>
+    function previewImages(event) {
+        const previewContainer = document.getElementById("image-preview");
+        previewContainer.innerHTML = "";
+        const files = event.target.files;
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const img = document.createElement("img");
+                img.src = e.target.result;
+                img.classList.add("img-preview");
+
+                const deleteIcon = document.createElement("i");
+                deleteIcon.className = "fa-solid fa-trash";
+                deleteIcon.onclick = function () {
+                    this.parentNode.remove();
+                    updateSelectedFiles();
+                };
+
+                const replaceIcon = document.createElement("i");
+                replaceIcon.className = "fa-solid fa-repeat";
+                replaceIcon.onclick = function () {
+                    const index = Array.from(this.parentNode.parentNode.children).indexOf(this.parentNode);
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.accept = 'image/*';
+                    fileInput.onchange = function (event) {
+                        const file = event.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function (e) {
+                                img.src = e.target.result;
+                                updateFileInput(file, index);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    };
+                    fileInput.click();
+                };
+
+                const div = document.createElement("div");
+                div.appendChild(img);
+
+                const iconContainer = document.createElement("div");
+        iconContainer.style.display = "flex";
+        iconContainer.style.justifyContent = "center"; 
+        iconContainer.style.gap = "5px";
+        iconContainer.style.marginTop = "5px"; 
+        iconContainer.appendChild(deleteIcon);
+        iconContainer.appendChild(replaceIcon);
+
+                div.appendChild(iconContainer);
+                previewContainer.appendChild(div);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    }
+
+
+    function updateSelectedFiles() {
+        const filesInput = document.getElementById("product_image");
+        const previewContainer = document.getElementById("image-preview");
+        const selectedFiles = previewContainer.querySelectorAll("img");
+
+        const fileList = [];
+
+        selectedFiles.forEach((img) => {
+            const file = dataURLtoFile(img.src, `image_${Date.now()}.png`);
+            fileList.push(file);
+        });
+
+        const newFilesList = new DataTransfer();
+        fileList.forEach((file) => {
+            newFilesList.items.add(file);
+        });
+
+        filesInput.files = newFilesList.files;
+    }
+
+    function dataURLtoFile(dataurl, filename) {
+        const arr = dataurl.split(',');
+        const mime = arr[0].match(/:(.*?);/)[1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([u8arr], filename, { type: mime });
+    }
+
+    function updateFileInput(file, index) {
+    const fileInput = document.getElementById('product_image');
+    const fileList = new DataTransfer();
+    
+    const previewImages = document.querySelectorAll('.img-preview');
+    previewImages.forEach((img) => {
+        const src = img.getAttribute('src');
+        const file = dataURLtoFile(src, `image_${Date.now()}.png`);
+        fileList.items.add(file);
+    });
+
+    fileList.items[index] = file;
+
+    fileInput.files = fileList.files;
+}
+
+</script>
+
 
   <script>
     var nameError = document.getElementById("name-error");
