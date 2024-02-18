@@ -231,7 +231,22 @@
           </article>
         </div>
       </div>
+      <div class="col-lg-3">
+        <div class="card card-body mb-4">
+          <article class="icontext">
+            <span class="icon icon-sm rounded-circle bg-info-light">
+              <i class="text-info material-icons md-attach_money"></i>
+            </span>
+            <div class="text">
+              <h6 class="mb-1 card-title">Revenue</h6>
+              <% let revenue = 0; %>
+              <% orders.forEach(order => { revenue += order.totalPrice; }); %>
+              <span>Rs <%= revenue.toFixed(2) %></span>
+            </div>
+          </article>
+        </div>
       </div>
+    </div>
 <div class="row">
         <div class="col-lg-8">
           <div class="card mb-4">
@@ -327,9 +342,8 @@
         const initialData = {
           pending: 0,
           shipped: 0,
-          processing: 0,
           delivered: 0,
-          returned: 0,
+          cancelled: 0,
         };
   
         
@@ -418,6 +432,7 @@
             label: 'Orders by Month',
             data: countsWithNull,
             borderColor: 'rgba(54, 162, 235, 1)',
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
             fill: true,
           }],
         },
@@ -488,6 +503,7 @@ console.log('countsWithNull:', countsWithNull);
             label: 'Orders by Years',
             data: countsWithNull,
             borderColor: 'rgba(54, 162, 235, 1)',
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
             fill: true,
           }],
         },

@@ -654,27 +654,34 @@ geteditUserAccountPage: async (req, res, next) => {
       next(err);
     }
   },
+
   
-
-    userOrderCancel: async (req, res,next) => {
-      const orderId = req.params.orderId;
-
-      try {
-        const order = await Order.findById(orderId);
-
-        if (!order) {
-          return res.status(404).json({ message: "Order not found" });
-        }
-
-        order.status = "Cancelled";
-
-        await order.save();
-
-        return res.status(200).redirect("/userorders");
-      } catch (err) {
-        next(err);
+  userOrderCancel: async (req, res, next) => {
+    const orderId = req.params.orderId;
+  
+    try {
+      const order = await Order.findById(orderId);
+  
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
       }
-    },
+  
+      for (const item of order.items) {
+        await Product.findByIdAndUpdate(
+          item.product,
+          { $inc: { stock: item.quantity } }
+        );
+      }
+  
+      order.status = "Cancelled";
+      await order.save();
+  
+      return res.status(200).redirect("/userorders");
+    } catch (err) {
+      next(err);
+    }
+  },
+  
     userOrderDetails: async (req, res,next) => {
       try {
         const orderId = req.params.orderId;

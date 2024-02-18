@@ -12,9 +12,8 @@
       const ordersCount = {
         pending: 0,
         shipped: 0,
-        processing: 0,
         delivered: 0,
-        returned: 0,
+        cancelled:0
       }
 
       ordersPie.forEach((order) => {
@@ -25,7 +24,7 @@
         }  else if (order.status === "Delivered" ) {
           ordersCount.delivered++
         } else if (order.status === "Cancelled") {
-          ordersCount.returned++
+          ordersCount.cancelled++
         }
       })
 
