@@ -49,7 +49,6 @@
                                           </div>
                                         </td>
                                         <td class="quantity__item">
-                                          <!-- Inside the quantity__item td -->
                                         <div class="quantity">
                                             <div class="pro-qty-2" style="display: flex;">
                                                 <button class="qty-dec" data-id="<%= cartItem.product._id %>"><i class="fa fa-minus"></i></button>
@@ -61,7 +60,6 @@
                                         </td>
                                         <td class="cart__price" data-id="<%= cartItem.product._id %>">Rs <%= cartItem.product.price * cartItem.quantity %></td>
                                         <td class="cart__close">
-                                          <!-- Add a form to remove the item from the cart -->
                                           <form >
                                             <button type="button" class="delete-item" data-id="<%= cartItem.product._id%>" onclick="remove('<%= cartItem.product._id %>')"><i class="fa-regular fa-trash-can" style="color: #000000;"></i></button>
                                           </form>
@@ -116,8 +114,7 @@
                                         <a href="/checkout" class="primary-btn">Proceed to checkout</a>
                                     </button>
                                     <% } %>
-                            
-                            
+
                         </div>
                     </div>
                 </div>

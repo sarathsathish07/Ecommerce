@@ -493,17 +493,28 @@
     return true;
 }
 
-    function validateImage() {
-      var image = document.getElementById("product_image").value;
-      if (image.length === 0) {
-        imageError.innerHTML = "Image is required";
-        imageError.style.color = "red";
-        return false;
-      }
-      imageError.innerHTML = "Valid";
-      imageError.style.color = "green";
-      return true;
+function validateImage() {
+    var imageInput = document.getElementById("product_image");
+ 
+    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+
+    if (imageInput.files.length === 0) {
+      imageError.innerHTML = "Image is required";
+      imageError.style.color = "red";
+      return false;
     }
+
+    var file = imageInput.files[0];
+    if (!allowedExtensions.exec(file.name)) {
+      imageError.innerHTML = "Only JPG, JPEG, PNG, or GIF files are allowed";
+      imageError.style.color = "red";
+      return false;
+    }
+
+    imageError.innerHTML = "Valid";
+    imageError.style.color = "green";
+    return true;
+  }
    
 
 function validateStock() {

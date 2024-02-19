@@ -238,21 +238,18 @@
           return false;
         }
 
-        
         if (name[0] === " ") {
           nameError.innerHTML = "Name should not start with a space";
           nameError.style.color = "red";
           return false;
         }
 
-        
         if (name.match(/^[0-9]+$/)) {
           nameError.innerHTML = "Alphabets only";
           nameError.style.color = "red";
           return false;
         }
 
-       
         if (!name.match(/^[A-Za-z]*\s{1}[A-Za-z]*$/)) {
           nameError.innerHTML = "Write full name";
           nameError.style.color = "red";
@@ -291,7 +288,6 @@
           return false;
         }
 
-        
         if (!phone.match(/^[6-9][0-9]{9}$/)) {
           phoneError.innerHTML = "Invalid phone number";
           phoneError.style.color = "red";
@@ -304,27 +300,29 @@
       }
 
       function validatePassword() {
-  var password = document.getElementById("contact-password").value.trim();
- 
+        var password = document.getElementById("contact-password").value.trim();
 
-  if (password.length === 0) {
-    passwordError.innerHTML = "Password is required";
-    passwordError.style.color = "red";
-    return false;
-  }
-  if (password.length < 8 ||!/[a-zA-Z]/.test(password)||!/\d/.test(password)||!/[!@#$%^&*(),.?":{}|<>]/.test(password) ){ 
-    passwordError.innerHTML = "Password must be at least 8 characters <br> Password must contain at least one letter <br> Password must contain at least one number <br> Password must contain at least one special character";
-    passwordError.style.color = "red";
-    return false;
-  }
- 
- 
+        if (password.length === 0) {
+          passwordError.innerHTML = "Password is required";
+          passwordError.style.color = "red";
+          return false;
+        }
+        if (
+          password.length < 8 ||
+          !/[a-zA-Z]/.test(password) ||
+          !/\d/.test(password) ||
+          !/[!@#$%^&*(),.?":{}|<>]/.test(password)
+        ) {
+          passwordError.innerHTML =
+            "Password must be at least 8 characters <br> Password must contain at least one letter <br> Password must contain at least one number <br> Password must contain at least one special character";
+          passwordError.style.color = "red";
+          return false;
+        }
 
-  passwordError.innerHTML = "Strong Password";
-  passwordError.style.color = "green";
-  return true;
-}
-
+        passwordError.innerHTML = "Strong Password";
+        passwordError.style.color = "green";
+        return true;
+      }
 
       function validateConfirmPassword() {
         var password = document.getElementById("contact-password").value.trim();
@@ -338,7 +336,6 @@
           return false;
         }
 
-        
         if (password !== confirmPassword) {
           confirmPassError.innerHTML = "Passwords do not match";
           confirmPassError.style.color = "red";

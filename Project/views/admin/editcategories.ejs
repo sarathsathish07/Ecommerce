@@ -38,7 +38,7 @@
             <span class="text">Categories</span>
           </a>
         </li>
-        <li class="menu-item ">
+        <li class="menu-item">
           <a class="menu-link" href="/orders">
             <i class="icon material-icons md-store"></i>
             <span class="text">Orders</span>
@@ -181,10 +181,10 @@
           <h2 class="content-title card-title">Edit Categories</h2>
           <p>Edit a category</p>
           <% if (locals.alert) { %>
-            <div class="alert alert-danger text-center m-3" id="error">
-              <%= locals.alert %>
-            </div>
-            <% } %>
+          <div class="alert alert-danger text-center m-3" id="error">
+            <%= locals.alert %>
+          </div>
+          <% } %>
         </div>
       </div>
       <div class="card">
@@ -220,13 +220,17 @@
                   <%= category.description %></textarea
                   >
                   <span
-                  id="description-error"
-                  style="font-size: 14px; margin-top: -20px"
-                ></span>
-                  
+                    id="description-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span>
                 </div>
                 <div class="d-grid">
-                  <button class="btn btn-primary" onclick="return validateForm()">Edit category</button>
+                  <button
+                    class="btn btn-primary"
+                    onclick="return validateForm()"
+                  >
+                    Edit category
+                  </button>
                 </div>
               </form>
             </div>
@@ -237,42 +241,42 @@
   </main>
   <script>
     var nameError = document.getElementById("name-error");
-      var descriptionError = document.getElementById("description-error");
-      var submitError = document.getElementById("submit-error");
+    var descriptionError = document.getElementById("description-error");
+    var submitError = document.getElementById("submit-error");
 
-      function validateName() {
-        var name = document.getElementById("product_name").value.trim();
-        if (name.length === 0) {
-          nameError.innerHTML = "Product name is required";
-          nameError.style.color = "red";
-          return false;
-        }
-        nameError.innerHTML = "Valid";
-        nameError.style.color = "green";
-        return true;
+    function validateName() {
+      var name = document.getElementById("product_name").value.trim();
+      if (name.length === 0) {
+        nameError.innerHTML = "Product name is required";
+        nameError.style.color = "red";
+        return false;
       }
-      function validateDescription() {
-        var desc = document.getElementById("product_description").value.trim();
-        if (desc.length === 0) {
-          descriptionError.innerHTML = "Description is required";
-          descriptionError.style.color = "red";
-          return false;
-        }
-        descriptionError.innerHTML = "Valid";
-        descriptionError.style.color = "green";
-        return true;
+      nameError.innerHTML = "Valid";
+      nameError.style.color = "green";
+      return true;
+    }
+    function validateDescription() {
+      var desc = document.getElementById("product_description").value.trim();
+      if (desc.length === 0) {
+        descriptionError.innerHTML = "Description is required";
+        descriptionError.style.color = "red";
+        return false;
       }
-      function validateForm() {
-        if (!validateName() || !validateDescription()) {
-          submitError.style.display = "block";
-          submitError.innerHTML = "Please enter all the fields to submit ";
-          submitError.style.color = "red";
-          setTimeout(function () {
-            submitError.style.display = "none";
-          }, 3000);
-          return false;
-        }
+      descriptionError.innerHTML = "Valid";
+      descriptionError.style.color = "green";
+      return true;
+    }
+    function validateForm() {
+      if (!validateName() || !validateDescription()) {
+        submitError.style.display = "block";
+        submitError.innerHTML = "Please enter all the fields to submit ";
+        submitError.style.color = "red";
+        setTimeout(function () {
+          submitError.style.display = "none";
+        }, 3000);
+        return false;
       }
-    </script>
-    <%- include('adminfooter') %>
-  
+    }
+  </script>
+  <%- include('adminfooter') %>
+</body>

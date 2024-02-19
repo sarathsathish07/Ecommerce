@@ -1,35 +1,32 @@
 <%- include('userheader') %>
 <!-- Hero Section Begin -->
 
-  <div class="container-fluid gx-0" style="background-color: #232323;">
-    
-    <div class="content-home">
-      <div class="row content-home2">
-        <div class="col-lg-6 col-md-6">
-          
-            <img
-              src="/static//img/2150887424.jpg"
-              class="img-home"
-              alt="headphone"
-            />
-          
-        </div>
-        <div class="col-lg-6 col-md-6">
-          <div class="box-container2">
-            <h1 class="home-heading">
-              Your Premier Destination for 
-              <span class="home-span">Football Accessories</span>
-            </h1>
+<div class="container-fluid gx-0" style="background-color: #232323">
+  <div class="content-home">
+    <div class="row content-home2">
+      <div class="col-lg-6 col-md-6">
+        <img
+          src="/static//img/2150887424.jpg"
+          class="img-home"
+          alt="headphone"
+        />
+      </div>
+      <div class="col-lg-6 col-md-6">
+        <div class="box-container2">
+          <h1 class="home-heading">
+            Your Premier Destination for
+            <span class="home-span">Football Accessories</span>
+          </h1>
 
-            <div class="btn-home">
-              <a href="/shop" class="home-links">Buy Now</a>
-              <a href="/shop" class="home-links btn-2">Explore</a>
-            </div>
+          <div class="btn-home">
+            <a href="/shop" class="home-links">Buy Now</a>
+            <a href="/shop" class="home-links btn-2">Explore</a>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
 
 <!-- Hero Section End -->
 
@@ -124,7 +121,9 @@
           </div>
           <div class="product__item__text">
             <h6><%= product.productTitle %></h6>
-            <a href="#" class="add-cart" onclick="addcart('<%= product._id %>')">+ Add To Cart</a>
+            <a href="#" class="add-cart" onclick="addcart('<%= product._id %>')"
+              >+ Add To Cart</a
+            >
             <a href="/productdetails/<%= product._id %>" class="view-details"
               >+ View Details</a
             >
@@ -254,7 +253,6 @@
     <div class="row">
       <div class="col-lg-12 text-center">
         <div class="footer__copyright__text">
-          
           <p>
             Copyright ©
             <script>
@@ -264,7 +262,6 @@
             <i class="fa fa-heart-o" aria-hidden="true"></i> by
             <a href="https://colorlib.com" target="_blank">Colorlib</a>
           </p>
-         
         </div>
       </div>
     </div>
@@ -293,33 +290,32 @@
         console.log(response);
         if (response.success) {
           Swal.fire({
-            icon: 'success',
-            title: 'Added to cart successfully!',
+            icon: "success",
+            title: "Added to cart successfully!",
             showConfirmButton: true,
           }).then((result) => {
             if (result.isConfirmed) {
-              window.location.href = '/add-to-cart/' + _id;
+              window.location.href = "/add-to-cart/" + _id;
             }
           });
         } else {
           Swal.fire({
-            icon: 'error',
-            title: 'Product is out of stock',
+            icon: "error",
+            title: "Product is out of stock",
             showConfirmButton: true,
           });
         }
       },
       error: function () {
         Swal.fire({
-          icon: 'error',
-          title: 'Error occurred',
-          text: 'Failed to check stock availability',
+          icon: "error",
+          title: "Error occurred",
+          text: "Failed to check stock availability",
           showConfirmButton: true,
         });
-      }
+      },
     });
   }
 </script>
 
-
- <%- include('userfooter') %>
+<%- include('userfooter') %>

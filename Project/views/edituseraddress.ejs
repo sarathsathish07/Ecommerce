@@ -38,48 +38,72 @@
                     id="addressLine1"
                     name="addressLine1"
                     onkeyup="validateLine1()"
-                  /><br>
-                  <span id="line1-error" style="font-size: 14px; margin-top: -20px"></span><br>
+                  /><br />
+                  <span
+                    id="line1-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span
+                  ><br />
                   <input
                     type="text"
                     value="<%= address.addressLine2 %>"
                     id="addressLine2"
                     name="addressLine2"
                     onkeyup="validateLine2()"
-                  /><br>
-                  <span id="line2-error" style="font-size: 14px; margin-top: -20px"></span><br>
+                  /><br />
+                  <span
+                    id="line2-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span
+                  ><br />
                   <input
                     type="text"
                     value="<%= address.city %>"
                     id="city"
                     name="city"
                     onkeyup="validateCity()"
-                  /><br>
-                  <span id="city-error" style="font-size: 14px; margin-top: -20px"></span><br>
+                  /><br />
+                  <span
+                    id="city-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span
+                  ><br />
                   <input
                     type="text"
                     value="<%= address.state %>"
                     id="state"
                     name="state"
                     onkeyup="validateState()"
-                  /><br>
-                  <span id="state-error" style="font-size: 14px; margin-top: -20px"></span><br>
+                  /><br />
+                  <span
+                    id="state-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span
+                  ><br />
                   <input
                     type="text"
                     value="<%= address.postalCode %>"
                     id="postalCode"
                     name="postalCode"
                     onkeyup="validatePost()"
-                  /><br>
-                  <span id="postalcode-error" style="font-size: 14px; margin-top: -20px"></span><br>
+                  /><br />
+                  <span
+                    id="postalcode-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span
+                  ><br />
                   <input
                     type="text"
                     value="<%= address.country %>"
                     id="country"
                     name="country"
                     onkeyup="validateCountry()"
-                  /><br>
-                  <span id="country-error" style="font-size: 14px; margin-top: -20px"></span><br>
+                  /><br />
+                  <span
+                    id="country-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span
+                  ><br />
                   <button
                     type="submit"
                     class="btn"
@@ -192,92 +216,91 @@
   var submitError = document.getElementById("submit-error");
 
   function validateLine1() {
-      var name = document.getElementById("addressLine1").value.trim();
-      if (name.length === 0) {
-          line1Error.innerHTML = "This field is required";
-          line1Error.style.color = "red";
-          return false;
-      }
-      line1Error.innerHTML = "Valid";
-      line1Error.style.color = "green";
-      return true;
+    var name = document.getElementById("addressLine1").value.trim();
+    if (name.length === 0) {
+      line1Error.innerHTML = "This field is required";
+      line1Error.style.color = "red";
+      return false;
+    }
+    line1Error.innerHTML = "Valid";
+    line1Error.style.color = "green";
+    return true;
   }
   function validateLine2() {
-      var name = document.getElementById("addressLine2").value.trim();
-      if (name.length === 0) {
-          line2Error.innerHTML = "This field is required";
-          line2Error.style.color = "red";
-          return false;
-      }
-      line2Error.innerHTML = "Valid";
-      line2Error.style.color = "green";
-      return true;
+    var name = document.getElementById("addressLine2").value.trim();
+    if (name.length === 0) {
+      line2Error.innerHTML = "This field is required";
+      line2Error.style.color = "red";
+      return false;
+    }
+    line2Error.innerHTML = "Valid";
+    line2Error.style.color = "green";
+    return true;
   }
   function validateCity() {
-      var name = document.getElementById("city").value.trim();
-      if (!/^[a-zA-Z]+$/.test(name)) {
-          cityError.innerHTML = "City name should contain only alphabets";
-          cityError.style.color = "red";
-          return false;
-      }
-      cityError.innerHTML = "Valid";
-      cityError.style.color = "green";
-      return true;
+    var name = document.getElementById("city").value.trim();
+    if (!/^[a-zA-Z]+$/.test(name)) {
+      cityError.innerHTML = "City name should contain only alphabets";
+      cityError.style.color = "red";
+      return false;
+    }
+    cityError.innerHTML = "Valid";
+    cityError.style.color = "green";
+    return true;
   }
   function validateState() {
-      var name = document.getElementById("state").value.trim();
-      if (!/^[a-zA-Z]+$/.test(name)) {
-          stateError.innerHTML = "State name should contain only alphabets";
-          stateError.style.color = "red";
-          return false;
-      }
-      stateError.innerHTML = "Valid";
-      stateError.style.color = "green";
-      return true;
+    var name = document.getElementById("state").value.trim();
+    if (!/^[a-zA-Z]+$/.test(name)) {
+      stateError.innerHTML = "State name should contain only alphabets";
+      stateError.style.color = "red";
+      return false;
+    }
+    stateError.innerHTML = "Valid";
+    stateError.style.color = "green";
+    return true;
   }
   function validatePost() {
-      var name = document.getElementById("postalCode").value.trim();
-      if (name.length === 0 || isNaN(name) || parseFloat(name) <= 0) {
-          postalcodeError.innerHTML = "This field is required and must be a number";
-          postalcodeError.style.color = "red";
-          return false;
-      }
-      postalcodeError.innerHTML = "Valid";
-      postalcodeError.style.color = "green";
-      return true;
+    var name = document.getElementById("postalCode").value.trim();
+    if (name.length === 0 || isNaN(name) || parseFloat(name) <= 0) {
+      postalcodeError.innerHTML = "This field is required and must be a number";
+      postalcodeError.style.color = "red";
+      return false;
+    }
+    postalcodeError.innerHTML = "Valid";
+    postalcodeError.style.color = "green";
+    return true;
   }
 
   function validateCountry() {
-      var name = document.getElementById("country").value.trim();
-      if (!/^[a-zA-Z]+$/.test(name)) {
-          countryError.innerHTML = "Country name should contain only alphabets";
-          countryError.style.color = "red";
-          return false;
-      }
-      countryError.innerHTML = "Valid";
-      countryError.style.color = "green";
-      return true;
+    var name = document.getElementById("country").value.trim();
+    if (!/^[a-zA-Z]+$/.test(name)) {
+      countryError.innerHTML = "Country name should contain only alphabets";
+      countryError.style.color = "red";
+      return false;
+    }
+    countryError.innerHTML = "Valid";
+    countryError.style.color = "green";
+    return true;
   }
   function validateForm() {
-      if (
-          !validateLine1() ||
-          !validateLine2() ||
-          !validateCity() ||
-          !validateState() ||
-          !validatePost() ||
-          !validateCountry()
-
-      ) {
-          submitError.style.display = "block";
-          submitError.innerHTML = "Please enter all the fields correctly to submit ";
-          submitError.style.color = "red";
-          setTimeout(function () {
-              submitError.style.display = "none";
-          }, 3000);
-          return false;
-      }
+    if (
+      !validateLine1() ||
+      !validateLine2() ||
+      !validateCity() ||
+      !validateState() ||
+      !validatePost() ||
+      !validateCountry()
+    ) {
+      submitError.style.display = "block";
+      submitError.innerHTML =
+        "Please enter all the fields correctly to submit ";
+      submitError.style.color = "red";
+      setTimeout(function () {
+        submitError.style.display = "none";
+      }, 3000);
+      return false;
+    }
   }
 </script>
-
 
 <%- include('userfooter') %>

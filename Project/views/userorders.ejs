@@ -49,7 +49,7 @@
               <tbody>
                 <% orders.forEach(order => { %>
                 <tr>
-                  <td><%= order._id %></td>
+                  <td>ord_<%= order.trackingId %></td>
                   <td><%= order.billingDetails.name %></td>
 
                   <td>Rs <%= order.totalPrice.toFixed(2) %></td>

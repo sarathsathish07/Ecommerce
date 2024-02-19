@@ -1,146 +1,182 @@
-
-   
 <%- include('userheader') %>
 
 <!-- User Account Section Begin -->
 <section class="user-account spad">
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-lg-3 col-md-4">
-                <div class="account-sidebar text-center">
-                    <div class="sidebar-header">
-                        <h4>User Account</h4>
-                    </div>
-                    <ul class="account-menu">
-                        <li><a href="/useraccount">Account Details</a></li>
-                        <li class="active"><a href="/useraddress">Addresses</a></li>
-                        <li><a href="/userorders">Orders</a></li>
-                        <li><a href="#wishlist">Wishlist</a></li>
-                        <li><a href="#logout">Logout</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-lg-9 col-md-8 mt-5">
-                <div class="account-content">
-                    <!-- Address Section -->
-                    <section id="user-address" class="account-section">
-                        <h2><b>Manage Addresses</b></h2>
-                        
-                        <% if (addresses && addresses.length > 0) { %>
-                        <ul>
-                            <% for (let i = 0; i < addresses[0].addresses.length; i++) { %>
-                            <li style="margin-bottom: 10px;">
-                                <div style="display: flex;">
-                                    <!-- Address Details -->
-                                    <div style="margin-right: 30px;">
-                                        <input
-                                            type="radio"
-                                            name="defaultAddress"
-                                            value="<%= addresses[0].addresses[i]._id %>"
-                                            onclick="setDefaultAddress('<%= addresses[0].addresses[i]._id %>')"
-                                            <%= addresses[0].addresses[i].isDefault ? 'checked' : '' %>
-                                        >
-                                        <strong>Address <%= i + 1 %>:</strong>
-                                        <p><%= addresses[0].addresses[i].addressLine1 %>, <%= addresses[0].addresses[i].addressLine2 %></p>
-                                        <p><%= addresses[0].addresses[i].city %>, <%= addresses[0].addresses[i].state %></p>
-                                        <p><%= addresses[0].addresses[i].country %> - <%= addresses[0].addresses[i].postalCode %></p>
-                                    </div>
-                                    <!-- Buttons -->
-                                    <div>
-                                        <a href="/editAddress/<%= addresses[0].addresses[i]._id %>" class="edit-btn"><i class="fas fa-edit"></i> Edit</a>
-                                        <form id="deleteForm_<%= addresses[0].addresses[i]._id %>" action="/deleteAddress/<%= addresses[0].addresses[i]._id %>" method="post" style="display: inline-block;">
-                                            <button type="submit" onclick="confirmDelete(event, '<%= addresses[0].addresses[i]._id %>')" style="background-color: #1f4959; color: white; margin-left: 10px;">Delete</button>
-                                        </form>
-                                        
-                                    </div>
-                                </div>
-                            </li>
-                            <% } %>
-                        </ul>
-                        <% } else { %>
-                        <p>No existing addresses found.</p>
-                        <% } %>
-                    </section>
-                    
-                    <!-- Add Address Form -->
-                    <section id="add-address" class="account-section">
-                        
-                        <form action="/addAddress" method="get">
-                           
-                            <button type="submit" style="background-color: #1f4959; color: white; padding-left: 10px; padding-right: 10px;">Add Address</button>
-                        </form>
-                    </section>
-                </div>
-            </div>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-lg-3 col-md-4">
+        <div class="account-sidebar text-center">
+          <div class="sidebar-header">
+            <h4>User Account</h4>
+          </div>
+          <ul class="account-menu">
+            <li><a href="/useraccount">Account Details</a></li>
+            <li class="active"><a href="/useraddress">Addresses</a></li>
+            <li><a href="/userorders">Orders</a></li>
+            <li><a href="#wishlist">Wishlist</a></li>
+            <li><a href="#logout">Logout</a></li>
+          </ul>
         </div>
+      </div>
+      <div class="col-lg-9 col-md-8 mt-5">
+        <div class="account-content">
+          <!-- Address Section -->
+          <section id="user-address" class="account-section">
+            <h2><b>Manage Addresses</b></h2>
+
+            <% if (addresses && addresses.length > 0) { %>
+            <ul>
+              <% for (let i = 0; i < addresses[0].addresses.length; i++) { %>
+              <li style="margin-bottom: 10px">
+                <div style="display: flex">
+                  <!-- Address Details -->
+                  <div style="margin-right: 30px">
+                    <input type="radio" name="defaultAddress" value="<%=
+                    addresses[0].addresses[i]._id %>"
+                    onclick="setDefaultAddress('<%=addresses[0].addresses[i]._id %>')" <%=
+                    addresses[0].addresses[i].isDefault ? 'checked' : '' %> >
+                    <strong>Address <%= i + 1 %>:</strong>
+                    <p>
+                      <%= addresses[0].addresses[i].addressLine1 %>, <%=
+                      addresses[0].addresses[i].addressLine2 %>
+                    </p>
+                    <p>
+                      <%= addresses[0].addresses[i].city %>, <%=
+                      addresses[0].addresses[i].state %>
+                    </p>
+                    <p>
+                      <%= addresses[0].addresses[i].country %> - <%=
+                      addresses[0].addresses[i].postalCode %>
+                    </p>
+                  </div>
+                  <!-- Buttons -->
+                  <div>
+                    <a
+                      href="/editAddress/<%= addresses[0].addresses[i]._id %>"
+                      class="edit-btn"
+                      ><i class="fas fa-edit"></i> Edit</a
+                    >
+                    <form
+                      id="deleteForm_<%= addresses[0].addresses[i]._id %>"
+                      action="/deleteAddress/<%= addresses[0].addresses[i]._id %>"
+                      method="post"
+                      style="display: inline-block"
+                    >
+                      <button
+                        type="submit"
+                        onclick="confirmDelete(event, '<%= addresses[0].addresses[i]._id %>')"
+                        style="
+                          background-color: #1f4959;
+                          color: white;
+                          margin-left: 10px;
+                        "
+                      >
+                        Delete
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </li>
+              <% } %>
+            </ul>
+            <% } else { %>
+            <p>No existing addresses found.</p>
+            <% } %>
+          </section>
+
+          <!-- Add Address Form -->
+          <section id="add-address" class="account-section">
+            <form action="/addAddress" method="get">
+              <button
+                type="submit"
+                style="
+                  background-color: #1f4959;
+                  color: white;
+                  padding-left: 10px;
+                  padding-right: 10px;
+                "
+              >
+                Add Address
+              </button>
+            </form>
+          </section>
+        </div>
+      </div>
     </div>
+  </div>
 </section>
 <!-- User Account Section End -->
 
 <!-- Footer Section Begin -->
 <footer class="footer">
   <div class="container">
-      <div class="row">
-          <div class="col-lg-3 col-md-6 col-sm-6">
-              <div class="footer__about">
-                  <div class="footer__logo">
-                      <a href="#"><img src="img/footer-logo.png" alt=""></a>
-                  </div>
-                  <p>The customer is at the heart of our unique business model, which includes design.</p>
-                  <a href="#"><img src="img/payment.png" alt=""></a>
-              </div>
+    <div class="row">
+      <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="footer__about">
+          <div class="footer__logo">
+            <a href="#"><img src="img/footer-logo.png" alt="" /></a>
           </div>
-          <div class="col-lg-2 offset-lg-1 col-md-3 col-sm-6">
-              <div class="footer__widget">
-                  <h6>Shopping</h6>
-                  <ul>
-                      <li><a href="#">Clothing Store</a></li>
-                      <li><a href="#">Trending Shoes</a></li>
-                      <li><a href="#">Accessories</a></li>
-                      <li><a href="#">Sale</a></li>
-                  </ul>
-              </div>
-          </div>
-          <div class="col-lg-2 col-md-3 col-sm-6">
-              <div class="footer__widget">
-                  <h6>Shopping</h6>
-                  <ul>
-                      <li><a href="#">Contact Us</a></li>
-                      <li><a href="#">Payment Methods</a></li>
-                      <li><a href="#">Delivary</a></li>
-                      <li><a href="#">Return & Exchanges</a></li>
-                  </ul>
-              </div>
-          </div>
-          <div class="col-lg-3 offset-lg-1 col-md-6 col-sm-6">
-              <div class="footer__widget">
-                  <h6>NewLetter</h6>
-                  <div class="footer__newslatter">
-                      <p>Be the first to know about new arrivals, look books, sales & promos!</p>
-                      <form action="#">
-                          <input type="text" placeholder="Your email">
-                          <button type="submit"><span class="icon_mail_alt"></span></button>
-                      </form>
-                  </div>
-              </div>
-          </div>
+          <p>
+            The customer is at the heart of our unique business model, which
+            includes design.
+          </p>
+          <a href="#"><img src="img/payment.png" alt="" /></a>
+        </div>
       </div>
-      <div class="row">
-          <div class="col-lg-12 text-center">
-              <div class="footer__copyright__text">
-                  
-                  <p>Copyright ©
-                      <script>
-                          document.write(new Date().getFullYear());
-                      </script>2020
-                      All rights reserved | This template is made with <i class="fa fa-heart-o"
-                      aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-                  </p>
-                 
-              </div>
-          </div>
+      <div class="col-lg-2 offset-lg-1 col-md-3 col-sm-6">
+        <div class="footer__widget">
+          <h6>Shopping</h6>
+          <ul>
+            <li><a href="#">Clothing Store</a></li>
+            <li><a href="#">Trending Shoes</a></li>
+            <li><a href="#">Accessories</a></li>
+            <li><a href="#">Sale</a></li>
+          </ul>
+        </div>
       </div>
+      <div class="col-lg-2 col-md-3 col-sm-6">
+        <div class="footer__widget">
+          <h6>Shopping</h6>
+          <ul>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Payment Methods</a></li>
+            <li><a href="#">Delivary</a></li>
+            <li><a href="#">Return & Exchanges</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-3 offset-lg-1 col-md-6 col-sm-6">
+        <div class="footer__widget">
+          <h6>NewLetter</h6>
+          <div class="footer__newslatter">
+            <p>
+              Be the first to know about new arrivals, look books, sales &
+              promos!
+            </p>
+            <form action="#">
+              <input type="text" placeholder="Your email" />
+              <button type="submit"><span class="icon_mail_alt"></span></button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <div class="footer__copyright__text">
+          <p>
+            Copyright ©
+            <script>
+              document.write(new Date().getFullYear());
+            </script>
+            2020 All rights reserved | This template is made with
+            <i class="fa fa-heart-o" aria-hidden="true"></i> by
+            <a href="https://colorlib.com" target="_blank">Colorlib</a>
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 </footer>
 <!-- Footer Section End -->
@@ -148,51 +184,49 @@
 <!-- Search Begin -->
 <div class="search-model">
   <div class="h-100 d-flex align-items-center justify-content-center">
-      <div class="search-close-switch">+</div>
-      <form class="search-model-form">
-          <input type="text" id="search-input" placeholder="Search here.....">
-      </form>
+    <div class="search-close-switch">+</div>
+    <form class="search-model-form">
+      <input type="text" id="search-input" placeholder="Search here....." />
+    </form>
   </div>
 </div>
 
 <script>
-    function confirmDelete(event,addressId) {
-        event.preventDefault(); 
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'You won\'t be able to revert this!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-               
-                document.getElementById('deleteForm_' + addressId).submit();
-            }
-        });
-    }
+  function confirmDelete(event, addressId) {
+    event.preventDefault();
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.getElementById("deleteForm_" + addressId).submit();
+      }
+    });
+  }
 </script>
 
 <script>
-    function setDefaultAddress(addressId) {
-       
-        fetch('/setDefaultAddress', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ addressId }),
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
+  function setDefaultAddress(addressId) {
+    fetch("/setDefaultAddress", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ addressId }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Success:", data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
 </script>
 
 <%- include('userfooter') %>

@@ -322,6 +322,9 @@
     
     if (!startDate || !endDate) {
       $('#errorSpan').show();
+      setTimeout(function() {
+          $('#errorSpan').hide();
+        }, 3000);
       return; 
     }
     $.ajax({
