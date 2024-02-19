@@ -24,7 +24,7 @@ const upload = multer({
 const productController = {
   getProducts: async (req, res, next) => {
     try {
-      const perPage = 2;
+      const perPage = 5;
       const page = req.query.page || 1;
 
       const totalProducts = await Product.aggregate([
@@ -74,7 +74,7 @@ const productController = {
 
   getProductsPagination: async (req, res, next) => {
     try {
-      const perPage = 2;
+      const perPage = 5;
       const page = req.query.page || 1;
       
       const totalProducts = await Product.aggregate([

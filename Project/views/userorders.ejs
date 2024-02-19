@@ -100,7 +100,6 @@
       confirmButtonText: "Yes, cancel it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        // If the user confirms, redirect to the block endpoint
         window.location.href = "/cancelOrder/" + orderId;
       }
     });

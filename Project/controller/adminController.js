@@ -5,8 +5,8 @@
   const pdf = require('html-pdf');
 
   const credentials = {
-    email: "admin@gmail.com",
-    password: "12345",
+    email: process.env.ADMIN_EMAIL,
+    password: process.env.ADMIN_PASSWORD,
   };
 
   const adminController = {
@@ -219,21 +219,20 @@
         const { orderId, selectedStatus } = req.body;
     
         if (selectedStatus === 'Cancelled') {
-          // Retrieve the order
           const order = await Order.findById(orderId).populate('items.product');
           if (!order) {
             return res.status(404).json({ success: false, message: 'Order not found' });
           }
     
-          // Loop through order items and return stock for each product
+          
           order.items.forEach(async (item) => {
             const product = item.product;
-            product.stock += item.quantity; // Add back the quantity to the product's stock
-            await product.save(); // Save the product with updated stock
+            product.stock += item.quantity;
+            await product.save(); 
           });
         }
     
-        // Update the status of the order
+        
         const updatedOrder = await Order.findByIdAndUpdate(
           orderId,
           { $set: { status: selectedStatus } },

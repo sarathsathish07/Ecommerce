@@ -279,6 +279,9 @@
         </div>
     </div>
   </div>
+  <div class="content-header">
+      <h2 class="content-title card-title">Sales Report</h2>
+  </div>
   <div class="row">
     <div class="col-lg-5">
       <div>
@@ -291,6 +294,7 @@
       <a href="#" class="btn btn-primary" id="createReportButton">
         <i class="text-muted material-icons md-post_add"></i>Create report
       </a>
+      <span id="errorSpan" class="text-danger" style="display: none;">Please select start and end dates.</span>
       </div>
       
     </div>
@@ -307,14 +311,19 @@
   </div>
     </section>
   </main>
-  
     <!-- content-main end// -->
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
       $(document).ready(function() {
   $('#createReportButton').click(function() {
+    const startDate = $('#startDate').val();
+    const endDate = $('#endDate').val();
+    
+    if (!startDate || !endDate) {
+      $('#errorSpan').show();
+      return; 
+    }
     $.ajax({
       url: '/generate-report',
       type: 'POST',
@@ -329,7 +338,6 @@
         $('#downloadButton').show();
       },
       error: function(xhr, status, error) {
-        // Handle error
         console.error(error);
       }
     });
@@ -387,7 +395,6 @@
           fetch('/fetchdashboard')
             .then(response => response.json())
             .then(data => {
-              console.log(data.ordersPie);
               updateChartData(data.ordersPie);
             })
             .catch(error => {
@@ -397,9 +404,6 @@
   
         fetchDataAndUpdateChart();
   
-       
-  
-
         function updateGraphWithMonthlyData() {
           const existingChart = Chart.getChart('lineChart');
     if (existingChart) {
@@ -519,7 +523,7 @@ console.log('countsWithNull:', countsWithNull);
             },
             y: {
                     type: 'linear',
-                    beginAtZero: true, // Start y-axis from zero
+                    beginAtZero: true, 
                     ticks: {
                         stepSize: 1,
                     },
@@ -536,7 +540,6 @@ console.log('countsWithNull:', countsWithNull);
       });
     }
  
-
     const monthGraphBtn = document.getElementById('monthGraphBtn');
     const yearGraphBtn = document.getElementById('yearGraphBtn');
 

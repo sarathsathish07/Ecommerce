@@ -21,27 +21,6 @@
   cursor: pointer;
   padding: 0;
 }
-.existing-images .image-preview {
-  position: relative;
-}
-
-.existing-images .button-container {
-  position: absolute;
-  bottom: -15px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 10px;
-}
-
-.existing-images .delete-image-btn,
-.existing-images .replace-image-icon {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
 
 </style>
 <body>
@@ -329,27 +308,26 @@
                 </div>
                 <!-- Existing Images -->
               
-                <div class="mb-4">
-                  <label class="form-label">Existing Images</label>
-                  <div class="existing-images">
-                    <% if (product.images && product.images.length > 0) { %>
-                      <div class="image-container">
-                        <% product.images.forEach((imageUrl, index) => { %>
-                          <div class="image-preview">
-                            <img src="/static/<%= imageUrl %>" alt="Existing Image" class="existing-image">
-                            <div class="button-container">
-                              <i class="fa-solid fa-trash delete-image-btn" data-index="<%= index %>"></i>
-                              <i class="fa-solid fa-repeat replace-image-icon" data-index="<%= index %>"></i>
-                            </div>
-                          </div>
-                        <% }) %>
-                      </div>
-                    <% } else { %>
-                      <p>No existing images</p>
-                    <% } %>
-                  </div>
+              <div class="mb-4">
+                <label class="form-label">Existing Images</label>
+                <div class="existing-images">
+                  <% if (product.images && product.images.length > 0) { %>
+                    <div class="image-container">
+                      <% product.images.forEach((imageUrl, index) => { %>
+                        <div class="image-preview">
+                          <img src="/static/<%= imageUrl %>" alt="Existing Image" class="existing-image">
+                          <i class="fa-solid fa-repeat replace-image-icon" data-index="<%= index %>"></i>
+                          <i class="fa-solid fa-trash delete-image-btn" data-index="<%= index %>"></i>
+                        
+                        </div>
+                      <% }) %>
+                    </div>
+                  <% } else { %>
+                    <p>No existing images</p>
+                  <% } %>
                 </div>
-                
+              </div>
+
 
 
               
@@ -404,6 +382,7 @@
     </section>
   </main>
   <script>
+    // Handle replacement of images
     document.querySelectorAll('.replace-image-icon').forEach(icon => {
       icon.addEventListener('click', function () {
         const index = this.dataset.index;
@@ -434,52 +413,56 @@
     }
 </script>
 
-        <script>
-      
-      window.addEventListener('DOMContentLoaded', function () {
-        const existingImages = document.querySelectorAll('.existing-images img');
-        const fileInput = document.getElementById('product_image');
-        const fileList = new DataTransfer();
+    <script>
+   
+   window.addEventListener('DOMContentLoaded', function () {
+    const existingImages = document.querySelectorAll('.existing-images img');
+    const fileInput = document.getElementById('product_image');
+    const fileList = new DataTransfer();
 
-        existingImages.forEach(function (image) {
-            const url = image.getAttribute('src');
-            const filename = url.substring(url.lastIndexOf('/') + 1);
-            fetch(url)
-                .then(response => response.blob())
-                .then(blob => {
-                    const file = new File([blob], filename, { type: blob.type });
-                    fileList.items.add(file);
-                    fileInput.files = fileList.files;
-                });
-        });
+    existingImages.forEach(function (image) {
+        const url = image.getAttribute('src');
+        const filename = url.substring(url.lastIndexOf('/') + 1);
+        fetch(url)
+            .then(response => response.blob())
+            .then(blob => {
+                const file = new File([blob], filename, { type: blob.type });
+                fileList.items.add(file);
+                fileInput.files = fileList.files;
+            });
     });
+});
 
-    document.querySelectorAll('.delete-image-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const index = this.dataset.index;
-            const parentDiv = this.parentElement;
-            parentDiv.remove(); 
-            updateFileInput();
-        });
+document.querySelectorAll('.delete-image-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const index = this.dataset.index;
+        const parentDiv = this.parentElement;
+        parentDiv.remove(); 
+        updateFileInput();
     });
+});
 
-    function updateFileInput() {
-        const fileInput = document.getElementById('product_image');
-        const existingImages = document.querySelectorAll('.existing-images img');
-        const fileList = new DataTransfer();
+function updateFileInput() {
+    const fileInput = document.getElementById('product_image');
+    const existingImages = document.querySelectorAll('.existing-images img');
+    const fileList = new DataTransfer();
 
-        existingImages.forEach(function (image) {
-            const url = image.getAttribute('src');
-            const filename = url.substring(url.lastIndexOf('/') + 1);
-            fetch(url)
-                .then(response => response.blob())
-                .then(blob => {
-                    const file = new File([blob], filename, { type: blob.type });
-                    fileList.items.add(file);
-                    fileInput.files = fileList.files;
-                });
-        });
-    }
+    existingImages.forEach(function (image) {
+        const url = image.getAttribute('src');
+        const filename = url.substring(url.lastIndexOf('/') + 1);
+        fetch(url)
+            .then(response => response.blob())
+            .then(blob => {
+                const file = new File([blob], filename, { type: blob.type });
+                fileList.items.add(file);
+                fileInput.files = fileList.files;
+            });
+    });
+}
+
+
+
+
 
     </script>
     

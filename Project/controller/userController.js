@@ -77,7 +77,8 @@
               { $match: { isPublished: true } },
               { $lookup: { from: "categories", localField: "category", foreignField: "_id", as: "category" } },
               { $unwind: "$category" },
-              { $match: { "category.isListed": true } }
+              { $match: { "category.isListed": true } },
+              { $limit:8}
           ]);
   
           res.render("home", {
@@ -239,7 +240,7 @@
     },
     shopPage: async (req, res, next) => {
       try {
-          const perPage = 2;
+          const perPage = 9;
           const page = req.query.page || 1;
   
           const products = await Product.aggregate([
@@ -277,7 +278,7 @@
 
   getShopPagination: async (req, res, next) => {
     try {
-        const perPage = 2;
+        const perPage = 9;
         const page = req.query.page || 1;
 
         const aggregatePipeline = [

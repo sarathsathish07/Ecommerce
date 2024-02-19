@@ -5,11 +5,13 @@ const mongoose = require("mongoose");
 const path = require("path");
 const session = require("express-session");
 const nocache = require("nocache");
-const sharp = require('sharp');
+const sharp = require("sharp");
 
 app.use(nocache());
 
 const { v4: uuidv4 } = require("uuid");
+
+//port configuration
 const port = process.env.PORT || 5000;
 
 //connecting database
@@ -20,16 +22,14 @@ db.then(() => {
   console.log("Error in connecting to database");
 });
 
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //setting view engine
 app.set("view engine", "ejs");
 
-
 // miidleware to serve static files
-app.use('/temp', express.static('temp'));
+app.use("/temp", express.static("temp"));
 app.use("/static", express.static(path.join(__dirname, "public")));
 
 //middleware to handle session
@@ -47,20 +47,18 @@ app.use((req, res, next) => {
   next();
 });
 
-
 app.use("/", require("./routes/userRoutes"));
 app.use("/", require("./routes/adminRoutes"));
 
-
-app.use(function(err,req,res,next){
+// middleware for handling  errors
+app.use(function (err, req, res, next) {
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.error = req.app.get("env") === "development" ? err : {};
 
   res.status(err.status || 500);
   console.log(err);
-  res.render('error')
-})
-
+  res.render("error");
+});
 
 app.listen(port, () => {
   console.log("Listening to server http://localhost:5000");

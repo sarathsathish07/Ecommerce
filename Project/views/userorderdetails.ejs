@@ -14,7 +14,6 @@
         color: #ffffff;
     }
 
-    /* Progress bar styles */
     .progress {
         height: 25px;
         margin-bottom: 20px;
@@ -66,6 +65,16 @@
                        
                     </div>
                     <div class="text">
+                        <h6 class="mb-1"><b>Shipping Address</b></h6>
+                        <p class="mb-1">
+                            City: <%= order.billingDetails.city %> <br>
+                            Address: <%= order.billingDetails.addressLine1 %> <br>
+                            Postal Code: <%= order.billingDetails.postalCode %> <br>
+                            Country: <%= order.billingDetails.country %>
+                        </p>
+                        
+                    </div>
+                    <div class="text">
                         <h6 ><b>Payment info</b></h6>
                         <p>
                             <%= order.paymentMethod %>
@@ -104,15 +113,13 @@
                               <% }); %>
                             </tbody>
                       </table>
-                  </div> <!-- table-responsive //end -->
-                             <!-- card end// -->
-                </section>  <!-- Orders List Section end// -->
+                  </div>          
+                </section>  
             </div>
-            
         </div>
     </div>
 </section>
 
-<!-- Footer and Search section codes remain unchanged -->
+
 
 <%- include('userfooter') %>

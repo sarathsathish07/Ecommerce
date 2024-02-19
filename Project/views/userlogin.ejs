@@ -202,14 +202,12 @@
           return false;
         }
 
-        // Check if the password contains any spaces
         if (password.includes(" ")) {
           passwordError.innerHTML = "Password should not contain spaces";
           passwordError.style.color = "red";
           return false;
         }
 
-        // Basic password validation: Requires at least 8 characters
         if (password.length < 5) {
           passwordError.innerHTML = "Password must be at least 5 characters";
           passwordError.style.color = "red";

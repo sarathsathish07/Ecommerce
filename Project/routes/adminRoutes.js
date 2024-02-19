@@ -26,16 +26,12 @@ admin_router.post("/addproducts",isAdmin, productController.postAddProducts);
 admin_router.get("/editproduct/:id",isAdmin, productController.getEditProducts);
 admin_router.post("/updateproduct/:id",isAdmin, productController.postEditProducts);
 
-
 admin_router.get("/categories",isAdmin, categoryController.getCategories);
 admin_router.get("/categories/:page",isAdmin, categoryController.getCategoryPagination);
 admin_router.get("/addcategories",isAdmin, categoryController.getAddCategories);
 admin_router.post("/addcategories",isAdmin, categoryController.postAddCategories);
 admin_router.get("/edit/:id",isAdmin, categoryController.getEditCategories);
 admin_router.post("/update/:id",isAdmin, categoryController.postEditCategories);
-
-
-admin_router.get("/adminlogout",isAdmin, adminController.getAdminLogout);
 
 admin_router.get("/block/:userId", isAdmin,adminController.blockUser);
 admin_router.get("/unblock/:userId",isAdmin, adminController.unblockUser);
@@ -52,7 +48,9 @@ admin_router.get("/orderdetails/:id",isAdmin, adminController.getOrderDetailsPag
 
 admin_router.post("/updateStatus",isAdmin, adminController.updateStatus);
 
-admin_router.post('/generate-report',adminController.generateReport)
-admin_router.get('/report',adminController.report)
+admin_router.post('/generate-report',isAdmin,adminController.generateReport)
+admin_router.get('/report',isAdmin,adminController.report)
+
+admin_router.get("/adminlogout",isAdmin, adminController.getAdminLogout);
 
 module.exports = admin_router;
