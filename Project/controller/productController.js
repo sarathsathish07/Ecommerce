@@ -39,6 +39,7 @@ const productController = {
       const totalProductsCount = totalProducts.length > 0 ? totalProducts[0].count : 0;
 
       const products = await Product.aggregate([
+        { $sort: { time: -1 } },
         {
           $skip: perPage * page - perPage
         },
@@ -56,6 +57,8 @@ const productController = {
         {
           $unwind: "$category"
         }
+       
+        
       ]);
 
       const totalPages = Math.ceil(totalProductsCount / perPage);
@@ -114,8 +117,6 @@ const productController = {
   getAddProducts: async (req, res,next) => {
     try {
       let allCategories = await Category.find();
-
-
       res.render("admin/addproduct", {title: "Add Products", categories: allCategories });
     } catch (err) {
       next(err);
@@ -130,7 +131,6 @@ const productController = {
         }
 
         const images = req.files.map((file) => `/img/${file.filename}`);
-        console.log("category:", req.body.category);
         const product = new Product({
           productTitle: req.body.producttitle,
           description: req.body.description,

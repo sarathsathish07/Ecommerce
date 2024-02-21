@@ -249,7 +249,8 @@
               { $unwind: "$category" },
               { $match: { "category.isListed": true } },
               { $skip: perPage * (page - 1) },
-              { $limit: perPage }
+              { $limit: perPage },
+              { $sort: { time: -1 } },
           ]);
   
           const totalProducts = await Product.aggregate([
@@ -313,14 +314,12 @@
       try {
        
         const id = new mongoose.Types.ObjectId(req.params.id);
-        console.log(id);
        
         const product = await Product.aggregate([
           {
             $match:{_id:id}
           }
         ])
-        console.log(product);
         if (!product) {
           res.redirect("/");
           return;
@@ -467,7 +466,6 @@ geteditUserAccountPage: async (req, res, next) => {
 
     userAddress: async (req, res, next) => {
       const userId = new mongoose.Types.ObjectId(req.session.userID);
-      console.log(userId);
       try {
         const addresses = await Address.aggregate([
           {
@@ -475,7 +473,6 @@ geteditUserAccountPage: async (req, res, next) => {
           }
          
         ]);
-        console.log(addresses);
     
         res.render("useraddress", { title: "User Address", addresses, user: req.session.user });
       } catch (err) {
@@ -521,7 +518,14 @@ geteditUserAccountPage: async (req, res, next) => {
 
         await userAddress.save();
 
-        res.redirect("/useraddress");
+        if (req.query) {
+          res.redirect('/checkout');
+        } else {
+          res.redirect('/useraddress');
+        }
+    
+        
+        
       } catch (err) {
         next(err);
       }
@@ -716,7 +720,6 @@ geteditUserAccountPage: async (req, res, next) => {
             progressPercentage = 0;
             break;
         }
-        console.log(order.status);
 
         res.render("userorderdetails", {
           title: "User Order Details",
@@ -732,7 +735,8 @@ geteditUserAccountPage: async (req, res, next) => {
     checkoutPage: async (req, res, next) => {
       try {
         const userId = req.session.userID;
-
+        const queryTotalPrice = parseInt(req.query.totalPrice);
+        const orderId = req.query.orderId
         const addresses = await Address.findOne({ userID: userId });
 
         let defaultAddress = null;
@@ -745,6 +749,7 @@ geteditUserAccountPage: async (req, res, next) => {
         const userCart = await Cart.findOne({ userID: userId })
           .populate("items.product")
           .exec();
+          const totalPrice = queryTotalPrice || userCart.totalPrice;
 
         res.render("checkout", {
           title: "Checkout",
@@ -752,28 +757,43 @@ geteditUserAccountPage: async (req, res, next) => {
           user: req.session.user,
           userAddress: defaultAddress,
           cartItems: userCart.items,
-          totalPrice: userCart.totalPrice,
+          totalPrice: totalPrice,
+          orderId:orderId
         });
       } catch (err) {
         next(err);
       }
     },
 
-    placeOrder: async (req, res,next) => {
+    placeOrder: async (req, res, next) => {
       try {
-        const { addressID, totalPrice, paymentMethod, paymentStatus} = req.body;
-
+        const { orderId, addressID, totalPrice, paymentMethod, paymentStatus } = req.body;
+    
+        if (orderId) {
+          const orderToUpdate = await Order.findById(orderId);
+    
+          if (!orderToUpdate) {
+            return res.status(404).json({ message: "Order not found" });
+          }
+    
+          orderToUpdate.totalPrice = totalPrice;
+          orderToUpdate.paymentMethod = paymentMethod;
+          orderToUpdate.paymentStatus = paymentStatus;
+    
+          if (paymentStatus === "Paid" || paymentStatus === "Pending") {
+            await orderToUpdate.save();
+            return res.status(200).redirect("/thankyou");
+          } else if (paymentStatus === "Failed") {
+            await orderToUpdate.save();
+            return res.status(200).redirect("/userorders");
+          }
+        }
+    
         const cartItems = Array.from(JSON.parse(req.body.cartItems));
-
         const address = await Address.findOne({ "addresses._id": addressID });
-
-        const selectedAddress = address.addresses.find((a) =>
-          addressID.includes(a._id.toString())
-        );
-        
-
-        const user = await User.findById(address.userID);
-
+        const selectedAddress = address.addresses.find((a) => addressID.includes(a._id.toString()));
+        const user = await User.findById(req.session.userID);
+    
         const order = new Order({
           userID: user._id,
           items: cartItems.map((item) => ({
@@ -793,22 +813,28 @@ geteditUserAccountPage: async (req, res, next) => {
             phone: user.phone,
             email: user.email,
           },
-          paymentMethod: paymentMethod,
-          paymentStatus: paymentStatus,
+          paymentMethod,
+          paymentStatus,
         });
-
+    
         await order.save();
-
+    
         await Cart.findOneAndUpdate(
           { userID: user._id },
           { $set: { items: [], totalPrice: 0 } }
         );
-
-        res.status(200).render("thankyou", {title: "Thank You", user: req.session.user });
+    
+        if (paymentStatus === "Paid" || paymentStatus === "Pending") {
+          return res.status(200).redirect("/thankyou");
+        } else if (paymentStatus === "Failed") {
+          return res.status(200).redirect("/userorders");
+        }
       } catch (err) {
         next(err);
       }
     },
+    
+    
     razorpayCheckout:async(req, res) => {
       try {
         const userId = req.session.userID;

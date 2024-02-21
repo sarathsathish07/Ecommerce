@@ -318,8 +318,6 @@
     },
     
 
-    
-    
     report: (req, res) => {
       const filePath = '../temp/report.pdf'; 
       

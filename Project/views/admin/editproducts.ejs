@@ -220,6 +220,7 @@
                 action="/updateproduct/<%= product._id  %>"
                 method="post"
                 enctype="multipart/form-data"
+                
               >
                 <div class="mb-4">
                   <label for="product_name" class="form-label"
@@ -327,10 +328,6 @@
                   <% } %>
                 </div>
               </div>
-
-
-
-              
               <div class="mb-4">
                   <label class="form-label">New Images</label>
                   <input
@@ -438,7 +435,7 @@ document.querySelectorAll('.delete-image-btn').forEach(button => {
         const index = this.dataset.index;
         const parentDiv = this.parentElement;
         parentDiv.remove(); 
-        updateFileInput();
+        updateFileInput(); 
     });
 });
 
@@ -446,7 +443,7 @@ function updateFileInput() {
     const fileInput = document.getElementById('product_image');
     const existingImages = document.querySelectorAll('.existing-images img');
     const fileList = new DataTransfer();
-
+    
     existingImages.forEach(function (image) {
         const url = image.getAttribute('src');
         const filename = url.substring(url.lastIndexOf('/') + 1);
@@ -458,14 +455,14 @@ function updateFileInput() {
                 fileInput.files = fileList.files;
             });
     });
+
+    
+    if (existingImages.length === 0) {
+        fileInput.value = ''; 
+    }
 }
 
-
-
-
-
     </script>
-    
     
     <script>
       var nameError = document.getElementById("name-error");
@@ -501,7 +498,7 @@ function updateFileInput() {
 
       function validatePrice() {
     var price = document.getElementById("product_price").value.trim();
-    var priceError = document.getElementById("price_error");
+    
 
     if (price.length === 0 || isNaN(price) || parseFloat(price) <= 0) {
         priceError.innerHTML = "Price is required and must be a positive number";
@@ -517,7 +514,7 @@ function updateFileInput() {
 function validateImage() {
     var imageInput = document.getElementById("product_image");
     
-    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.webp)$/i;
 
     if (imageInput.files.length === 0) {
       imageError.innerHTML = "Image is required";

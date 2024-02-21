@@ -128,7 +128,6 @@ const categoryController = {
   unlistCategory: async (req, res,next) => {
     try {
       const categoryId = req.params.categoryId;
-      console.log(categoryId);
 
       await Category.findByIdAndUpdate(categoryId, { isListed: false });
 

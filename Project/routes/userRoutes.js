@@ -28,6 +28,7 @@ router.delete("/remove-from-cart/:id",isUser, cartController.deleteCart);
 router.post('/update-cart',isUser, cartController.updateCart);
 
 router.post('/place-order',isUser, userController.placeOrder);
+
 router.get('/checkout',isUser, userController.checkoutPage);
 router.get('/razorpay-checkout',isUser,userController.razorpayCheckout)
 router.get('/thankyou',isUser, userController.thankYou);

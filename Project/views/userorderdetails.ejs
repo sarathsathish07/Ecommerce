@@ -38,7 +38,6 @@
             <li class="active"><a href="/useraddress">Addresses</a></li>
             <li><a href="/userorders">Orders</a></li>
             <li><a href="#wishlist">Wishlist</a></li>
-            <li><a href="#logout">Logout</a></li>
           </ul>
         </div>
       </div>
@@ -123,6 +122,10 @@
                 <% }); %>
               </tbody>
             </table>
+          </div>
+          <div  style="background-color: rgb(157, 183, 183); height: 100PX; display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 20px;"> SUB TOTAL : Product Amount + Delivery Charge(100):  Rs <%= order.totalPrice.toFixed(2) %></span>
+           
           </div>
         </section>
       </div>

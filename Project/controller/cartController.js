@@ -64,7 +64,6 @@ const cartController = {
     try {
       const productID = req.params.id;
       const product = await Products.findById(productID);
-      console.log("product:", product);
     
       if (product.stock === 0) {
         

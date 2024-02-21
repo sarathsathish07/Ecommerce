@@ -121,7 +121,7 @@
                                 <tr>
                                     <th>#ID</th>
                                     <th scope="col">Name</th>
-                                    <th scope="col">Email</th>
+                                    <th scope="col">Payment Status</th>
                                     <th scope="col">Total</th>
                                     <th scope="col">Status</th>
                                     <th scope="col">Date</th>
@@ -132,7 +132,7 @@
                                 <% orders.forEach(order => { %>
                                     <tr>
                                         <td>ord_<%= order.trackingId %></td>
-                                        <td><%= order.billingDetails.name %></td>
+                                        <td><%= order.paymentStatus %></td>
                                         <td><%= order.billingDetails.email %></td>
                                         <td>Rs <%= order.totalPrice.toFixed(2) %></td>
                                         
