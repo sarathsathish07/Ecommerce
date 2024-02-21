@@ -7,6 +7,7 @@ const adminController = require("../controller/adminController");
 const categoryController = require("../controller/categoryController");
 const productController = require("../controller/productController");
 const dashController = require("../controller/dashboardController");
+const brandController = require("../controller/brandController");
 
 admin_router.use(nocache());
   
@@ -40,6 +41,14 @@ admin_router.get("/edit/:id",isAdmin, categoryController.getEditCategories);
 admin_router.post("/update/:id",isAdmin, categoryController.postEditCategories);
 admin_router.get("/list/:categoryId",isAdmin, categoryController.listCategory);
 admin_router.get("/unlist/:categoryId",isAdmin, categoryController.unlistCategory);
+
+admin_router.get("/brands",isAdmin, brandController.getBrands);
+admin_router.get("/addbrands",isAdmin, brandController.getAddBrands);
+admin_router.post("/addbrands",isAdmin, brandController.postAddBrands);
+admin_router.get("/editbrand/:id",isAdmin, brandController.getEditBrands);
+admin_router.post("/updatebrand/:id",isAdmin, brandController.postEditBrands);
+admin_router.get("/listbrand/:brandId",isAdmin, brandController.listBrand);
+admin_router.get("/unlistbrand/:brandId",isAdmin, brandController.unlistBrand);
 
 admin_router.get("/orders",isAdmin, adminController.getOrders);
 admin_router.get("/orders/:page",isAdmin, adminController.getOrdersPagination);

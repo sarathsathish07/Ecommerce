@@ -78,6 +78,9 @@
               { $lookup: { from: "categories", localField: "category", foreignField: "_id", as: "category" } },
               { $unwind: "$category" },
               { $match: { "category.isListed": true } },
+              { $lookup: { from: "brands", localField: "brand", foreignField: "_id", as: "brand" } }, 
+              { $unwind: "$brand" },
+              { $match: { "brand.isListed": true } },
               { $limit:8}
           ]);
   
@@ -248,6 +251,9 @@
               { $lookup: { from: "categories", localField: "category", foreignField: "_id", as: "category" } },
               { $unwind: "$category" },
               { $match: { "category.isListed": true } },
+              { $lookup: { from: "brands", localField: "brand", foreignField: "_id", as: "brand" } }, 
+              { $unwind: "$brand" },
+              { $match: { "brand.isListed": true } },
               { $skip: perPage * (page - 1) },
               { $limit: perPage },
               { $sort: { time: -1 } },
@@ -258,10 +264,14 @@
               { $lookup: { from: "categories", localField: "category", foreignField: "_id", as: "category" } },
               { $unwind: "$category" },
               { $match: { "category.isListed": true } },
+              { $lookup: { from: "brands", localField: "brand", foreignField: "_id", as: "brand" } }, 
+              { $unwind: "$brand" },
+              { $match: { "brand.isListed": true } },
               { $count: "count" }
           ]);
   
-          const totalPages = Math.ceil(totalProducts[0].count / perPage);
+          const totalPages = totalProducts.length > 0 ? Math.ceil(totalProducts[0].count / perPage) : 0;
+
   
           res.render("shop", {
               title: "Shop",

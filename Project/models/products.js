@@ -10,6 +10,11 @@ const productSchema = new mongoose.Schema({
     ref: "Category",
     require: true,
   },
+  brand: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Brand",
+    require: true,
+  },
   quantity: {
     type: Number,
   },

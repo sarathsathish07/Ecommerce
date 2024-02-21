@@ -1,5 +1,6 @@
 const Product = require("../models/products");
 const Category = require("../models/category");
+const Brand = require("../models/brands");
 const sharp = require("sharp");
 const fs = require('fs')
 const multer = require("multer");
@@ -56,6 +57,17 @@ const productController = {
         },
         {
           $unwind: "$category"
+        },
+        {
+          $lookup: {
+            from: "brands",
+            localField: "brand",
+            foreignField: "_id",
+            as: "brand"
+          }
+        },
+        {
+          $unwind: "$brand"
         }
        
         
@@ -117,7 +129,8 @@ const productController = {
   getAddProducts: async (req, res,next) => {
     try {
       let allCategories = await Category.find();
-      res.render("admin/addproduct", {title: "Add Products", categories: allCategories });
+      let allBrands = await Brand.find();
+      res.render("admin/addproduct", {title: "Add Products", categories: allCategories, brands: allBrands });
     } catch (err) {
       next(err);
     }
@@ -135,6 +148,7 @@ const productController = {
           productTitle: req.body.producttitle,
           description: req.body.description,
           category: req.body.category,
+          brand:req.body.brand,
           price: req.body.price,
           stock: req.body.stock,
           images: images,

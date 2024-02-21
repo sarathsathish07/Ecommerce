@@ -1,5 +1,4 @@
 <%- include('adminheader') %>
-
 <body>
   <div class="screen-overlay"></div>
   <aside class="navbar-aside" id="offcanvas_aside">
@@ -21,7 +20,7 @@
             <span class="text">Dashboard</span>
           </a>
         </li>
-        <li class="menu-item ">
+        <li class="menu-item">
           <a class="menu-link" href="/userlist">
             <i class="icon material-icons md-person"></i>
             <span class="text">Users</span>
@@ -33,19 +32,19 @@
             <span class="text">Products</span>
           </a>
         </li>
-        <li class="menu-item">
+        <li class="menu-item ">
           <a class="menu-link" href="/categories">
             <i class="icon material-icons md-store"></i>
             <span class="text">Categories</span>
           </a>
         </li>
-        <li class="menu-item ">
+        <li class="menu-item active">
           <a class="menu-link" href="/brands">
             <i class="icon material-icons md-store"></i>
             <span class="text">Brands</span>
           </a>
         </li>
-        <li class="menu-item active">
+        <li class="menu-item">
           <a class="menu-link" href="/orders">
             <i class="icon material-icons md-store"></i>
             <span class="text">Orders</span>
@@ -184,83 +183,112 @@
     </header>
     <section class="content-main">
       <div class="content-header">
-        <h2 class="content-title">Orders</h2>
-       
+        <div>
+          <h2 class="content-title card-title">Add Brands</h2>
+          <p>Add a brand</p>
+          <% if (locals.alert) { %>
+          <div class="alert alert-danger text-center m-3" id="error">
+            <%= locals.alert %>
+          </div>
+          <% } %>
+        </div>
       </div>
-      <div class="card mb-4">
+      <div class="card">
         <div class="card-body">
-          <div class="table-responsive">
-            <% if (orders != '') { %>
-            <table class="table table-striped text-center">
-              <thead>
-                <tr class="table-dark">
-                  <th>#ID</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Payment Status</th>
-                  <th scope="col">Total</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Date</th>
-                  <th scope="col" class="text-end"> Action </th>
-                </tr>
-              </thead>
-              <tbody>
-                <% orders.forEach(order => { %>
-                  <tr>
-                      <td>ord_<%= order.trackingId %></td>
-                      <td><%= order.billingDetails.name %></td>
-                      <td><%= order.paymentStatus %></td>
-                      
-                      <td>Rs <%= order.totalPrice.toFixed(2) %></td>
-                      
-                      <td class="status-column  <%= order.status.toLowerCase() %>" style="font-weight:900 ;"><%= order.status %></td>
-                      <td><%= order.orderDate.toDateString() %></td>
-                      <td class="text-end">
-                          <a href="/orderdetails/<%= order._id %>" class="btn btn-md rounded font-sm">Detail</a>
+          <div class="row" style="justify-content: center">
+            <div class="col-md-3">
+              <form action="/addbrands" method="post">
+                <div class="mb-4">
+                  <label for="product_name" class="form-label">Name</label>
+                  <input
+                    type="text"
+                    placeholder="Type here"
+                    name="brand"
+                    class="form-control"
+                    id="product_name"
+                    onkeyup="validateName()"
+                  />
+                  <span
+                    id="name-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span>
+                </div>
 
-                       
-                      </td>
-                  </tr>
-              <% }); %>
-              </tbody>
-            </table>
-            <% }else{ %>
-            <h1 class="text-center text-secondary mt-5">
-              No Orders found in the database
-            </h1>
-
-            <% } %>
+                <div class="mb-4">
+                  <label class="form-label">Description</label>
+                  <textarea
+                    placeholder="Type here"
+                    name="description"
+                    class="form-control"
+                    id="product_description"
+                    onkeyup="validateDescription()"
+                  ></textarea>
+                  <span
+                    id="description-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span>
+                </div>
+                <div class="d-grid">
+                  <button
+                    class="btn btn-primary"
+                    onclick="return validateForm()"
+                  >
+                    Create Brand</button
+                  ><br />
+                  <span
+                    id="submit-error"
+                    style="font-size: 14px; margin-top: -20px"
+                  ></span>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
-      <div class="pagination-area mt-15 mb-50">
-        <nav aria-label="Page navigation example">
-          <ul class="pagination justify-content-center">
-            <% for(let i = 1; i <= totalPages; i++) { %>
-              <li class="page-item <%= currentPage == i ? 'active' : '' %>">
-                <a class="page-link" href="/userlist?page=<%= i %>"><%= i %></a>
-              </li>
-            <% } %>
-          </ul>
-        </nav>
-      </div>
     </section>
-    <footer class="main-footer font-xs">
-      <div class="row pb-30 pt-15">
-          <div class="col-sm-6">
-              <script>
-              document.write(new Date().getFullYear())
-              </script> ©, Evara - HTML Ecommerce Template .
-          </div>
-          <div class="col-sm-6">
-              <div class="text-sm-end">
-                  All rights reserved
-              </div>
-          </div>
-      </div>
-  </footer>
   </main>
-    <!-- content-main end// -->
-   
+  <script>
+    setTimeout(() => {
+      document.getElementById("error").style.display = "none";
+    }, 3000);
+    var nameError = document.getElementById("name-error");
+    var descriptionError = document.getElementById("description-error");
+    var submitError = document.getElementById("submit-error");
 
-    <%- include('adminfooter') %>
- 
+    function validateName() {
+      var name = document.getElementById("product_name").value.trim();
+      if (name.length === 0) {
+        nameError.innerHTML = "Product name is required";
+        nameError.style.color = "red";
+        return false;
+      }
+      nameError.innerHTML = "Valid";
+      nameError.style.color = "green";
+      return true;
+    }
+    function validateDescription() {
+      var desc = document.getElementById("product_description").value.trim();
+      if (desc.length === 0) {
+        descriptionError.innerHTML = "Description is required";
+        descriptionError.style.color = "red";
+        return false;
+      }
+      descriptionError.innerHTML = "Valid";
+      descriptionError.style.color = "green";
+      return true;
+    }
+    function validateForm() {
+      if (!validateName() || !validateDescription()) {
+        submitError.style.display = "block";
+        submitError.innerHTML = "Please enter all the fields to submit ";
+        submitError.style.color = "red";
+        setTimeout(function () {
+          submitError.style.display = "none";
+        }, 3000);
+        return false;
+      }
+    }
+  </script>
+
+  <%- include('adminfooter') %>
+

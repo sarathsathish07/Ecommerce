@@ -21,7 +21,7 @@
             <span class="text">Dashboard</span>
           </a>
         </li>
-        <li class="menu-item ">
+        <li class="menu-item">
           <a class="menu-link" href="/userlist">
             <i class="icon material-icons md-person"></i>
             <span class="text">Users</span>
@@ -33,19 +33,19 @@
             <span class="text">Products</span>
           </a>
         </li>
-        <li class="menu-item">
+        <li class="menu-item ">
           <a class="menu-link" href="/categories">
             <i class="icon material-icons md-store"></i>
             <span class="text">Categories</span>
           </a>
         </li>
-        <li class="menu-item ">
+        <li class="menu-item active">
           <a class="menu-link" href="/brands">
             <i class="icon material-icons md-store"></i>
             <span class="text">Brands</span>
           </a>
         </li>
-        <li class="menu-item active">
+        <li class="menu-item">
           <a class="menu-link" href="/orders">
             <i class="icon material-icons md-store"></i>
             <span class="text">Orders</span>
@@ -184,83 +184,152 @@
     </header>
     <section class="content-main">
       <div class="content-header">
-        <h2 class="content-title">Orders</h2>
-       
+        <div>
+          <h2 class="content-title card-title">Brands</h2>
+          <p>Add, edit or delete a Brand</p>
+        </div>
+        <div>
+          <a href="/addbrands" class="btn btn-primary btn-sm rounded"
+            >Add Brand</a
+          >
+        </div>
       </div>
-      <div class="card mb-4">
+      <div class="card">
         <div class="card-body">
-          <div class="table-responsive">
-            <% if (orders != '') { %>
-            <table class="table table-striped text-center">
-              <thead>
-                <tr class="table-dark">
-                  <th>#ID</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Payment Status</th>
-                  <th scope="col">Total</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Date</th>
-                  <th scope="col" class="text-end"> Action </th>
-                </tr>
-              </thead>
-              <tbody>
-                <% orders.forEach(order => { %>
-                  <tr>
-                      <td>ord_<%= order.trackingId %></td>
-                      <td><%= order.billingDetails.name %></td>
-                      <td><%= order.paymentStatus %></td>
-                      
-                      <td>Rs <%= order.totalPrice.toFixed(2) %></td>
-                      
-                      <td class="status-column  <%= order.status.toLowerCase() %>" style="font-weight:900 ;"><%= order.status %></td>
-                      <td><%= order.orderDate.toDateString() %></td>
-                      <td class="text-end">
-                          <a href="/orderdetails/<%= order._id %>" class="btn btn-md rounded font-sm">Detail</a>
-
-                       
+          <div class="row">
+            <div class="col-md-12">
+              <% if (locals.message) { %>
+              <div
+                class="alert alert-dismissible fade show alert-<%= message.type %>"
+                role="alert"
+              >
+                <button
+                  class="btn-close"
+                  type="button"
+                  data-bs-dismiss="alert"
+                  aria-label="Close"
+                ></button>
+                <strong><%= message.message %></strong>
+              </div>
+              <% } %>
+              <div class="table-responsive">
+                <% if (brands != '') { %>
+                <table class="table table-striped text-center">
+                  <thead>
+                    <tr class="table-dark">
+                      <th>ID</th>
+                      <th>Category</th>
+                      <th>Description</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                      <th>Details</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% brands.forEach((row,index) => { %>
+                    <tr class="align-middle">
+                      <td><%= index + 1 %></td>
+                      <td><%= row.brand %></td>
+                      <td><%= row.description %></td>
+                      <td>
+                        <% if(row.isListed == false){ %>
+                        <span class="text-danger">UnListed</span>
+                        <% }else{ %>
+                        <span class="text-success">Listed</span>
+                        <% } %>
                       </td>
-                  </tr>
-              <% }); %>
-              </tbody>
-            </table>
-            <% }else{ %>
-            <h1 class="text-center text-secondary mt-5">
-              No Orders found in the database
-            </h1>
+                      <td>
+                        <% if (row.isListed==false) { %>
+                        <a
+                          href="#"
+                          class="btn btn-sm font-sm rounded btn-brand"
+                          onclick="confirmList('<%= row._id %>')"
+                        >
+                          <i class="material-icons md-edit"></i> List
+                        </a>
+                        <% } else { %>
+                        <a
+                          href="#"
+                          class="btn btn-sm font-sm rounded btn-brand"
+                          onclick="confirmUnlist('<%= row._id %>')"
+                        >
+                          <i class="material-icons md-edit"></i> UnList
+                        </a>
+                        <% } %>
+                      </td>
+                      <td>
+                        <a
+                          href="/editbrand/<%= row._id %>"
+                          class="btn btn-sm font-sm rounded btn-brand"
+                        >
+                          <i class="material-icons md-edit"></i> Edit
+                        </a>
+                      </td>
+                    </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+                <% }else{ %>
+                <h1 class="text-center text-secondary mt-5">
+                  No Brands found in the database
+                </h1>
 
-            <% } %>
+                <% } %>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="pagination-area mt-15 mb-50">
-        <nav aria-label="Page navigation example">
-          <ul class="pagination justify-content-center">
-            <% for(let i = 1; i <= totalPages; i++) { %>
+      <div class="pagination-area mt-30 mb-50">
+        <div class="d-flex justify-content-center">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+              <% for(let i = 1; i <= totalPages; i++) { %>
               <li class="page-item <%= currentPage == i ? 'active' : '' %>">
-                <a class="page-link" href="/userlist?page=<%= i %>"><%= i %></a>
+                <a class="page-link" href="/brands?page=<%= i %>"
+                  ><%= i %></a
+                >
               </li>
-            <% } %>
-          </ul>
-        </nav>
+              <% } %>
+            </ul>
+          </nav>
+        </div>
       </div>
     </section>
-    <footer class="main-footer font-xs">
-      <div class="row pb-30 pt-15">
-          <div class="col-sm-6">
-              <script>
-              document.write(new Date().getFullYear())
-              </script> ©, Evara - HTML Ecommerce Template .
-          </div>
-          <div class="col-sm-6">
-              <div class="text-sm-end">
-                  All rights reserved
-              </div>
-          </div>
-      </div>
-  </footer>
   </main>
-    <!-- content-main end// -->
-   
 
-    <%- include('adminfooter') %>
- 
+  <script>
+    function confirmList(brandId) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You want to list this category?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, list it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "/listbrand/" + brandId;
+        }
+      });
+    }
+
+    function confirmUnlist(brandId) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You want to unlist this category?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, unlist it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "/unlistbrand/" + brandId;
+        }
+      });
+    }
+  </script>
+  <%- include('adminfooter') %>
+</body>

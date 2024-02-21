@@ -40,6 +40,12 @@
           </a>
         </li>
         <li class="menu-item ">
+          <a class="menu-link" href="/brands">
+            <i class="icon material-icons md-store"></i>
+            <span class="text">Brands</span>
+          </a>
+        </li>
+        <li class="menu-item ">
           <a class="menu-link" href="/orders">
             <i class="icon material-icons md-store"></i>
             <span class="text">Orders</span>
@@ -179,7 +185,7 @@
     <section class="content-main">
       <div class="content-header">
         <div>
-          <h2 class="content-title card-title">Products List</h2>
+          <h2 class="content-title card-title">Products</h2>
           <p>Add, edit or delete a product</p>
         </div>
         <div>
@@ -200,6 +206,7 @@
                     <th>Images</th>
                     <th>Product Name</th>
                     <th>Category</th>
+                    <th>Brand</th>
                     <th>Price</th>
                     <th>Stock</th>
                     <th>Status</th> 
@@ -225,6 +232,7 @@
                     </td>
                     <td class="align-middle"><%= row.productTitle %></td>
                     <td class="align-middle"><%= row.category.category %></td>
+                    <td class="align-middle"><%= row.brand.brand %></td>
                     <td class="align-middle"><%= row.price %></td>
                     <td class="align-middle"><%= row.stock %></td>
                     <td class="align-middle">

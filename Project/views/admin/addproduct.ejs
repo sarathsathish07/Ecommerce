@@ -55,6 +55,12 @@
             <span class="text">Categories</span>
           </a>
         </li>
+        <li class="menu-item ">
+          <a class="menu-link" href="/brands">
+            <i class="icon material-icons md-store"></i>
+            <span class="text">Brands</span>
+          </a>
+        </li>
         <li class="menu-item">
           <a class="menu-link" href="/orders">
             <i class="icon material-icons md-store"></i>
@@ -293,6 +299,22 @@
                   </select>
                 </div>
                 <div class="mb-4">
+                  <label for="product_brand" class="form-label"
+                    >Brand</label
+                  >
+                  <select
+                    name="brand"
+                    class="form-control"
+                    id="product_brand"
+                  >
+                    <% brands.forEach(brand => { %>
+                    <option value="<%= brand._id %>">
+                      <%= brand.brand %>
+                    </option>
+                    <% }); %>
+                  </select>
+                </div>
+                <div class="mb-4">
                   <label class="form-label">Images</label>
                   <input
                     class="form-control"
@@ -496,7 +518,7 @@
 function validateImage() {
     var imageInput = document.getElementById("product_image");
  
-    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.webp)$/i;
 
     if (imageInput.files.length === 0) {
       imageError.innerHTML = "Image is required";
