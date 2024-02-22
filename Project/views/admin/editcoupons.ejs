@@ -38,7 +38,7 @@
             <span class="text">Categories</span>
           </a>
         </li>
-        <li class="menu-item active">
+        <li class="menu-item ">
           <a class="menu-link" href="/brands">
             <i class="icon material-icons md-store"></i>
             <span class="text">Brands</span>
@@ -50,7 +50,7 @@
             <span class="text">Orders</span>
           </a>
         </li>
-        <li class="menu-item ">
+        <li class="menu-item active">
           <a class="menu-link" href="/coupons">
             <i class="icon material-icons md-store"></i>
             <span class="text">Coupons</span>
@@ -201,8 +201,8 @@
     <section class="content-main">
       <div class="content-header">
         <div>
-          <h2 class="content-title card-title">Add Brands</h2>
-          <p>Add a brand</p>
+          <h2 class="content-title card-title">Edit Coupons</h2>
+          <p>Edit a coupon</p>
           <% if (locals.alert) { %>
           <div class="alert alert-danger text-center m-3" id="error">
             <%= locals.alert %>
@@ -214,50 +214,100 @@
         <div class="card-body">
           <div class="row" style="justify-content: center">
             <div class="col-md-3">
-              <form action="/addbrands" method="post">
+              <form action="/updatecoupons/<%= coupon._id  %>" method="post">
                 <div class="mb-4">
-                  <label for="product_name" class="form-label">Name</label>
-                  <input
-                    type="text"
-                    placeholder="Type here"
-                    name="brand"
-                    class="form-control"
-                    id="product_name"
-                    onkeyup="validateName()"
-                  />
+                  <label for="coupon_code" class="form-label">Coupon Code</label>
+                  <div class="input-group">
+                      <input
+                          type="text"
+                          placeholder="Type here"
+                          name="couponCode"
+                          class="form-control"
+                          id="coupon_code"
+                          value="<%= coupon.couponCode %>"
+                          onkeyup="validateCouponCode()"
+                      />
+                      <button class="btn btn-secondary" type="button" onclick="generateCouponCode()">Generate</button>
+                  </div>
                   <span
-                    id="name-error"
-                    style="font-size: 14px; margin-top: -20px"
+                      id="couponCode-error"
+                      style="font-size: 14px; margin-top: -20px"
                   ></span>
+              </div>
+              
+            
+                <div class="mb-4">
+                    <label class="form-label">Description</label>
+                    <textarea
+                        placeholder="Type here"
+                        name="description"
+                        class="form-control"
+                        id="coupon_description"
+                      
+                        onkeyup="validateDescription()"
+                    ><%= coupon.description %></textarea>
+                    <span
+                        id="description-error"
+                        style="font-size: 14px; margin-top: -20px"
+                    ></span>
                 </div>
-
+            
                 <div class="mb-4">
-                  <label class="form-label">Description</label>
-                  <textarea
-                    placeholder="Type here"
-                    name="description"
-                    class="form-control"
-                    id="product_description"
-                    onkeyup="validateDescription()"
-                  ></textarea>
-                  <span
-                    id="description-error"
-                    style="font-size: 14px; margin-top: -20px"
-                  ></span>
+                    <label for="discount_percentage" class="form-label">Discount Percentage</label>
+                    <input
+                        type="number"
+                        placeholder="Enter discount percentage"
+                        name="discountPercentage"
+                        class="form-control"
+                        id="discount_percentage"
+                        value="<%= coupon.discountPercentage %>"
+                    />
+                </div>
+            
+                <div class="mb-4">
+                    <label for="max_discount_amount" class="form-label">Max Discount Amount</label>
+                    <input
+                        type="number"
+                        placeholder="Enter max discount amount"
+                        name="maxDiscountAmount"
+                        class="form-control"
+                        id="max_discount_amount"
+                        value="<%= coupon.maxDiscountAmount %>"
+                    />
+                </div>
+                <div class="mb-4">
+                    <label for="min_amount" class="form-label">Minimum Amount</label>
+                    <input
+                        type="number"
+                        placeholder="Enter minimum amount"
+                        name="minAmount"
+                        class="form-control"
+                        id="min_amount"
+                        value="<%= coupon.minAmount %>"
+                    />
+                </div>
+                <div class="mb-4">
+                    <label for="expiry_date" class="form-label">Expiry Date</label>
+                    <input
+                        type="date"
+                        name="expiryDate"
+                        class="form-control"
+                        id="expiry_date"
+                        value="<%= coupon.expiryDate %>"
+                    />
                 </div>
                 <div class="d-grid">
                   <button
                     class="btn btn-primary"
-                    onclick="return validateForm()"
-                  >
-                    Create Brand</button
+                    onclick="return validateForm()">
+                    Create coupon</button
                   ><br />
                   <span
                     id="submit-error"
                     style="font-size: 14px; margin-top: -20px"
                   ></span>
                 </div>
-              </form>
+            </form>
             </div>
           </div>
         </div>
@@ -306,6 +356,19 @@
       }
     }
   </script>
+  <script>
+    function generateCouponCode() {
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var couponCode = '';
+        var length = 8; 
+        for (var i = 0; i < length; i++) {
+            couponCode += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+
+        document.getElementById("coupon_code").value = couponCode;
+    }
+</script>
+
 
   <%- include('adminfooter') %>
-
+</body>

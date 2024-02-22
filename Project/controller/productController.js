@@ -199,7 +199,6 @@ const productController = {
       }
       const allCategories = await Category.find();
 
-      
 
       res.render("admin/editproducts", {
         title: "Edit Products",

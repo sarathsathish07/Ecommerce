@@ -1,4 +1,5 @@
 <%- include('adminheader') %>
+
 <body>
   <div class="screen-overlay"></div>
   <aside class="navbar-aside" id="offcanvas_aside">
@@ -20,7 +21,7 @@
             <span class="text">Dashboard</span>
           </a>
         </li>
-        <li class="menu-item">
+        <li class="menu-item ">
           <a class="menu-link" href="/userlist">
             <i class="icon material-icons md-person"></i>
             <span class="text">Users</span>
@@ -32,25 +33,25 @@
             <span class="text">Products</span>
           </a>
         </li>
-        <li class="menu-item ">
+        <li class="menu-item">
           <a class="menu-link" href="/categories">
             <i class="icon material-icons md-store"></i>
             <span class="text">Categories</span>
           </a>
         </li>
-        <li class="menu-item active">
+        <li class="menu-item ">
           <a class="menu-link" href="/brands">
             <i class="icon material-icons md-store"></i>
             <span class="text">Brands</span>
           </a>
         </li>
-        <li class="menu-item">
+        <li class="menu-item ">
           <a class="menu-link" href="/orders">
             <i class="icon material-icons md-store"></i>
             <span class="text">Orders</span>
           </a>
         </li>
-        <li class="menu-item ">
+        <li class="menu-item active">
           <a class="menu-link" href="/coupons">
             <i class="icon material-icons md-store"></i>
             <span class="text">Coupons</span>
@@ -200,112 +201,131 @@
     </header>
     <section class="content-main">
       <div class="content-header">
+        <h2 class="content-title">Coupons</h2>
         <div>
-          <h2 class="content-title card-title">Add Brands</h2>
-          <p>Add a brand</p>
-          <% if (locals.alert) { %>
-          <div class="alert alert-danger text-center m-3" id="error">
-            <%= locals.alert %>
-          </div>
-          <% } %>
+          <a href="/addcoupons" class="btn btn-primary"
+            ><i class="material-icons md-plus"></i> Create new</a
+          >
         </div>
       </div>
-      <div class="card">
+      <div class="card mb-4">
         <div class="card-body">
-          <div class="row" style="justify-content: center">
-            <div class="col-md-3">
-              <form action="/addbrands" method="post">
-                <div class="mb-4">
-                  <label for="product_name" class="form-label">Name</label>
-                  <input
-                    type="text"
-                    placeholder="Type here"
-                    name="brand"
-                    class="form-control"
-                    id="product_name"
-                    onkeyup="validateName()"
-                  />
-                  <span
-                    id="name-error"
-                    style="font-size: 14px; margin-top: -20px"
-                  ></span>
-                </div>
+          <div class="table-responsive">
+            <% if (coupons != '') { %>
+            <table class="table table-striped text-center">
+              <thead>
+                <tr class="table-dark">
+                  <th>ID</th>
+                  <th>Coupon Code</th>
+                  <th>Description</th>
+                  <th>Expire Date</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                  <th>Edit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% coupons.forEach((row,index) => { %>
+                <tr class="align-middle">
+                  <td class="align-middle"><%= (perPage * (currentPage - 1)) + index + 1 %></td>
+                  <td><%= row.couponCode %></td>
+                  <td><%= row.description %></td>
+                  <td><%= row.expiryDate %></td>
 
-                <div class="mb-4">
-                  <label class="form-label">Description</label>
-                  <textarea
-                    placeholder="Type here"
-                    name="description"
-                    class="form-control"
-                    id="product_description"
-                    onkeyup="validateDescription()"
-                  ></textarea>
-                  <span
-                    id="description-error"
-                    style="font-size: 14px; margin-top: -20px"
-                  ></span>
-                </div>
-                <div class="d-grid">
-                  <button
-                    class="btn btn-primary"
-                    onclick="return validateForm()"
-                  >
-                    Create Brand</button
-                  ><br />
-                  <span
-                    id="submit-error"
-                    style="font-size: 14px; margin-top: -20px"
-                  ></span>
-                </div>
-              </form>
-            </div>
+                  <td>
+                    <% if(row.isListed == false){ %>
+                    <span class="text-danger">UnListed</span>
+                    <% }else{ %>
+                    <span class="text-success">Listed</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <% if (row.isListed==false) { %>
+                    <a
+                      href="#"
+                      class="btn btn-sm font-sm rounded btn-brand"
+                      onclick="confirmList('<%= row._id %>')"
+                    >
+                      <i class="material-icons md-edit"></i> List
+                    </a>
+                    <% } else { %>
+                    <a
+                      href="#"
+                      class="btn btn-sm font-sm rounded btn-brand"
+                      onclick="confirmUnlist('<%= row._id %>')"
+                    >
+                      <i class="material-icons md-edit"></i> UnList
+                    </a>
+                    <% } %>
+                  </td>
+                  <td>
+                    <a
+                      href="/editcoupons/<%= row._id %>"
+                      class="btn btn-sm font-sm rounded btn-brand"
+                    >
+                      <i class="material-icons md-edit"></i> Edit
+                    </a>
+                  </td>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table>
+            <% }else{ %>
+            <h1 class="text-center text-secondary mt-5">
+              No coupons found in the database
+            </h1>
+
+            <% } %>
           </div>
         </div>
+      </div>
+      <div class="pagination-area mt-15 mb-50">
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-center">
+            <% for(let i = 1; i <= totalPages; i++) { %>
+              <li class="page-item <%= currentPage == i ? 'active' : '' %>">
+                <a class="page-link" href="/userlist?page=<%= i %>"><%= i %></a>
+              </li>
+            <% } %>
+          </ul>
+        </nav>
       </div>
     </section>
   </main>
-  <script>
-    setTimeout(() => {
-      document.getElementById("error").style.display = "none";
-    }, 3000);
-    var nameError = document.getElementById("name-error");
-    var descriptionError = document.getElementById("description-error");
-    var submitError = document.getElementById("submit-error");
-
-    function validateName() {
-      var name = document.getElementById("product_name").value.trim();
-      if (name.length === 0) {
-        nameError.innerHTML = "Product name is required";
-        nameError.style.color = "red";
-        return false;
+    <!-- content-main end// -->
+    <script>
+      function confirmList(couponId) {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You want to list this coupon?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Yes, list it!",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = "/listcoupon/" + couponId;
+          }
+        });
       }
-      nameError.innerHTML = "Valid";
-      nameError.style.color = "green";
-      return true;
-    }
-    function validateDescription() {
-      var desc = document.getElementById("product_description").value.trim();
-      if (desc.length === 0) {
-        descriptionError.innerHTML = "Description is required";
-        descriptionError.style.color = "red";
-        return false;
+  
+      function confirmUnlist(couponId) {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You want to unlist this coupon?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Yes, unlist it!",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = "/unlistcoupon/" + couponId;
+          }
+        });
       }
-      descriptionError.innerHTML = "Valid";
-      descriptionError.style.color = "green";
-      return true;
-    }
-    function validateForm() {
-      if (!validateName() || !validateDescription()) {
-        submitError.style.display = "block";
-        submitError.innerHTML = "Please enter all the fields to submit ";
-        submitError.style.color = "red";
-        setTimeout(function () {
-          submitError.style.display = "none";
-        }, 3000);
-        return false;
-      }
-    }
-  </script>
+    </script>
 
-  <%- include('adminfooter') %>
-
+    <%- include('adminfooter') %>
+ 

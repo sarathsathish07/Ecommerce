@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const path = require("path");
 const session = require("express-session");
 const nocache = require("nocache");
-const sharp = require("sharp");
+
 
 app.use(nocache());
 

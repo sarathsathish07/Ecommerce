@@ -493,10 +493,21 @@ geteditUserAccountPage: async (req, res, next) => {
 
     addAddressPage: (req, res,next) => {
       try {
-        res.render("addaddress", {
-          title: "Add Address",
-          user: req.session.user,
-        });
+        const checkout = req.query.from
+        if(checkout){
+          res.render("addaddress", {
+            title: "Add Address",
+            user: req.session.user,
+            checkout: checkout
+          });
+        }else{
+          res.render("addaddress", {
+            title: "Add Address",
+            user: req.session.user,
+            checkout:"address"
+          });
+        }
+      
       } catch (err) {
         next(err);
       }
@@ -505,6 +516,8 @@ geteditUserAccountPage: async (req, res, next) => {
     addAddress: async (req, res,next) => {
       try {
         const userId = req.session.userID;
+        const checkout = req.body.checkout
+        
 
         const { addressLine1, addressLine2, city, state, postalCode, country } =
           req.body;
@@ -528,14 +541,12 @@ geteditUserAccountPage: async (req, res, next) => {
 
         await userAddress.save();
 
-        if (req.query) {
+        if (checkout == "checkout") {
           res.redirect('/checkout');
         } else {
           res.redirect('/useraddress');
         }
     
-        
-        
       } catch (err) {
         next(err);
       }
@@ -745,7 +756,7 @@ geteditUserAccountPage: async (req, res, next) => {
     checkoutPage: async (req, res, next) => {
       try {
         const userId = req.session.userID;
-        const queryTotalPrice = parseInt(req.query.totalPrice);
+        const queryTotalPrice = parseInt(req.query.totalPrice); 
         const orderId = req.query.orderId
         const addresses = await Address.findOne({ userID: userId });
 
@@ -759,7 +770,7 @@ geteditUserAccountPage: async (req, res, next) => {
         const userCart = await Cart.findOne({ userID: userId })
           .populate("items.product")
           .exec();
-          const totalPrice = queryTotalPrice || userCart.totalPrice;
+          const totalPrice = queryTotalPrice;
 
         res.render("checkout", {
           title: "Checkout",
@@ -768,7 +779,8 @@ geteditUserAccountPage: async (req, res, next) => {
           userAddress: defaultAddress,
           cartItems: userCart.items,
           totalPrice: totalPrice,
-          orderId:orderId
+          orderId:orderId,
+         
         });
       } catch (err) {
         next(err);

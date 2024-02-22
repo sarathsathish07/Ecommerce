@@ -328,6 +328,132 @@
           }
       });
   },
+  bestProducts:async (req, res, next) => {
+    try {
+      const bestSellingProducts = await Order.aggregate([
+        { $unwind: '$items' },
+        {
+          $group: {
+            _id: '$items.product',
+            totalQuantity: { $sum: '$items.quantity' },
+          },
+        },
+        { $sort: { totalQuantity: -1 } },
+        { $limit: 10 }, 
+        {
+          $lookup: {
+            from: 'products',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'product',
+          },
+        },
+        { $unwind: '$product' },
+        {
+          $project: {
+            _id: '$product._id',
+            productTitle: '$product.productTitle',
+            totalQuantity: 1,
+          },
+        },
+      ]);
+  
+      res.render("admin/bestproducts",{ bestSellingProducts });
+    } catch (err) {
+      next(err);
+    }
+  },
+  bestCategories:async (req, res, next) => {
+    try {
+      const bestSellingCategories = await Order.aggregate([
+        { $unwind: '$items' },
+        {
+          $lookup: {
+            from: 'products',
+            localField: 'items.product',
+            foreignField: '_id',
+            as: 'product',
+          },
+        },
+        { $unwind: '$product' },
+        {
+          $group: {
+            _id: '$product.category',
+            totalQuantity: { $sum: '$items.quantity' },
+          },
+        },
+        {
+          $sort: { totalQuantity: -1 },
+        },
+        {
+          $limit: 10, 
+        },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'category',
+          },
+        },
+        { $unwind: '$category' },
+        {
+          $project: {
+            _id: '$category._id',
+            category: '$category.category',
+            totalQuantity: 1,
+          },
+        },
+      ]);
+      res.render('admin/bestcategories', { bestSellingCategories });
+    } catch (err) {
+      next(err);
+    }
+  },
+  bestBrands: async (req, res, next) => {
+    try {
+        const bestSellingBrands = await Order.aggregate([
+            { $unwind: '$items' },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'items.product',
+                    foreignField: '_id',
+                    as: 'product',
+                },
+            },
+            { $unwind: '$product' },
+            {
+                $group: {
+                    _id: '$product.brand',
+                    totalQuantity: { $sum: '$items.quantity' },
+                },
+            },
+            { $sort: { totalQuantity: -1 } },
+            { $limit: 10 },
+            {
+                $lookup: {
+                    from: 'brands',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'brand',
+                },
+            },
+            { $unwind: '$brand' },
+            {
+                $project: {
+                    _id: '$brand._id',
+                    brandName: '$brand.brand',
+                    totalQuantity: 1,
+                },
+            },
+        ]);
+        res.render('admin/bestbrands', { bestSellingBrands });
+    } catch (err) {
+        next(err);
+    }
+},
+
   
     
     getAdminLogout: (req, res,next) => {

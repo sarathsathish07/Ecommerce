@@ -78,12 +78,14 @@ const cartController = {
   cartPage: async (req, res,next) => {
     try {
       const userId = req.session.userID;
-
+       
+    
       const userCart = await Cart.findOne({ userID: userId }).populate({
         path: "items.product",
         model: "Product",
       });
-
+      
+     
       res.status(200).render("addcart", { userCart, user: req.session.user });
     } catch (err) {
       next(err);

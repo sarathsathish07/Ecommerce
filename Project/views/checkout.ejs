@@ -1,4 +1,35 @@
 <%- include('userheader') %>
+<style>
+  .modal {
+      display: none; 
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgb(0, 0, 0);
+      background-color: rgba(0, 0, 0, 0.4); 
+  }
+  
+  .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto; 
+      padding: 20px;
+      border: 1px solid #888;
+      width: 50%; 
+  }
+  .coupon-item {
+      margin-bottom: 20px;
+  }
+  
+  .apply-button {
+      margin-left: 10px;
+  }
+  
+  
+  </style>
 <!-- Header Section End -->
 
 <!-- Breadcrumb Section Begin -->
@@ -72,18 +103,18 @@
                   <% } %>
                 </div>
                 <section id="add-address" class="account-section">
-  <button
-    onclick="window.location.href='/addAddress?from=checkout'"
-    style="
-      background-color: #1f4959;
-      color: white;
-      padding-left: 10px;
-      padding-right: 10px;
-    "
-  >
-    Add Address
-  </button>
-</section>
+                <button
+                  onclick="window.location.href='/addAddress?from=checkout'"
+                  style="
+                    background-color: #1f4959;
+                    color: white;
+                    padding-left: 10px;
+                    padding-right: 10px;
+                  "
+                >
+                  Add Address
+                </button>
+              </section>
 
               </div>
             </div>
@@ -104,9 +135,19 @@
                 <% } %>
               </ul>
               <ul class="checkout__total__all">
-                <li>Total (Excluding Delivery): <span>Rs <%= totalPrice %></span></li>
-                <li>Delivery Charge: <span>Rs 100</span></li>
-                <li>Total (Including Delivery): <span>Rs <%= totalPrice + 100 %></span></li>
+              
+                        <button type="button" class="site-btn" onclick="openCouponModal()">Apply Coupon</button>
+                        <div id="couponModal" class="modal">
+                            <div class="modal-content">
+                            <span class="close" onclick="closeCouponModal()">&times;</span>
+                            <h2>Select Coupon</h2>
+                            <div id="couponDetails"></div> 
+                            </div>
+                        </div>
+                          <li>Amount <span id="totalPrice"> <%= totalPrice  %></span></li>
+                         <li>Delivery Charge<span id="delivery">100</span></li>
+                         <li > Subtotal<span id="subtotal"></span> </li>
+              
               </ul>
               <div class="checkout__input__checkbox">
                 <label for="payment-cod">
@@ -254,6 +295,90 @@
 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
+        function openCouponModal() {
+            const totalPrice = document.getElementById("totalPrice").innerText;
+            fetch(`/getcoupons?totalPrice=${totalPrice}`)
+                .then(response => response.json())
+                .then(data => {
+                    const couponDetails = document.getElementById("couponDetails");
+                    couponDetails.innerHTML = "";
+                    data.coupons.forEach(coupon => {
+                        const div = document.createElement("div");
+                        div.classList.add("coupon-item");
+
+                        const title = document.createElement("h3");
+                        title.textContent = coupon.couponCode;
+                        div.appendChild(title);
+
+                        const description = document.createElement("p");
+                        description.textContent = coupon.description;
+                        div.appendChild(description);
+
+                        const applyButton = document.createElement("button");
+                        applyButton.textContent = "Apply";
+                        applyButton.classList.add("apply-button");
+                        applyButton.addEventListener("click", () => applyCoupon(coupon));
+                        div.appendChild(applyButton);
+
+                        couponDetails.appendChild(div);
+                    });
+                })
+                .catch(error => console.error("Error fetching coupons:", error));
+
+            document.getElementById("couponModal").style.display = "block";
+        }
+
+        function closeCouponModal() {
+            document.getElementById("couponModal").style.display = "none";
+        }
+
+       
+    document.addEventListener("DOMContentLoaded", function() {
+        const totalPriceElement = document.getElementById("totalPrice");
+        const totalPrice = parseFloat(totalPriceElement.innerText);
+        const subtotalElement = document.getElementById("subtotal");
+        if (subtotalElement) {
+            subtotalElement.innerHTML = ` <span id="subtotal"><%= totalPrice + 100 %></span> `;
+           
+        }
+    });
+
+    function applyCoupon(coupon) {
+    const totalPriceElement = document.getElementById("totalPrice");
+    const totalPrice = parseFloat(totalPriceElement.innerText);
+    const deliveryElement = document.getElementById("delivery");
+
+    let discountAmount = 0;
+    if (coupon.discountPercentage) {
+        discountAmount = (totalPrice * coupon.discountPercentage) / 100;
+        if (coupon.maxDiscountAmount && discountAmount > coupon.maxDiscountAmount) {
+            discountAmount = coupon.maxDiscountAmount;
+        }
+    }
+
+    const subtotal = totalPrice - discountAmount;
+
+    const subtotalElement = document.getElementById("subtotal");
+    if (subtotalElement) {
+        subtotalElement.innerHTML = ` ${subtotal+100}`;
+    }
+
+    let discountAmountElement = document.getElementById("discountAmount");
+    if (!discountAmountElement) {
+        discountAmountElement = document.createElement("li");
+        discountAmountElement.setAttribute("id", "discountAmount");
+        deliveryElement.parentElement.insertAdjacentElement('afterend', discountAmountElement);
+    }
+
+    discountAmountElement.innerHTML = `Discounted Amount <span>${discountAmount}</span>`;
+
+    closeCouponModal();
+}
+
+
+
+</script>
+<script>
   var checkError = document.getElementById("check-error");
 
   function validateForm() {
@@ -276,6 +401,14 @@
   } else if (!paymentCODCheckbox.checked && !paymentRazorpayCheckbox.checked) {
     checkError.style.display = "block";
     checkError.innerHTML = "Please select a payment method";
+    checkError.style.color = "red";
+    setTimeout(function () {
+      checkError.style.display = "none";
+    }, 3000);
+    return false;
+  } else if (paymentCODCheckbox.checked && paymentRazorpayCheckbox.checked) {
+    checkError.style.display = "block";
+    checkError.innerHTML = "Please select only one payment method";
     checkError.style.color = "red";
     setTimeout(function () {
       checkError.style.display = "none";
@@ -312,15 +445,17 @@
   
 
   function initiateRazorpayPayment() {
+    console.log("1");
     const user = {
       name: "<%= user.name %>",
       email: "<%= user.email %>",
       phone: "<%= user.phone %>",
     };
-    console.log(user);
+   
+    const totalPriceInput = document.getElementById("subtotal");
+        const totalPrice = parseFloat(totalPriceInput.innerText);
 
-    const totalPriceInput = document.getElementById("totalPrice");
-    const totalPrice = totalPriceInput ? parseInt(totalPriceInput.value) : 0;
+    console.log(totalPrice);
 
     var options = {
       key: "rzp_test_PkGwc5wn6qCei0",
@@ -333,15 +468,12 @@
       handler: function (response) {
         console.log(response);
         if (response.razorpay_payment_id) {
-          // Payment successful
           console.log("Payment successful");
           document.getElementById('paymentStatus').value = 'Paid';
         } else {
-          // Payment failed or canceled
           console.log("Payment failed or canceled");
           document.getElementById('paymentStatus').value = 'Failed';
         }
-        // Submit the form based on the payment status
         submitForm();
       },
 
@@ -359,9 +491,7 @@
 
     rzp.on('payment.failed', function (response) {
       console.log("Payment failed:", response);
-      // Handle payment failure here
       document.getElementById('paymentStatus').value = 'Failed';
-      // Submit the form
       submitForm();
     });
 

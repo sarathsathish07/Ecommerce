@@ -1,4 +1,5 @@
 <%- include('adminheader') %>
+
 <body>
   <div class="screen-overlay"></div>
   <aside class="navbar-aside" id="offcanvas_aside">
@@ -20,7 +21,7 @@
             <span class="text">Dashboard</span>
           </a>
         </li>
-        <li class="menu-item">
+        <li class="menu-item ">
           <a class="menu-link" href="/userlist">
             <i class="icon material-icons md-person"></i>
             <span class="text">Users</span>
@@ -32,19 +33,19 @@
             <span class="text">Products</span>
           </a>
         </li>
-        <li class="menu-item ">
+        <li class="menu-item">
           <a class="menu-link" href="/categories">
             <i class="icon material-icons md-store"></i>
             <span class="text">Categories</span>
           </a>
         </li>
-        <li class="menu-item active">
+        <li class="menu-item ">
           <a class="menu-link" href="/brands">
             <i class="icon material-icons md-store"></i>
             <span class="text">Brands</span>
           </a>
         </li>
-        <li class="menu-item">
+        <li class="menu-item ">
           <a class="menu-link" href="/orders">
             <i class="icon material-icons md-store"></i>
             <span class="text">Orders</span>
@@ -56,7 +57,7 @@
             <span class="text">Coupons</span>
           </a>
         </li>
-        <li class="menu-item has-submenu ">
+        <li class="menu-item has-submenu active">
           <a class="menu-link" href="page-orders-1.html"> <i class="icon material-icons md-star"></i>
               <span class="text">Best Selling</span>
           </a>
@@ -200,112 +201,45 @@
     </header>
     <section class="content-main">
       <div class="content-header">
-        <div>
-          <h2 class="content-title card-title">Add Brands</h2>
-          <p>Add a brand</p>
-          <% if (locals.alert) { %>
-          <div class="alert alert-danger text-center m-3" id="error">
-            <%= locals.alert %>
-          </div>
-          <% } %>
-        </div>
+        <h2 class="content-title">Best Selling Products</h2>
+        
       </div>
-      <div class="card">
+      <div class="card mb-4">
         <div class="card-body">
-          <div class="row" style="justify-content: center">
-            <div class="col-md-3">
-              <form action="/addbrands" method="post">
-                <div class="mb-4">
-                  <label for="product_name" class="form-label">Name</label>
-                  <input
-                    type="text"
-                    placeholder="Type here"
-                    name="brand"
-                    class="form-control"
-                    id="product_name"
-                    onkeyup="validateName()"
-                  />
-                  <span
-                    id="name-error"
-                    style="font-size: 14px; margin-top: -20px"
-                  ></span>
-                </div>
+          <div class="table-responsive">
+            <% if (bestSellingProducts != '') { %>
+            <table class="table table-striped text-center">
+              <thead>
+                <tr class="table-dark">
+                  <th>ID</th>
+            <th>Product Title</th>
+            <th>Total Quantity Sold</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% bestSellingProducts.forEach((product,index) => { %>
+                  <tr>
+                    <td><%= index+1 %></td>
+                    <td><%= product.productTitle %></td>
+                    <td><%= product.totalQuantity %></td>
+                  </tr>
+                <% }); %>
+              </tbody>
+      
+            </table>
+            <% }else{ %>
+            <h1 class="text-center text-secondary mt-5">
+              No products
+            </h1>
 
-                <div class="mb-4">
-                  <label class="form-label">Description</label>
-                  <textarea
-                    placeholder="Type here"
-                    name="description"
-                    class="form-control"
-                    id="product_description"
-                    onkeyup="validateDescription()"
-                  ></textarea>
-                  <span
-                    id="description-error"
-                    style="font-size: 14px; margin-top: -20px"
-                  ></span>
-                </div>
-                <div class="d-grid">
-                  <button
-                    class="btn btn-primary"
-                    onclick="return validateForm()"
-                  >
-                    Create Brand</button
-                  ><br />
-                  <span
-                    id="submit-error"
-                    style="font-size: 14px; margin-top: -20px"
-                  ></span>
-                </div>
-              </form>
-            </div>
+            <% } %>
           </div>
         </div>
       </div>
+      
     </section>
   </main>
-  <script>
-    setTimeout(() => {
-      document.getElementById("error").style.display = "none";
-    }, 3000);
-    var nameError = document.getElementById("name-error");
-    var descriptionError = document.getElementById("description-error");
-    var submitError = document.getElementById("submit-error");
-
-    function validateName() {
-      var name = document.getElementById("product_name").value.trim();
-      if (name.length === 0) {
-        nameError.innerHTML = "Product name is required";
-        nameError.style.color = "red";
-        return false;
-      }
-      nameError.innerHTML = "Valid";
-      nameError.style.color = "green";
-      return true;
-    }
-    function validateDescription() {
-      var desc = document.getElementById("product_description").value.trim();
-      if (desc.length === 0) {
-        descriptionError.innerHTML = "Description is required";
-        descriptionError.style.color = "red";
-        return false;
-      }
-      descriptionError.innerHTML = "Valid";
-      descriptionError.style.color = "green";
-      return true;
-    }
-    function validateForm() {
-      if (!validateName() || !validateDescription()) {
-        submitError.style.display = "block";
-        submitError.innerHTML = "Please enter all the fields to submit ";
-        submitError.style.color = "red";
-        setTimeout(function () {
-          submitError.style.display = "none";
-        }, 3000);
-        return false;
-      }
-    }
-  </script>
-
-  <%- include('adminfooter') %>
-
+    <!-- content-main end// -->
+    
+    <%- include('adminfooter') %>
+ 

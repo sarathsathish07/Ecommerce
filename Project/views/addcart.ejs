@@ -88,33 +88,26 @@
                         
                     
                     <div class="col-lg-4">
-                        <div class="cart__discount">
-                            <h6>Discount codes</h6>
-                            <form action="#">
-                                <input type="text" placeholder="Coupon code">
-                                <button type="submit">Apply</button>
-                            </form>
-                        </div>
+                       
+  
                         <div class="cart__total">
                             <h6>Cart total</h6>
                             <ul>
                                 <% if (userCart) { %>
-                                <li >Total <span>Rs <%= userCart.totalPrice %></span></li>
+                                <li >Total Rs<span id="totalPrice"> <%= userCart.totalPrice %></span></li>
                                 <% } else { %>
                                     <li >Total <span>Rs.0</span></li>
                                     <% } %>
                             </ul>
                             <% if (userCart && userCart.items.length==0) { %>
                                 <button style="display: none;">
-                                    <a href="/checkout" class="primary-btn">Proceed to checkout</a>
-                                    
+                                    <a href="/checkout?totalPrice=<%= userCart.totalPrice %>" class="primary-btn">Proceed to checkout</a>
                                 </button>
                                 <% } else { %>
                                     <button >
-                                        <a href="/checkout" class="primary-btn">Proceed to checkout</a>
+                                        <a href="/checkout?totalPrice=<%= userCart.totalPrice %>" class="primary-btn">Proceed to checkout</a>
                                     </button>
                                     <% } %>
-
                         </div>
                     </div>
                 </div>
@@ -199,6 +192,7 @@
             </div>
         </div>
         <!-- Search End -->
+  
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
         
 

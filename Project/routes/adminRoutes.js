@@ -8,6 +8,7 @@ const categoryController = require("../controller/categoryController");
 const productController = require("../controller/productController");
 const dashController = require("../controller/dashboardController");
 const brandController = require("../controller/brandController");
+const couponController = require("../controller/couponController");
 
 admin_router.use(nocache());
   
@@ -54,6 +55,21 @@ admin_router.get("/orders",isAdmin, adminController.getOrders);
 admin_router.get("/orders/:page",isAdmin, adminController.getOrdersPagination);
 admin_router.get("/orderdetails/:id",isAdmin, adminController.getOrderDetailsPage);
 admin_router.post("/updateStatus",isAdmin, adminController.updateStatus);
+
+admin_router.get("/coupons",isAdmin, couponController.getCoupons);
+admin_router.get("/addcoupons",isAdmin, couponController.getAddCoupons);
+admin_router.post("/addcoupons",isAdmin, couponController.postAddCoupons);
+admin_router.get("/editcoupons/:id",isAdmin, couponController.getEditCoupons);
+admin_router.post("/updatecoupons/:id",isAdmin, couponController.postEditCoupons);
+admin_router.get("/getcoupons", couponController.fetchCoupons);
+admin_router.get("/listcoupon/:couponId",isAdmin, couponController.listCoupon);
+admin_router.get("/unlistcoupon/:couponId",isAdmin, couponController.unlistCoupon);
+
+admin_router.get("/bestproducts", adminController.bestProducts);
+admin_router.get("/bestcategories", adminController.bestCategories);
+admin_router.get("/bestbrands", adminController.bestBrands);
+
+
 
 admin_router.get("/adminlogout",isAdmin, adminController.getAdminLogout);
 
