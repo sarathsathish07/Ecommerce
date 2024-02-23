@@ -38,27 +38,34 @@ const couponController = {
       next(err);
     }
   },
-  postAddCoupons:async (req, res) => {
+  postAddCoupons: async (req, res) => {
     try {
-      const { couponCode, description, discountPercentage, maxDiscountAmount, minAmount, expiryDate } = req.body;
-  
-      const newCoupon = new Coupon({
-        couponCode,
-        description,
-        discountPercentage,
-        maxDiscountAmount,
-        minAmount,
-        expiryDate
-      });
-  
-      await newCoupon.save();
-  
-      res.redirect('/coupons')
+        const { couponCode, description, discountPercentage, maxDiscountAmount, minAmount, expiryDate } = req.body;
+
+        const existingCoupon = await Coupon.findOne({ couponCode });
+
+        if (existingCoupon) {
+            return res.status(400).json({ error: 'Coupon code already exists' });
+        }
+
+        const newCoupon = new Coupon({
+            couponCode,
+            description,
+            discountPercentage,
+            maxDiscountAmount,
+            minAmount,
+            expiryDate
+        });
+
+        await newCoupon.save();
+
+        res.redirect('/coupons');
     } catch (error) {
-      console.error('Error creating coupon:', error);
-      res.status(500).json({ error: 'Internal server error' });
+        console.error('Error creating coupon:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-  },
+},
+
   getEditCoupons: async (req, res,next) => {
     try {
       const id = req.params.id;

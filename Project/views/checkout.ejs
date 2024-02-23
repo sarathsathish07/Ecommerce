@@ -110,6 +110,7 @@
                     color: white;
                     padding-left: 10px;
                     padding-right: 10px;
+                    margin-left: -50px;
                   "
                 >
                   Add Address
@@ -343,7 +344,21 @@
         }
     });
 
-    function applyCoupon(coupon) {
+    // Define a global variable to keep track of the applied coupon
+let appliedCoupon = null;
+
+function applyCoupon(coupon) {
+    if (appliedCoupon) {
+      console.log("1");
+        swal.fire({
+            title: "Oops!",
+            text: "You can only apply one coupon at a time.",
+            icon: "error",
+            button: "OK",
+        });
+        return;
+    }
+
     const totalPriceElement = document.getElementById("totalPrice");
     const totalPrice = parseFloat(totalPriceElement.innerText);
     const deliveryElement = document.getElementById("delivery");
@@ -360,7 +375,7 @@
 
     const subtotalElement = document.getElementById("subtotal");
     if (subtotalElement) {
-        subtotalElement.innerHTML = ` ${subtotal+100}`;
+        subtotalElement.innerHTML = ` ${subtotal + 100}`;
     }
 
     let discountAmountElement = document.getElementById("discountAmount");
@@ -371,6 +386,29 @@
     }
 
     discountAmountElement.innerHTML = `Discounted Amount <span>${discountAmount}</span>`;
+
+    // Create a new element for applied coupon details
+    const appliedCouponElement = document.createElement("li");
+    appliedCouponElement.innerHTML = `
+        Applied Coupon: ${coupon.couponCode}
+        <span id="removeCoupon" style="cursor: pointer; color: red;">&times;</span>
+    `;
+
+    // Append the applied coupon element to the checkout section
+    const checkoutTotalAll = document.querySelector(".checkout__total__all");
+    checkoutTotalAll.appendChild(appliedCouponElement);
+
+    // Add event listener to remove the applied coupon when remove icon is clicked
+    const removeCouponIcon = appliedCouponElement.querySelector("#removeCoupon");
+    removeCouponIcon.addEventListener("click", function() {
+        appliedCouponElement.remove();
+        subtotalElement.innerHTML = ` ${totalPrice + 100}`;
+        discountAmountElement.remove();
+        appliedCoupon = null;
+    });
+
+    // Set the appliedCoupon variable to the applied coupon
+    appliedCoupon = coupon;
 
     closeCouponModal();
 }
