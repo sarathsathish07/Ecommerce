@@ -1,20 +1,5 @@
 <%- include('adminheader') %>
-<style>
 
-
-  #image-preview {
-    display: flex; 
-  
-}
-
-.img-preview {
-    width: 100px; 
-    height: auto; 
-    border: 1px solid #ddd;
-    margin-right: 10px; 
-}
-
-</style>
 <body>
   
   <div class="screen-overlay"></div>
@@ -333,21 +318,13 @@
                 </div>
                 <div class="mb-4">
                   <label class="form-label">Images</label>
-                  <input
-                    class="form-control"
-                    name="images"
-                    id="product_image"
-                    type="file"
-                    multiple
-                    
-                    onchange="previewImages(event)" 
-                  />
-                  <span
-                    id="image-error"
-                    style="font-size: 14px; margin-top: -20px"
-                  ></span>
+                  <input class="form-control" name="images" id="product_image" type="file" multiple accept="image/png, image/jpeg" onchange="previewImages(event)" />
+                  <span id="image-error" style="font-size: 14px; margin-top: -20px"></span>
+                  <button class="btn btn-secondary mt-2" id="crop-button" style="display: none;" onclick="confirmCrop()">Confirm</button>
                 </div>
                 <div id="image-preview" class="mb-4"></div>
+                
+
                
                 <div class="mb-4">
                   <label>
@@ -379,113 +356,130 @@
     </section>
   </main>
   
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
   <script>
-    function previewImages(event) {
-        const previewContainer = document.getElementById("image-preview");
-        previewContainer.innerHTML = "";
-        const files = event.target.files;
+    const croppers = [];
+    const files = [];
+  let currentIndex = 0;
 
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const reader = new FileReader();
+  function previewImages(event) {
+  const previewContainer = document.getElementById("image-preview");
+  previewContainer.innerHTML = "";
+  const files = event.target.files;
 
-            reader.onload = function (e) {
-                const img = document.createElement("img");
-                img.src = e.target.result;
-                img.classList.add("img-preview");
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const reader = new FileReader();
 
-                const deleteIcon = document.createElement("i");
-                deleteIcon.className = "fa-solid fa-trash";
-                deleteIcon.onclick = function () {
-                    this.parentNode.remove();
-                    updateSelectedFiles();
+    reader.onload = function (e) {
+      const img = document.createElement("img");
+      img.src = e.target.result;
+      img.classList.add("img-preview");
+
+          const deleteIcon = document.createElement("i");
+          deleteIcon.className = "fa-solid fa-trash text-danger";
+          deleteIcon.onclick = function () {
+            this.parentNode.remove();
+            updateSelectedFiles();
+          };
+
+          const replaceIcon = document.createElement("i");
+          replaceIcon.className = "fa-solid fa-repeat text-success ms-2";
+          replaceIcon.onclick = function () {
+            const index = Array.from(this.parentNode.parentNode.children).indexOf(this.parentNode);
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.onchange = function (event) {
+              const file = event.target.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                  img.src = e.target.result;
+                  updateFileInput(file, index);
                 };
-
-                const replaceIcon = document.createElement("i");
-                replaceIcon.className = "fa-solid fa-repeat";
-                replaceIcon.onclick = function () {
-                    const index = Array.from(this.parentNode.parentNode.children).indexOf(this.parentNode);
-                    const fileInput = document.createElement('input');
-                    fileInput.type = 'file';
-                    fileInput.accept = 'image/*';
-                    fileInput.onchange = function (event) {
-                        const file = event.target.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = function (e) {
-                                img.src = e.target.result;
-                                updateFileInput(file, index);
-                            };
-                            reader.readAsDataURL(file);
-                        }
-                    };
-                    fileInput.click();
-                };
-
-                const div = document.createElement("div");
-                div.appendChild(img);
-                div.appendChild(deleteIcon);
-                div.appendChild(replaceIcon);
-                previewContainer.appendChild(div);
+                reader.readAsDataURL(file);
+              }
             };
+            fileInput.click();
+          };
 
-            reader.readAsDataURL(file);
-        }
+          const cropIcon = document.createElement("i");
+      cropIcon.className = "fa-solid fa-crop text-info ms-2";
+      cropIcon.onclick = function () {
+        cropImage(img, i);
+      };
+
+          const div = document.createElement("div");
+          div.appendChild(img);
+          div.appendChild(deleteIcon);
+          div.appendChild(replaceIcon);
+          div.appendChild(cropIcon);
+          previewContainer.appendChild(div);
+        };
+
+        reader.readAsDataURL(file);
+      }
     }
+
+    function cropImage(image, index) {
+  const cropper = new Cropper(image, {
+    aspectRatio: 1,
+    viewMode: 1,
+    crop: function (event) {
+      const canvas = cropper.getCroppedCanvas();
+      canvas.toBlob(function (blob) {
+        const croppedFile = new File([blob], 'cropped_image.png', { type: 'image/png' });
+        updateFileInput(croppedFile, index); 
+      });
+    },
+  });
+  return cropper; 
+}
 
 
     function updateSelectedFiles() {
-        const filesInput = document.getElementById("product_image");
-        const previewContainer = document.getElementById("image-preview");
-        const selectedFiles = previewContainer.querySelectorAll("img");
+      const filesInput = document.getElementById("product_image");
+      const previewImages = document.querySelectorAll('.img-preview');
+      const fileList = new DataTransfer();
 
-        const fileList = [];
-
-        selectedFiles.forEach((img) => {
-            const file = dataURLtoFile(img.src, `image_${Date.now()}.png`);
-            fileList.push(file);
-        });
-
-        const newFilesList = new DataTransfer();
-        fileList.forEach((file) => {
-            newFilesList.items.add(file);
-        });
-
-        filesInput.files = newFilesList.files;
-    }
-
-    function dataURLtoFile(dataurl, filename) {
-        const arr = dataurl.split(',');
-        const mime = arr[0].match(/:(.*?);/)[1];
-        const bstr = atob(arr[1]);
-        let n = bstr.length;
-        const u8arr = new Uint8Array(n);
-        while (n--) {
-            u8arr[n] = bstr.charCodeAt(n);
-        }
-        return new File([u8arr], filename, { type: mime });
-    }
-
-    function updateFileInput(file, index) {
-    const fileInput = document.getElementById('product_image');
-    const fileList = new DataTransfer();
-    
-    const previewImages = document.querySelectorAll('.img-preview');
-    previewImages.forEach((img) => {
+      previewImages.forEach((img) => {
         const src = img.getAttribute('src');
         const file = dataURLtoFile(src, `image_${Date.now()}.png`);
         fileList.items.add(file);
-    });
+      });
 
-    fileList.items[index] = file;
+      filesInput.files = fileList.files;
+    }
 
-    fileInput.files = fileList.files;
+    function dataURLtoFile(dataurl, filename) {
+      const arr = dataurl.split(',');
+      const mime = arr[0].match(/:(.*?);/)[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new File([u8arr], filename, { type: mime });
+    }
+
+    function updateFileInput(file, index) {
+  const fileInput = document.getElementById('product_image');
+  const fileList = new DataTransfer();
+
+  const files = fileInput.files;
+  for (let i = 0; i < files.length; i++) {
+    if (i === index) {
+      fileList.items.add(file);
+    } else {
+      fileList.items.add(files[i]);
+    }
+  }
+
+  fileInput.files = fileList.files;
 }
 
-</script>
-
-
-  <script>
     var nameError = document.getElementById("name-error");
     var descriptionError = document.getElementById("description-error");
     var priceError = document.getElementById("price-error");
@@ -585,6 +579,7 @@ function validateStock() {
         }, 3000);
         return false;
       }
+      return true;
     }
   </script>
 
