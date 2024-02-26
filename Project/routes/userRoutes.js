@@ -3,6 +3,7 @@ const router = express.Router();
 const nocache = require("nocache");
 const userController = require("../controller/userController");
 const cartController = require("../controller/cartController");
+const walletController = require("../controller/walletController");
 const isUser = require('../middleware/userauth')
 const isLoggedUser = require('../middleware/userlogged')
 router.use(nocache());
@@ -28,6 +29,7 @@ router.delete("/remove-from-cart/:id",isUser, cartController.deleteCart);
 router.post('/update-cart',isUser, cartController.updateCart);
 
 router.post('/place-order',isUser, userController.placeOrder);
+router.get('/downloadinvoice/:orderId', userController.downloadInvoice)
 
 router.get('/checkout',isUser, userController.checkoutPage);
 router.get('/razorpay-checkout',isUser,userController.razorpayCheckout)
@@ -50,6 +52,11 @@ router.post('/setDefaultAddress',isUser, userController.setDefaultAddress);
 router.get("/userorders",isUser, userController.userOrders);
 router.get('/cancelOrder/:orderId',isUser,userController.userOrderCancel)
 router.get("/userorderdetails/:orderId",isUser, userController.userOrderDetails);
+
+
+router.get("/wallet",isUser, walletController.wallet);
+router.post("/addAmount",isUser, walletController.addAmount);
+
 
 router.get("/logout",isUser, userController.logout);
 

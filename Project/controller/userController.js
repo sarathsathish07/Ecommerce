@@ -2,11 +2,15 @@
   const Product = require("../models/products");
   const Cart = require("../models/userCart");
   const Order = require("../models/orders");
+  const Wallet = require("../models/wallet");
   const Address = require("../models/address");
   const bcrypt = require("bcrypt");
   const mongoose = require('mongoose');
   const nodemailer = require("nodemailer");
   const randomstring = require("randomstring");
+  const easyinvoice = require('easyinvoice');
+  const path = require('path');
+  const fs = require('fs')
   const saltPassword = 10;
 
   const transporter = nodemailer.createTransport({
@@ -193,6 +197,13 @@
 
           user.isVerified = true;
           await user.save();
+          console.log(user._id);
+
+          const wallet = new Wallet({
+            userId: user._id,
+            balance: 0
+          })
+          await wallet.save()
 
           req.session.resendTime = new Date().getTime();
 
@@ -494,11 +505,14 @@ geteditUserAccountPage: async (req, res, next) => {
     addAddressPage: (req, res,next) => {
       try {
         const checkout = req.query.from
+        const totalPrice = req.query.totalPrice
+        console.log(totalPrice);
         if(checkout){
           res.render("addaddress", {
             title: "Add Address",
             user: req.session.user,
-            checkout: checkout
+            checkout: checkout,
+            totalPrice:totalPrice
           });
         }else{
           res.render("addaddress", {
@@ -517,6 +531,7 @@ geteditUserAccountPage: async (req, res, next) => {
       try {
         const userId = req.session.userID;
         const checkout = req.body.checkout
+        const totalPrice = req.body.totalPrice
         
 
         const { addressLine1, addressLine2, city, state, postalCode, country } =
@@ -542,7 +557,7 @@ geteditUserAccountPage: async (req, res, next) => {
         await userAddress.save();
 
         if (checkout == "checkout") {
-          res.redirect('/checkout');
+          res.redirect(`/checkout?totalPrice=${totalPrice}`);
         } else {
           res.redirect('/useraddress');
         }
@@ -687,6 +702,20 @@ geteditUserAccountPage: async (req, res, next) => {
   
     try {
       const order = await Order.findById(orderId);
+       if (order.paymentStatus === 'Paid') {
+      // Retrieve user's wallet
+      const wallet = await Wallet.findOne({ userId: order.userID });
+
+      if (!wallet) {
+        return res.status(404).json({ error: 'Wallet not found for user' });
+      }
+
+      // Add canceled order's total amount to wallet balance
+      wallet.balance += order.totalPrice;
+      
+      // Save the updated wallet balance
+      await wallet.save();
+    }
   
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
@@ -804,7 +833,7 @@ geteditUserAccountPage: async (req, res, next) => {
     
           if (paymentStatus === "Paid" || paymentStatus === "Pending") {
             await orderToUpdate.save();
-            return res.status(200).redirect("/thankyou");
+            return res.status(200).render("thankyou",{orderId});
           } else if (paymentStatus === "Failed") {
             await orderToUpdate.save();
             return res.status(200).redirect("/userorders");
@@ -847,12 +876,83 @@ geteditUserAccountPage: async (req, res, next) => {
         );
     
         if (paymentStatus === "Paid" || paymentStatus === "Pending") {
-          return res.status(200).redirect("/thankyou");
+          return res.status(200).render("thankyou", { orderId: order._id.toString() });
+
         } else if (paymentStatus === "Failed") {
           return res.status(200).redirect("/userorders");
         }
       } catch (err) {
         next(err);
+      }
+    },
+
+    downloadInvoice: async (req, res) => {
+      try {
+        const orderId = req.params.orderId;
+        const order = await Order.findById(orderId);
+        
+        if (!order) {
+          return res.status(404).json({ error: 'Order not found' });
+        }
+        
+        // Prepare the invoice data
+        const productsData = await Promise.all(order.items.map(async item => {
+          const product = await Product.findById(item.product);
+          if (!product) {
+            throw new Error(`Product not found for ID: ${item.product}`);
+          }
+          return {
+            "quantity": item.quantity,
+            "description": product.productTitle,
+            "tax": 0,
+            "price": item.price * item.quantity
+          };
+        }));
+        
+        const data = {
+          "currency": "INR",
+          "taxNotation": "vat",
+          "marginTop": 25,
+          "marginRight": 25,
+          "marginLeft": 25,
+          "marginBottom": 25,
+          "logo": "https://public.easyinvoice.cloud/img/logo_en_original.png",
+          "sender": {
+            "company": "Sample Company",
+            "address": "Sample Street 123",
+            "zip": "1234 AB",
+            "city": "Sampletown",
+            "country": "Samplecountry"
+          },
+          "client": {
+            "company": order.billingDetails.name,
+            "address": `${order.billingDetails.addressLine1}, ${order.billingDetails.addressLine2}`,
+            "zip": order.billingDetails.postalCode,
+            "city": order.billingDetails.city,
+            "country": order.billingDetails.country
+          },
+          "invoiceNumber": order.trackingId,
+          "invoiceDate": order.orderDate.toISOString(),
+          "products": productsData,
+          "total": order.totalPrice+100, 
+          "bottomNotice": `Total: ${order.totalPrice} INR`,
+        };
+        
+        const result = await easyinvoice.createInvoice(data);
+        
+        const invoicesDir = path.join(__dirname, '..', 'invoices');
+        if (!fs.existsSync(invoicesDir)) {
+          fs.mkdirSync(invoicesDir);
+        }
+        
+        const filePath = path.join(invoicesDir, `invoice_${orderId}.pdf`);
+        fs.writeFileSync(filePath, result.pdf, 'base64');
+        
+        // Send the file as a response
+        res.download(filePath, `invoice_${orderId}.pdf`);
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to generate invoice' });
       }
     },
     

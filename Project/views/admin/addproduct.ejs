@@ -471,6 +471,7 @@
   const files = fileInput.files;
   for (let i = 0; i < files.length; i++) {
     if (i === index) {
+      // Replace the file at the specified index with the cropped image file
       fileList.items.add(file);
     } else {
       fileList.items.add(files[i]);

@@ -40,7 +40,7 @@ const couponController = {
   },
   postAddCoupons: async (req, res) => {
     try {
-        const { couponCode, description, discountPercentage, maxDiscountAmount, minAmount, expiryDate } = req.body;
+        const { couponCode, description, discountPercentage, maxDiscountAmount, minAmount, expiry_date } = req.body;
 
         const existingCoupon = await Coupon.findOne({ couponCode });
 
@@ -94,7 +94,7 @@ const couponController = {
         discountPercentage: req.body.discountPercentage,
         maxDiscountAmount: req.body.maxDiscountAmount,
         minAmount: req.body.minAmount,
-        expiryDate: req.body.expiryDate
+        expiryDate: req.body.expiry_date
       }).exec();
 
       req.session.message = {
@@ -111,9 +111,11 @@ const couponController = {
   fetchCoupons: async (req, res) => {
     try {
         const cartTotalPrice = req.query.totalPrice;
+        const currentDate = new Date();
         const coupons = await Coupon.find({  
             minAmount: { $lte: cartTotalPrice },
-            isListed: true
+            isListed: true,
+            expiryDate:{ $gte: currentDate}
         });
 
         res.json({ coupons });

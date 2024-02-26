@@ -37,7 +37,7 @@
             <li><a href="/useraccount">Account Details</a></li>
             <li class="active"><a href="/useraddress">Addresses</a></li>
             <li><a href="/userorders">Orders</a></li>
-            <li><a href="#wishlist">Wishlist</a></li>
+            <li><a href="/wallet">Wallet</a></li>
           </ul>
         </div>
       </div>
@@ -126,6 +126,9 @@
           <div  style="background-color: rgb(157, 183, 183); height: 100PX; display: flex; align-items: center; justify-content: center;">
             <span style="font-size: 20px;"> SUB TOTAL : Product Amount + Delivery Charge(100):  Rs <%= order.totalPrice.toFixed(2) %></span>
            
+          </div>
+          <div style="text-align: center; margin-top: 20px;">
+            <a href="/downloadinvoice/<%= order.id %>" class="btn btn-md">Download Invoice</a>
           </div>
         </section>
       </div>

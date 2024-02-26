@@ -224,7 +224,8 @@
                           name="couponCode"
                           class="form-control"
                           id="coupon_code"
-                          onkeyup="validateCouponCode()"
+                          
+                          onkeyup="validateCode()"
                       />
                       <button class="btn btn-secondary" type="button" onclick="generateCouponCode()">Generate</button>
                   </div>
@@ -235,56 +236,70 @@
               </div>
               
             
-                <div class="mb-4">
-                    <label class="form-label">Description</label>
-                    <textarea
-                        placeholder="Type here"
-                        name="description"
-                        class="form-control"
-                        id="coupon_description"
-                        onkeyup="validateDescription()"
-                    ></textarea>
-                    <span
-                        id="description-error"
-                        style="font-size: 14px; margin-top: -20px"
-                    ></span>
-                </div>
+              <div class="mb-4">
+                <label class="form-label">Description</label>
+                <textarea
+                    placeholder="Type here"
+                    name="description"
+                    class="form-control"
+                    id="coupon_description"
+                  
+                    onkeyup="validateDescription()"
+                ></textarea>
+                <span
+                    id="description-error"
+                    style="font-size: 14px; margin-top: -20px"
+                ></span>
+            </div>
             
-                <div class="mb-4">
-                    <label for="discount_percentage" class="form-label">Discount Percentage</label>
-                    <input
-                        type="number"
-                        placeholder="Enter discount percentage"
-                        name="discountPercentage"
-                        class="form-control"
-                        id="discount_percentage"
-                    />
-                </div>
+            <div class="mb-4">
+              <label for="discount_percentage" class="form-label">Discount Percentage</label>
+              <input
+                  type="number"
+                  placeholder="Enter discount percentage"
+                  name="discountPercentage"
+                  class="form-control"
+                  id="percentage"
+                  onkeyup="validatePrice()"
+              />
+              <span
+              id="price-error"
+              style="font-size: 14px; margin-top: -20px"
+          ></span>
+          </div>
             
-                <div class="mb-4">
-                    <label for="max_discount_amount" class="form-label">Max Discount Amount</label>
-                    <input
-                        type="number"
-                        placeholder="Enter max discount amount"
-                        name="maxDiscountAmount"
-                        class="form-control"
-                        id="max_discount_amount"
-                    />
-                </div>
+          <div class="mb-4">
+            <label for="max_discount_amount" class="form-label">Max Discount Amount</label>
+            <input
+                type="number"
+                placeholder="Enter max discount amount"
+                name="maxDiscountAmount"
+                class="form-control"
+                id="max_amount"
+                onkeyup="validateMaxAmount()"
+            />
+            <span
+            id="max-amount-error"
+            style="font-size: 14px; margin-top: -20px"
+        ></span>
+        </div>
             
-                <div class="mb-4">
-                    <label for="min_amount" class="form-label">Minimum Amount</label>
-                    <input
-                        type="number"
-                        placeholder="Enter minimum amount"
-                        name="minAmount"
-                        class="form-control"
-                        id="min_amount"
-                    />
-                </div>
-            
-                
-            
+        <div class="mb-4">
+          <label for="min_amount" class="form-label">Minimum Amount</label>
+          <input
+              type="number"
+              placeholder="Enter minimum amount"
+              name="minAmount"
+              class="form-control"
+              id="min_amount"
+              onkeyup="validateMinAmount()"
+          />
+          <span
+          id="min-amount-error"
+          style="font-size: 14px; margin-top: -20px"
+      ></span>
+      </div>
+  
                 <div class="mb-4">
                     <label for="expiry_date" class="form-label">Expiry Date</label>
                     <input
@@ -292,7 +307,9 @@
                         name="expiryDate"
                         class="form-control"
                         id="expiry_date"
+                        onchange="validateDate()"
                     />
+                    <span id="date-error" style="font-size: 14px; margin-top: -20px; color: green;"></span>
                 </div>
                 <div class="d-grid">
                   <button
@@ -315,26 +332,28 @@
     </section>
   </main>
   <script>
-    setTimeout(() => {
-      document.getElementById("error").style.display = "none";
-    }, 3000);
-    var nameError = document.getElementById("name-error");
+    var codeError = document.getElementById("code-error");
     var descriptionError = document.getElementById("description-error");
+    var priceError = document.getElementById("price-error");
+    var minAmountError = document.getElementById("min-amount-error");
+    var maxAmountError = document.getElementById("max-amount-error");
     var submitError = document.getElementById("submit-error");
 
-    function validateName() {
-      var name = document.getElementById("product_name").value.trim();
-      if (name.length === 0) {
-        nameError.innerHTML = "Product name is required";
-        nameError.style.color = "red";
+    function validateCode() {
+      var uppercaseRegex = /^[A-Z0-9]+$/;
+      var code = document.getElementById("coupon_code").value.trim();
+      if (!uppercaseRegex.test(code)) {
+        codeError.innerHTML = "Coupon code must contain only uppercase letters and numbers";
+        codeError.style.color = "red";
         return false;
       }
-      nameError.innerHTML = "Valid";
-      nameError.style.color = "green";
+      codeError.innerHTML = "Valid";
+      codeError.style.color = "green";
       return true;
     }
+
     function validateDescription() {
-      var desc = document.getElementById("product_description").value.trim();
+      var desc = document.getElementById("coupon_description").value.trim();
       if (desc.length === 0) {
         descriptionError.innerHTML = "Description is required";
         descriptionError.style.color = "red";
@@ -344,29 +363,83 @@
       descriptionError.style.color = "green";
       return true;
     }
-    function validateForm() {
-      if (!validateName() || !validateDescription()) {
-        submitError.style.display = "block";
-        submitError.innerHTML = "Please enter all the fields to submit ";
-        submitError.style.color = "red";
-        setTimeout(function () {
-          submitError.style.display = "none";
-        }, 3000);
+
+    function validatePrice() {
+      var price = document.getElementById("percentage").value.trim();
+      if (price.length === 0 || isNaN(price) || parseFloat(price) <= 0 || parseFloat(price) > 100) {
+        priceError.innerHTML = "Invalid entry";
+        priceError.style.color = "red";
         return false;
       }
+      priceError.innerHTML = "Valid";
+      priceError.style.color = "green";
+      return true;
+    }
+
+    function validateMinAmount() {
+      var minAmount = document.getElementById("min_amount").value.trim();
+      if (minAmount.length === 0 || isNaN(minAmount) || parseFloat(minAmount) < 0) {
+        minAmountError.innerHTML = "Minimum amount is required and must be a non-negative number";
+        minAmountError.style.color = "red";
+        return false;
+      }
+      minAmountError.innerHTML = "Valid";
+      minAmountError.style.color = "green";
+      return true;
+    }
+
+    function validateMaxAmount() {
+      var maxAmount = document.getElementById("max_amount").value.trim();
+      if (maxAmount.length === 0 || isNaN(maxAmount) || parseFloat(maxAmount) < 0) {
+        maxAmountError.innerHTML = "Maximum discount is required and must be a non-negative number";
+        maxAmountError.style.color = "red";
+        return false;
+      }
+      maxAmountError.innerHTML = "Valid";
+      maxAmountError.style.color = "green";
+      return true;
+    }
+
+    function validateDate() {
+      var dateInput = document.getElementById("expiry_date").value;
+      var currentDate = new Date();
+      var selectedDate = new Date(dateInput);
+      if (selectedDate <= currentDate) {
+        document.getElementById("date-error").innerHTML = "Please select a future date";
+        document.getElementById("date-error").style.color = "red";
+        return false;
+      } else {
+        document.getElementById("date-error").innerHTML = "Valid";
+        document.getElementById("date-error").style.color = "green";
+        return true;
+      }
+    }
+
+    function validateForm() {
+      if (!validateCode() || !validateDescription() || !validatePrice() || !validateMinAmount() || !validateMaxAmount()) {
+        submitError.innerHTML = "Please enter all the fields correctly to submit";
+        submitError.style.color = "red";
+        return false;
+      }
+      return true;
     }
   </script>
+
   <script>
     function generateCouponCode() {
-        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var couponCode = '';
-        var length = 8; 
-        for (var i = 0; i < length; i++) {
-            couponCode += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-
-        document.getElementById("coupon_code").value = couponCode;
+    var uppercaseCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var numbers = '0123456789';
+    var characters = uppercaseCharacters + numbers;
+    var couponCode = '';
+    var length = 8; 
+    for (var i = 0; i < length; i++) {
+        couponCode += characters.charAt(Math.floor(Math.random() * characters.length));
     }
+
+    document.getElementById("coupon_code").value = couponCode;
+    validateCode();
+}
+
 </script>
 
 

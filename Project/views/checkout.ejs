@@ -104,7 +104,7 @@
                 </div>
                 <section id="add-address" class="account-section">
                 <button
-                  onclick="window.location.href='/addAddress?from=checkout'"
+                  onclick="window.location.href='/addAddress?from=checkout&totalPrice=<%= totalPrice  %>'"
                   style="
                     background-color: #1f4959;
                     color: white;
@@ -116,7 +116,6 @@
                   Add Address
                 </button>
               </section>
-
               </div>
             </div>
           </div>

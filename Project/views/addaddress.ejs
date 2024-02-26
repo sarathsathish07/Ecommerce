@@ -14,7 +14,7 @@
             <li><a href="/useraccount">Account Details</a></li>
             <li class="active"><a href="/useraddress">Addresses</a></li>
             <li><a href="/userorders">Orders</a></li>
-            <li><a href="#wishlist">Wishlist</a></li>
+            <li><a href="/wallet">Wallet</a></li>
           </ul>
         </div>
       </div>
@@ -42,6 +42,9 @@
                   style="font-size: 14px; margin-top: -20px"
                 ></span>
                 <input type="hidden" value="<%= checkout %>" name="checkout">
+                <% if (checkout) { %>
+                  <input type="hidden" value="<%= totalPrice %>" name="totalPrice">
+                <% } %>
               </div>
 
               <div class="form-group">

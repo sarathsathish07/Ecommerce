@@ -109,8 +109,15 @@
       const ordersPie = await chart()
       const ordersGraph = await monthgraph();
       const ordersYearGraph = await yeargraph();
+      const paidOrders = orders.filter(order => order.paymentStatus === "Paid");
+
+      // Calculate revenue from paid orders
+      let revenue = 0;
+      paidOrders.forEach(order => {
+        revenue += order.totalPrice;
+      });
     
-      res.render("admin/dashboard", { title: "Admin Home", users: users,orders:orders,products:products, ordersPie:ordersPie,ordersGraph: ordersGraph,ordersYearGraph: ordersYearGraph});
+      res.render("admin/dashboard", { title: "Admin Home", users: users,orders:orders,products:products, ordersPie:ordersPie,ordersGraph: ordersGraph,ordersYearGraph: ordersYearGraph,revenue: revenue.toFixed(2)});
     } catch (err) {
       next(err);
     }

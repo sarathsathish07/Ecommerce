@@ -25,10 +25,7 @@ minAmount:{
   type: Number,
   min:0
 },
-status:{
-  type: String,
-  default: 'Active'
-},
+
 expiryDate:{
   type: Date
 },
