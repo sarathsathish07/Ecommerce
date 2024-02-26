@@ -1,6 +1,7 @@
   const User = require("../models/users");
   const Product = require("../models/products");
   const Order = require("../models/orders");  
+  const Wallet = require("../models/wallet");  
   const fs = require('fs')
   const pdf = require('html-pdf');
 
@@ -218,21 +219,32 @@
       try {
         const { orderId, selectedStatus } = req.body;
     
-        if (selectedStatus === 'Cancelled') {
-          const order = await Order.findById(orderId).populate('items.product');
-          if (!order) {
-            return res.status(404).json({ success: false, message: 'Order not found' });
-          }
-    
-          
-          order.items.forEach(async (item) => {
-            const product = item.product;
-            product.stock += item.quantity;
-            await product.save(); 
-          });
+        const order = await Order.findById(orderId).populate('items.product');
+        if (!order) {
+          return res.status(404).json({ success: false, message: 'Order not found' });
         }
     
-        
+        if (selectedStatus === 'Cancelled') {
+          if (order.paymentStatus === 'Paid') {
+            const wallet = await Wallet.findOne({ userId: order.userID });
+            if (!wallet) {
+              return res.status(404).json({ error: 'Wallet not found for user' });
+            }
+            // Refund the amount to the wallet
+            wallet.balance += order.totalPrice;
+            await wallet.save();
+          }
+    
+          // Increment stock for each product in the order
+          for (const item of order.items) {
+            const product = await Product.findById(item.product);
+            if (product) {
+              product.stock += item.quantity;
+              await product.save();
+            }
+          }
+        }
+    
         const updatedOrder = await Order.findByIdAndUpdate(
           orderId,
           { $set: { status: selectedStatus } },
@@ -248,6 +260,7 @@
         next(err);
       }
     },
+    
     
 
     generateReport: async (req, res) => {

@@ -703,17 +703,14 @@ geteditUserAccountPage: async (req, res, next) => {
     try {
       const order = await Order.findById(orderId);
        if (order.paymentStatus === 'Paid') {
-      // Retrieve user's wallet
       const wallet = await Wallet.findOne({ userId: order.userID });
 
       if (!wallet) {
         return res.status(404).json({ error: 'Wallet not found for user' });
       }
 
-      // Add canceled order's total amount to wallet balance
       wallet.balance += order.totalPrice;
       
-      // Save the updated wallet balance
       await wallet.save();
     }
   
