@@ -111,14 +111,15 @@ const couponController = {
 
   fetchCoupons: async (req, res) => {
     try {
-      console.log("6");
+        const userId = req.session.userID;
         const cartTotalPrice = req.query.totalPrice;
         console.log(cartTotalPrice);
         const currentDate = new Date();
         const coupons = await Coupon.find({  
             minAmount: { $lte: cartTotalPrice },
             isListed: true,
-            expiryDate:{ $gte: currentDate}
+            expiryDate:{ $gte: currentDate},
+            usedBy: { $ne: userId }
         });
 
         res.json({ coupons });

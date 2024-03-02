@@ -64,7 +64,7 @@
                       >Details</a
                     >
                     <% if (order.paymentStatus === 'Failed') { %>
-                      <a href="/checkout?totalPrice=<%=  order.totalPrice - 100  %>&&orderId=<%= order._id %>" class="btn btn-md rounded font-sm">Retry Checkout</a>
+                      <a href="/checkout?orderId=<%= order._id %>" class="btn btn-md rounded font-sm">Retry Checkout</a>
 
                     <% } else if (order.status !== 'Cancelled') { %>
                     <a href="#" class="btn btn-md rounded font-sm" onclick="confirmCancel('<%= order._id %>')" >Cancel</a>

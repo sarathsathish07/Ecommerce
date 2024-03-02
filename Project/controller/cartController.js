@@ -103,9 +103,6 @@ checkStock: async (req, res, next) => {
 },
 
 
-  
- 
-
 cartPage: async (req, res, next) => {
   try {
       const userId = req.session.userID;

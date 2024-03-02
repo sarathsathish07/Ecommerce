@@ -5,6 +5,7 @@
   const Wallet = require("../models/wallet");
   const Address = require("../models/address");
   const Category = require("../models/category");
+  const Coupon = require("../models/coupons");
   const Brand = require('../models/brands')
   const bcrypt = require("bcrypt");
   const mongoose = require('mongoose');
@@ -494,7 +495,7 @@ geteditUserAccountPage: async (req, res, next) => {
       try {
         const userId = req.session.userID
         const checkout = req.query.from
-        
+        const orderId = req.query.orderId;
        
         const userCart = await Cart.findOne({ userID: userId })
           .populate("items.product")
@@ -504,7 +505,8 @@ geteditUserAccountPage: async (req, res, next) => {
             title: "Add Address",
             user: req.session.user,
             checkout: checkout,
-            totalPrice:userCart.totalPrice
+            totalPrice:userCart.totalPrice,
+            orderId:orderId
           });
         }else{
           res.render("addaddress", {
@@ -519,63 +521,73 @@ geteditUserAccountPage: async (req, res, next) => {
       }
     },
 
-    addAddress: async (req, res,next) => {
+    addAddress: async (req, res, next) => {
       try {
         const userId = req.session.userID;
-        const checkout = req.body.checkout
-        const orderId = req.query.orderId
-        
-
-        const { addressLine1, addressLine2, city, state, postalCode, country } =
-          req.body;
-
-        const newAddress = {
-          addressLine1,
-          addressLine2,
-          city,
-          state,
-          postalCode,
-          country,
-        };
-
-        let userAddress = await Address.findOne({ userID: userId });
-
-        if (!userAddress) {
-          userAddress = new Address({ userID: userId, addresses: [] });
+        const checkout = req.body.checkout;
+        const orderId = req.body.orderId;
+        console.log("orderid",orderId);
+    
+        let userAddress;
+        let defaultAddress;
+        let userCart;
+        let totalPrice;
+    
+        if (orderId) {
+          const order = await Order.findById(orderId).populate('items.product').exec();
+          console.log("order",order);
+          if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+          }
+          const { addressLine1, addressLine2, city, state, postalCode, country } = req.body;
+          const newAddress = { addressLine1, addressLine2, city, state, postalCode, country };
+          userAddress = await Address.findOne({ userID: userId });
+          if (!userAddress) {
+            userAddress = new Address({ userID: userId, addresses: [] });
+          }
+          userAddress.addresses.push(newAddress);
+          await userAddress.save();
+          defaultAddress = userAddress.addresses.find(address => address.isDefault);
+          userCart = order.items;
+          totalPrice = order.amount;
+          console.log("usercart",userCart);
+          console.log("totalPrice",totalPrice);
+        } else {
+          const { addressLine1, addressLine2, city, state, postalCode, country } = req.body;
+          const newAddress = { addressLine1, addressLine2, city, state, postalCode, country };
+          userAddress = await Address.findOne({ userID: userId });
+          if (!userAddress) {
+            userAddress = new Address({ userID: userId, addresses: [] });
+          }
+          userAddress.addresses.push(newAddress);
+          await userAddress.save();
+          defaultAddress = userAddress.addresses.find(address => address.isDefault);
+         const cart = await Cart.findOne({ userID: userId }).populate("items.product").exec();
+          if (!cart) {
+            return res.status(404).json({ message: 'Cart not found' });
+          }
+          userCart = cart.items;
+          totalPrice = cart.totalPrice;
         }
-
-        userAddress.addresses.push(newAddress);
-
-        await userAddress.save();
-        let defaultAddress = null;
-        if (userAddress && userAddress.addresses && userAddress.addresses.length > 0) {
-          defaultAddress = userAddress.addresses.find(
-            (address) => address.isDefault
-          );
-        }
-        const userCart = await Cart.findOne({ userID: userId })
-        .populate("items.product")
-        .exec();
-
+    
         if (checkout == "checkout") {
           res.render("checkout", {
             title: "Checkout",
             addresses: userAddress,
             user: req.session.user,
             userAddress: defaultAddress,
-            cartItems: userCart.items,
-            totalPrice: userCart.totalPrice,
-            orderId:orderId,
-           
+            cartItems: userCart,
+            totalPrice: totalPrice,
+            orderId: orderId,
           });
         } else {
           res.redirect('/useraddress');
         }
-    
       } catch (err) {
         next(err);
       }
     },
+    
     setDefaultAddress: async (req, res,next) => {
       try {
         const userId = req.session.userID;
@@ -793,40 +805,58 @@ geteditUserAccountPage: async (req, res, next) => {
     checkoutPage: async (req, res, next) => {
       try {
         const userId = req.session.userID;
-      
-        const orderId = req.query.orderId
-        const addresses = await Address.findOne({ userID: userId });
-
-        let defaultAddress = null;
-        if (addresses && addresses.addresses && addresses.addresses.length > 0) {
-          defaultAddress = addresses.addresses.find(
-            (address) => address.isDefault
-          );
+        const orderId = req.query.orderId;
+    
+        let userCart;
+        let totalPrice;
+        let addresses;
+        let defaultAddress;
+    
+        if (orderId) {
+          const order = await Order.findById(orderId).populate('items.product').exec();
+          if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+          }
+          addresses = await Address.findOne({ userID: userId });
+          console.log(addresses);
+          if (addresses && addresses.addresses && addresses.addresses.length > 0) {
+            defaultAddress = addresses.addresses.find((address) => address.isDefault);
+          }
+          userCart = order.items;
+          totalPrice = order.amount;
+        } else {
+          addresses = await Address.findOne({ userID: userId });
+          console.log(addresses);
+          if (addresses && addresses.addresses && addresses.addresses.length > 0) {
+            defaultAddress = addresses.addresses.find((address) => address.isDefault);
+          }
+          const cart = await Cart.findOne({ userID: userId }).populate('items.product').exec();
+          if (!cart) {
+            return res.status(404).json({ message: 'Cart not found' });
+          }
+          userCart = cart.items;
+          totalPrice = cart.totalPrice;
         }
-
-        const userCart = await Cart.findOne({ userID: userId })
-          .populate("items.product")
-          .exec();
-         
-
-        res.render("checkout", {
-          title: "Checkout",
+    
+        res.render('checkout', {
+          title: 'Checkout',
           addresses: addresses,
           user: req.session.user,
           userAddress: defaultAddress,
-          cartItems: userCart.items,
-          totalPrice: userCart.totalPrice,
-          orderId:orderId,
-         
+          cartItems: userCart,
+          totalPrice: totalPrice,
+          orderId: orderId,
         });
       } catch (err) {
         next(err);
       }
     },
+    
+    
 
     placeOrder: async (req, res, next) => {
       try {
-          const { orderId, addressID, paymentMethod, paymentStatus, subtotal, couponCode } = req.body;
+          const { orderId, addressID, paymentMethod, paymentStatus, subtotal, couponCode, totalPrice } = req.body;
           
   
           if (orderId) {
@@ -877,7 +907,8 @@ geteditUserAccountPage: async (req, res, next) => {
               },
               paymentMethod,
               paymentStatus,
-              couponCode
+              couponCode,
+              amount:totalPrice
           });
   
           await order.save();
@@ -893,6 +924,13 @@ geteditUserAccountPage: async (req, res, next) => {
               { userID: user._id },
               { $set: { items: [], totalPrice: 0 } }
           );
+
+          if (paymentStatus !== "Failed" && couponCode) {
+            await Coupon.findOneAndUpdate(
+                { couponCode },
+                { $addToSet: { usedBy: user._id } } 
+            );
+        } 
   
           for (const item of order.items) {
               await Product.findByIdAndUpdate(

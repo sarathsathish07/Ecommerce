@@ -30,6 +30,9 @@ const OrderSchema = new mongoose.Schema({
       },
     },
   ],
+  amount:{
+    type: Number
+  },
   totalPrice: {
     type: Number,
     default: 0,
