@@ -110,6 +110,9 @@
       const ordersGraph = await monthgraph();
       const ordersYearGraph = await yeargraph();
       const paidOrders = orders.filter(order => order.paymentStatus === "Paid");
+      const filteredOrders = orders.filter(order => 
+        order.paymentStatus !== "Failed" && order.status !== "Cancelled"
+    );
 
       // Calculate revenue from paid orders
       let revenue = 0;
@@ -117,7 +120,7 @@
         revenue += order.totalPrice;
       });
     
-      res.render("admin/dashboard", { title: "Admin Home", users: users,orders:orders,products:products, ordersPie:ordersPie,ordersGraph: ordersGraph,ordersYearGraph: ordersYearGraph,revenue: revenue.toFixed(2)});
+      res.render("admin/dashboard", { title: "Admin Home", users: users,orders:filteredOrders,products:products, ordersPie:ordersPie,ordersGraph: ordersGraph,ordersYearGraph: ordersYearGraph,revenue: revenue.toFixed(2)});
     } catch (err) {
       next(err);
     }

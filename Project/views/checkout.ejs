@@ -14,19 +14,53 @@
   }
   
   .modal-content {
-      background-color: #fefefe;
-      margin: 15% auto; 
-      padding: 20px;
-      border: 1px solid #888;
-      width: 50%; 
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%; 
+    border-radius: 5px; 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+  }
+  .modal-content h5 {
+    margin-bottom: 10px; 
+    color: #333;
+  }
+  .modal-content p {
+    margin-bottom: 15px; 
+    color: #666; 
   }
   .coupon-item {
       margin-bottom: 20px;
   }
   
   .apply-button {
-      margin-left: 10px;
+    background-color: #1f4959;
+    color: white;
+    padding: 8px 16px; 
+    border: none;
+    border-radius: 3px; 
+    cursor: pointer;
+    transition: background-color 0.3s ease; 
   }
+  .apply-button:hover {
+    background-color: #0e2c36; 
+  }
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
   
   
   </style>
@@ -104,7 +138,7 @@
                 </div>
                 <section id="add-address" class="account-section">
                 <button
-                  onclick="window.location.href='/addAddress?from=checkout&totalPrice=<%= totalPrice  %>'"
+                  onclick="window.location.href='/addAddress?from=checkout'"
                   style="
                     background-color: #1f4959;
                     color: white;
@@ -140,7 +174,7 @@
                         <div id="couponModal" class="modal">
                             <div class="modal-content">
                             <span class="close" onclick="closeCouponModal()">&times;</span>
-                            <h2>Select Coupon</h2>
+                            <h2 class="mb-3">Select Coupon</h2>
                             <div id="couponDetails"></div> 
                             </div>
                         </div>
@@ -178,6 +212,20 @@
                   ></span>
                 </label>
               </div>
+            
+              <div class="checkout__input__checkbox">
+                  <label for="payment-wallet">
+                      Wallet
+                      <input
+                          type="checkbox"
+                          id="payment-wallet"
+                          name="paymentMethod"
+                          value="Wallet"
+                      />
+                      <span class="checkmark"></span>
+                  </label>
+              </div>
+
 
               <% if (userAddress) { %>
               <input
@@ -202,6 +250,11 @@
                 name="totalPrice"
                 value="<%= totalPrice +100 %>"
               />
+              
+              <input type="hidden" name="subtotal" id="subtotalInput" value="<%= totalPrice + 100 %>">
+              <input type="hidden" id="discountAmountInput" name="discountAmount" value="">
+              <input type="hidden" id="couponCodeInput" name="couponCode" value="">
+
               <input type="hidden" name="orderId" value="<%= orderId %>">
 
               <button type="submit" class="site-btn">PLACE ORDER</button>
@@ -297,6 +350,7 @@
 <script>
         function openCouponModal() {
             const totalPrice = document.getElementById("totalPrice").innerText;
+            console.log(totalPrice);
             fetch(`/getcoupons?totalPrice=${totalPrice}`)
                 .then(response => response.json())
                 .then(data => {
@@ -306,7 +360,7 @@
                         const div = document.createElement("div");
                         div.classList.add("coupon-item");
 
-                        const title = document.createElement("h3");
+                        const title = document.createElement("h5");
                         title.textContent = coupon.couponCode;
                         div.appendChild(title);
 
@@ -343,7 +397,6 @@
         }
     });
 
-    // Define a global variable to keep track of the applied coupon
 let appliedCoupon = null;
 
 function applyCoupon(coupon) {
@@ -361,6 +414,7 @@ function applyCoupon(coupon) {
     const totalPriceElement = document.getElementById("totalPrice");
     const totalPrice = parseFloat(totalPriceElement.innerText);
     const deliveryElement = document.getElementById("delivery");
+    
 
     let discountAmount = 0;
     if (coupon.discountPercentage) {
@@ -376,6 +430,8 @@ function applyCoupon(coupon) {
     if (subtotalElement) {
         subtotalElement.innerHTML = ` ${subtotal + 100}`;
     }
+    const subtotalInput = document.getElementById("subtotalInput");
+    subtotalInput.value = subtotal + 100;
 
     let discountAmountElement = document.getElementById("discountAmount");
     if (!discountAmountElement) {
@@ -386,18 +442,19 @@ function applyCoupon(coupon) {
 
     discountAmountElement.innerHTML = `Discounted Amount <span>${discountAmount}</span>`;
 
-    // Create a new element for applied coupon details
     const appliedCouponElement = document.createElement("li");
     appliedCouponElement.innerHTML = `
         Applied Coupon: ${coupon.couponCode}
         <span id="removeCoupon" style="cursor: pointer; color: red;">&times;</span>
     `;
+    const discountAmountInput = document.getElementById("discountAmountInput");
+    discountAmountInput.value = discountAmount;
+    const couponCodeInput = document.getElementById("couponCodeInput");
+    couponCodeInput.value = coupon.couponCode;
 
-    // Append the applied coupon element to the checkout section
     const checkoutTotalAll = document.querySelector(".checkout__total__all");
     checkoutTotalAll.appendChild(appliedCouponElement);
 
-    // Add event listener to remove the applied coupon when remove icon is clicked
     const removeCouponIcon = appliedCouponElement.querySelector("#removeCoupon");
     removeCouponIcon.addEventListener("click", function() {
         appliedCouponElement.remove();
@@ -406,7 +463,6 @@ function applyCoupon(coupon) {
         appliedCoupon = null;
     });
 
-    // Set the appliedCoupon variable to the applied coupon
     appliedCoupon = coupon;
 
     closeCouponModal();
@@ -421,10 +477,12 @@ function applyCoupon(coupon) {
   function validateForm() {
   const paymentCODCheckbox = document.getElementById("payment-cod");
   const paymentRazorpayCheckbox = document.getElementById("payment-razorpay");
+  const paymentWalletCheckbox = document.getElementById("payment-wallet");
   const paymentStatusInput = document.getElementById("paymentStatus");
 
-  const totalPriceInput = document.getElementById("totalPrice");
-  const totalPrice = totalPriceInput ? parseInt(totalPriceInput.value) : 0;
+  const totalPriceInput = document.getElementById("subtotal");
+        const totalPrice = parseFloat(totalPriceInput.innerText);
+  console.log(totalPrice);
 
   if (totalPrice > 1000 && paymentCODCheckbox.checked) {
     paymentStatusInput.value = "Pending";
@@ -435,7 +493,7 @@ function applyCoupon(coupon) {
       checkError.style.display = "none";
     }, 3000);
     return false;
-  } else if (!paymentCODCheckbox.checked && !paymentRazorpayCheckbox.checked) {
+  } else if (!paymentCODCheckbox.checked && !paymentRazorpayCheckbox.checked && !paymentWalletCheckbox.checked) {
     checkError.style.display = "block";
     checkError.innerHTML = "Please select a payment method";
     checkError.style.color = "red";
@@ -471,6 +529,49 @@ function applyCoupon(coupon) {
         }
       });
       return false;
+    }else  if (paymentWalletCheckbox.checked) {
+        fetch('/check-wallet-balance')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const walletBalance = data.balance;
+                    if (totalPrice <= walletBalance) {
+                        document.getElementById('paymentStatus').value = 'Paid';
+                        Swal.fire({
+                        title: "Are you sure?",
+                        text: "Do you want to place the order?",
+                        icon: "question",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Yes, place order",
+                      }).then((result) => {
+                        if (result.isConfirmed) {
+                          console.log("Order placed");
+                          document.querySelector("form").submit();
+                        }
+                      });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Insufficient Wallet Balance',
+                            text: 'Your wallet balance is not sufficient to complete the transaction.',
+                            showConfirmButton: true
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to fetch wallet balance. Please try again later.',
+                        showConfirmButton: true
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        return false;
     }
   }
 

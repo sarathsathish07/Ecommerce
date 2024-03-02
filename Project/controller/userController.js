@@ -4,6 +4,8 @@
   const Order = require("../models/orders");
   const Wallet = require("../models/wallet");
   const Address = require("../models/address");
+  const Category = require("../models/category");
+  const Brand = require('../models/brands')
   const bcrypt = require("bcrypt");
   const mongoose = require('mongoose');
   const nodemailer = require("nodemailer");
@@ -227,7 +229,6 @@
 
         const user = await User.findOne({ email: userEmail });
 
-        
 
         // OTP generation
         const newOTP = randomstring.generate({
@@ -252,85 +253,72 @@
         next(err);
       }
     },
+
     shopPage: async (req, res, next) => {
       try {
-          const perPage = 9;
-          const page = req.query.page || 1;
-  
-          const products = await Product.aggregate([
-              { $match: { isPublished: true } },
-              { $lookup: { from: "categories", localField: "category", foreignField: "_id", as: "category" } },
-              { $unwind: "$category" },
-              { $match: { "category.isListed": true } },
-              { $lookup: { from: "brands", localField: "brand", foreignField: "_id", as: "brand" } }, 
-              { $unwind: "$brand" },
-              { $match: { "brand.isListed": true } },
-              { $skip: perPage * (page - 1) },
-              { $limit: perPage },
-              { $sort: { time: -1 } },
-          ]);
-  
-          const totalProducts = await Product.aggregate([
-              { $match: { isPublished: true } },
-              { $lookup: { from: "categories", localField: "category", foreignField: "_id", as: "category" } },
-              { $unwind: "$category" },
-              { $match: { "category.isListed": true } },
-              { $lookup: { from: "brands", localField: "brand", foreignField: "_id", as: "brand" } }, 
-              { $unwind: "$brand" },
-              { $match: { "brand.isListed": true } },
-              { $count: "count" }
-          ]);
-  
-          const totalPages = totalProducts.length > 0 ? Math.ceil(totalProducts[0].count / perPage) : 0;
-
-  
-          res.render("shop", {
-              title: "Shop",
-              products: products,
-              totalPages: totalPages,
-              currentPage: page,
-              perPage: perPage,
-              user: req.session.user
-          });
-      } catch (err) {
-          next(err);
-      }
-  },
-  
-
-  getShopPagination: async (req, res, next) => {
-    try {
         const perPage = 9;
         const page = req.query.page || 1;
-
-        const aggregatePipeline = [
-            { $match: { isPublished: true } },
-            { $lookup: { from: "categories", localField: "category", foreignField: "_id", as: "category" } },
-            { $unwind: "$category" },
-            { $match: { "category.isListed": true } },
-            { $project: { _id: 1, title: 1, price: 1, category: "$category.name" } }, 
-            { $skip: perPage * (page - 1) },
-            { $limit: perPage }
-        ];
-
-        const products = await Product.aggregate(aggregatePipeline);
-
-        const totalProductsCount = await Product.countDocuments({ isPublished: true });
-        const totalPages = Math.ceil(totalProductsCount / perPage);
-
+        const { category, brand, sort } = req.query; 
+    
+        const categoriesQuery = Category.find({ isListed: true });
+        const brandsQuery = Brand.find({ isListed: true });
+    
+        let productQuery = Product.find({ isPublished: true });
+    
+        if (category) {
+          productQuery = productQuery.where('category').equals(category);
+        }
+    
+        if (brand) {
+          productQuery = productQuery.where('brand').equals(brand);
+        }
+    
+        if (sort === 'price') {
+          productQuery = productQuery.sort({ price: 1 }); 
+        } else if (sort === 'price-desc') {
+          productQuery = productQuery.sort({ price: -1 }); 
+        }
+    
+        const [categories, brands] = await Promise.all([
+          categoriesQuery.exec(),
+          brandsQuery.exec()
+        ]);
+    
+        const totalProductsCountQuery = Product.find({ isPublished: true });
+    
+        if (category) {
+          totalProductsCountQuery.where('category').equals(category);
+        }
+    
+        if (brand) {
+          totalProductsCountQuery.where('brand').equals(brand);
+        }
+    
+        const totalProductsCount = await totalProductsCountQuery.countDocuments();
+    
+        const products = await productQuery
+        .sort({ time: -1 })
+          .skip(perPage * (page - 1))
+          .limit(perPage)
+          .populate('category', 'isListed')
+          .populate('brand', 'isListed')
+          .exec();
+    
         res.render("shop", {
-            title: "Shop",
-            products: products,
-            totalPages: totalPages,
-            currentPage: page,
-            perPage: perPage,
-            user: req.session.user
+          title: "Shop",
+          products: products,
+          categories: categories,
+          brands: brands,
+          totalPages: Math.ceil(totalProductsCount / perPage),
+          currentPage: page,
+          perPage: perPage,
+          user: req.session.user
         });
-    } catch (err) {
+      } catch (err) {
         next(err);
-    }
-},
-
+      }
+    },
+    
     getProductDetailsPage: async (req, res,next) => {
       try {
        
@@ -502,17 +490,21 @@ geteditUserAccountPage: async (req, res, next) => {
     },
     
 
-    addAddressPage: (req, res,next) => {
+    addAddressPage: async(req, res,next) => {
       try {
+        const userId = req.session.userID
         const checkout = req.query.from
-        const totalPrice = req.query.totalPrice
-        console.log(totalPrice);
+        
+       
+        const userCart = await Cart.findOne({ userID: userId })
+          .populate("items.product")
+          .exec();
         if(checkout){
           res.render("addaddress", {
             title: "Add Address",
             user: req.session.user,
             checkout: checkout,
-            totalPrice:totalPrice
+            totalPrice:userCart.totalPrice
           });
         }else{
           res.render("addaddress", {
@@ -531,7 +523,7 @@ geteditUserAccountPage: async (req, res, next) => {
       try {
         const userId = req.session.userID;
         const checkout = req.body.checkout
-        const totalPrice = req.body.totalPrice
+        const orderId = req.query.orderId
         
 
         const { addressLine1, addressLine2, city, state, postalCode, country } =
@@ -555,9 +547,27 @@ geteditUserAccountPage: async (req, res, next) => {
         userAddress.addresses.push(newAddress);
 
         await userAddress.save();
+        let defaultAddress = null;
+        if (userAddress && userAddress.addresses && userAddress.addresses.length > 0) {
+          defaultAddress = userAddress.addresses.find(
+            (address) => address.isDefault
+          );
+        }
+        const userCart = await Cart.findOne({ userID: userId })
+        .populate("items.product")
+        .exec();
 
         if (checkout == "checkout") {
-          res.redirect(`/checkout?totalPrice=${totalPrice}`);
+          res.render("checkout", {
+            title: "Checkout",
+            addresses: userAddress,
+            user: req.session.user,
+            userAddress: defaultAddress,
+            cartItems: userCart.items,
+            totalPrice: userCart.totalPrice,
+            orderId:orderId,
+           
+          });
         } else {
           res.redirect('/useraddress');
         }
@@ -690,7 +700,7 @@ geteditUserAccountPage: async (req, res, next) => {
         { $match: { userID: userId } },
         { $sort: { orderDate: -1 } },
       ]);
-      res.render("userorders", { orders, user: req.session.user });
+      res.render("userorders", { title: "User Orders",orders, user: req.session.user });
     } catch (err) {
       next(err);
     }
@@ -701,38 +711,39 @@ geteditUserAccountPage: async (req, res, next) => {
     const orderId = req.params.orderId;
   
     try {
-      const order = await Order.findById(orderId);
-       if (order.paymentStatus === 'Paid') {
-      const wallet = await Wallet.findOne({ userId: order.userID });
+        const order = await Order.findById(orderId);
+        
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
 
-      if (!wallet) {
-        return res.status(404).json({ error: 'Wallet not found for user' });
-      }
+        if (order.paymentStatus === 'Paid') {
+            const wallet = await Wallet.findOne({ userId: order.userID });
 
-      wallet.balance += order.totalPrice;
-      
-      await wallet.save();
-    }
+            if (!wallet) {
+                return res.status(404).json({ error: 'Wallet not found for user' });
+            }
+
+            wallet.balance += order.totalPrice;
+            await wallet.save();
+        }
   
-      if (!order) {
-        return res.status(404).json({ message: "Order not found" });
-      }
+        for (const item of order.items) {
+            await Product.findByIdAndUpdate(
+                item.product,
+                { $inc: { stock: item.quantity } }
+            );
+        }
   
-      for (const item of order.items) {
-        await Product.findByIdAndUpdate(
-          item.product,
-          { $inc: { stock: item.quantity } }
-        );
-      }
+        order.status = "Cancelled";
+        await order.save();
   
-      order.status = "Cancelled";
-      await order.save();
-  
-      return res.status(200).redirect("/userorders");
+        return res.status(200).redirect("/userorders");
     } catch (err) {
-      next(err);
+        next(err);
     }
-  },
+},
+
   
     userOrderDetails: async (req, res,next) => {
       try {
@@ -782,7 +793,7 @@ geteditUserAccountPage: async (req, res, next) => {
     checkoutPage: async (req, res, next) => {
       try {
         const userId = req.session.userID;
-        const queryTotalPrice = parseInt(req.query.totalPrice); 
+      
         const orderId = req.query.orderId
         const addresses = await Address.findOne({ userID: userId });
 
@@ -796,7 +807,7 @@ geteditUserAccountPage: async (req, res, next) => {
         const userCart = await Cart.findOne({ userID: userId })
           .populate("items.product")
           .exec();
-          const totalPrice = queryTotalPrice;
+         
 
         res.render("checkout", {
           title: "Checkout",
@@ -804,7 +815,7 @@ geteditUserAccountPage: async (req, res, next) => {
           user: req.session.user,
           userAddress: defaultAddress,
           cartItems: userCart.items,
-          totalPrice: totalPrice,
+          totalPrice: userCart.totalPrice,
           orderId:orderId,
          
         });
@@ -815,73 +826,93 @@ geteditUserAccountPage: async (req, res, next) => {
 
     placeOrder: async (req, res, next) => {
       try {
-        const { orderId, addressID, totalPrice, paymentMethod, paymentStatus } = req.body;
-    
-        if (orderId) {
-          const orderToUpdate = await Order.findById(orderId);
-    
-          if (!orderToUpdate) {
-            return res.status(404).json({ message: "Order not found" });
+          const { orderId, addressID, paymentMethod, paymentStatus, subtotal, couponCode } = req.body;
+          
+  
+          if (orderId) {
+              const orderToUpdate = await Order.findById(orderId);
+  
+              if (!orderToUpdate) {
+                  return res.status(404).json({ message: "Order not found" });
+              }
+  
+              orderToUpdate.totalPrice = subtotal;
+              orderToUpdate.paymentMethod = paymentMethod;
+              orderToUpdate.paymentStatus = paymentStatus;
+              orderToUpdate.couponCode = couponCode;
+  
+              if (paymentStatus === "Paid" || paymentStatus === "Pending") {
+                  await orderToUpdate.save();
+                  return res.status(200).render("thankyou", { title: "Thank You", orderId });
+              } else if (paymentStatus === "Failed") {
+                  await orderToUpdate.save();
+                  return res.status(200).redirect("/userorders");
+              }
           }
-    
-          orderToUpdate.totalPrice = totalPrice;
-          orderToUpdate.paymentMethod = paymentMethod;
-          orderToUpdate.paymentStatus = paymentStatus;
-    
-          if (paymentStatus === "Paid" || paymentStatus === "Pending") {
-            await orderToUpdate.save();
-            return res.status(200).render("thankyou",{orderId});
-          } else if (paymentStatus === "Failed") {
-            await orderToUpdate.save();
-            return res.status(200).redirect("/userorders");
-          }
-        }
-    
-        const cartItems = Array.from(JSON.parse(req.body.cartItems));
-        const address = await Address.findOne({ "addresses._id": addressID });
-        const selectedAddress = address.addresses.find((a) => addressID.includes(a._id.toString()));
-        const user = await User.findById(req.session.userID);
-    
-        const order = new Order({
-          userID: user._id,
-          items: cartItems.map((item) => ({
-            product: item.product,
-            price: item.price,
-            quantity: item.quantity,
-          })),
-          totalPrice,
-          billingDetails: {
-            name: user.name,
-            addressLine1: selectedAddress.addressLine1,
-            addressLine2: selectedAddress.addressLine2,
-            city: selectedAddress.city,
-            state: selectedAddress.state,
-            country: selectedAddress.country,
-            postalCode: selectedAddress.postalCode,
-            phone: user.phone,
-            email: user.email,
-          },
-          paymentMethod,
-          paymentStatus,
-        });
-    
-        await order.save();
-    
-        await Cart.findOneAndUpdate(
-          { userID: user._id },
-          { $set: { items: [], totalPrice: 0 } }
-        );
-    
-        if (paymentStatus === "Paid" || paymentStatus === "Pending") {
-          return res.status(200).render("thankyou", { orderId: order._id.toString() });
+          const user = await User.findById(req.session.userID);
+          const cartItems = Array.from(JSON.parse(req.body.cartItems));
+          const address = await Address.findOne({ "addresses._id": addressID });
+          
+          const selectedAddress = address.addresses.find((a) => addressID.includes(a._id.toString()));
+        
+  
+          const order = new Order({
+              userID: user._id,
+              items: cartItems.map((item) => ({
+                  product: item.product,
+                  price: item.price,
+                  quantity: item.quantity,
+              })),
+              totalPrice: subtotal,
+              billingDetails: {
+                  name: user.name,
+                  addressLine1: selectedAddress.addressLine1,
+                  addressLine2: selectedAddress.addressLine2,
+                  city: selectedAddress.city,
+                  state: selectedAddress.state,
+                  country: selectedAddress.country,
+                  postalCode: selectedAddress.postalCode,
+                  phone: user.phone,
+                  email: user.email,
+              },
+              paymentMethod,
+              paymentStatus,
+              couponCode
+          });
+  
+          await order.save();
+          if (paymentMethod === 'Wallet') {
+            const wallet = await Wallet.findOne({ userId: user._id });
 
-        } else if (paymentStatus === "Failed") {
-          return res.status(200).redirect("/userorders");
+            
+            wallet.balance -= subtotal;
+            await wallet.save();
         }
+  
+          await Cart.findOneAndUpdate(
+              { userID: user._id },
+              { $set: { items: [], totalPrice: 0 } }
+          );
+  
+          for (const item of order.items) {
+              await Product.findByIdAndUpdate(
+                  item.product,
+                  { $inc: { stock: -item.quantity } },
+                  { new: true }
+              );
+          } 
+  
+          if (paymentStatus === "Paid" || paymentStatus === "Pending") {
+              return res.status(200).render("thankyou", { title: "Thank You", orderId: order._id.toString() });
+  
+          } else if (paymentStatus === "Failed") {
+              return res.status(200).redirect("/userorders");
+          }
       } catch (err) {
-        next(err);
+          next(err);
       }
-    },
+  },
+  
 
     downloadInvoice: async (req, res) => {
       try {
@@ -892,7 +923,6 @@ geteditUserAccountPage: async (req, res, next) => {
           return res.status(404).json({ error: 'Order not found' });
         }
         
-        // Prepare the invoice data
         const productsData = await Promise.all(order.items.map(async item => {
           const product = await Product.findById(item.product);
           if (!product) {
@@ -902,7 +932,7 @@ geteditUserAccountPage: async (req, res, next) => {
             "quantity": item.quantity,
             "description": product.productTitle,
             "tax": 0,
-            "price": item.price * item.quantity
+            "price": product.price 
           };
         }));
         
@@ -915,11 +945,11 @@ geteditUserAccountPage: async (req, res, next) => {
           "marginBottom": 25,
           "logo": "https://public.easyinvoice.cloud/img/logo_en_original.png",
           "sender": {
-            "company": "Sample Company",
-            "address": "Sample Street 123",
-            "zip": "1234 AB",
-            "city": "Sampletown",
-            "country": "Samplecountry"
+            "company": "Football Arena",
+            "address": "Maradu Kochi",
+            "zip": "680013",
+            "city": "Kerala",
+            "country": "India"
           },
           "client": {
             "company": order.billingDetails.name,

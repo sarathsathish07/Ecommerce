@@ -41,9 +41,13 @@
                   id="line1-error"
                   style="font-size: 14px; margin-top: -20px"
                 ></span>
-                <input type="hidden" value="<%= checkout %>" name="checkout">
-                <% if (checkout) { %>
-                  <input type="hidden" value="<%= totalPrice %>" name="totalPrice">
+                <input type="hidden" value="<%= checkout %>" name="checkout" />
+                <% if (checkout=="checkout") { %>
+                <input
+                  type="hidden"
+                  value="<%= totalPrice %>"
+                  name="totalPrice"
+                />
                 <% } %>
               </div>
 

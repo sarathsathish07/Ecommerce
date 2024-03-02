@@ -209,7 +209,7 @@
 
         const order = await Order.findById(orderId).populate("items.product");
 
-        res.render("admin/orderDetails", { order });
+        res.render("admin/orderDetails", { title: "Order Details",order });
       } catch (err) {
         next(err);
       }
@@ -371,7 +371,7 @@
         },
       ]);
   
-      res.render("admin/bestproducts",{ bestSellingProducts });
+      res.render("admin/bestproducts",{title: "Best Products", bestSellingProducts });
     } catch (err) {
       next(err);
     }
@@ -418,7 +418,7 @@
           },
         },
       ]);
-      res.render('admin/bestcategories', { bestSellingCategories });
+      res.render('admin/bestcategories', { title: "Best Categories",bestSellingCategories });
     } catch (err) {
       next(err);
     }
@@ -461,7 +461,7 @@
                 },
             },
         ]);
-        res.render('admin/bestbrands', { bestSellingBrands });
+        res.render('admin/bestbrands', {title: "Best Brands", bestSellingBrands });
     } catch (err) {
         next(err);
     }

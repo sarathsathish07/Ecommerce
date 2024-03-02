@@ -237,8 +237,8 @@
                                       </tbody>
                                 </table>
                             </div> 
-                            <div  style=" height: 100PX; display: flex; align-items: center; justify-content: center;">
-                                <span style="font-size: 20px;"> SUB TOTAL : Product Amount + Delivery Charge(100):  Rs <%= order.totalPrice.toFixed(2) %></span>
+                            <div  style=" height: 80PX; display: flex; align-items: center; justify-content: center; background-color: rgba(8, 129, 120, 0.2);">
+                                <span style="font-size: 18px;"> SUB TOTAL : Amount + Delivery Charge(100) - Discount:  Rs <%= order.totalPrice.toFixed(2) %></span>
                                
                               </div>
                         </div> 
@@ -253,6 +253,15 @@
                                 <p>
                                     <%= order.paymentStatus %>
                                 </p>
+                                <h6 class="mb-10">Coupon Applied</h6>
+                                <p>
+                                    <% if (order.couponCode) { %>
+                                        <%= order.couponCode %>
+                                    <% } else { %>
+                                        nil
+                                    <% } %>
+                                </p>
+
                             </div>
                            
                         </div> 

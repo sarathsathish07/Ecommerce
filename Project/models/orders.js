@@ -56,7 +56,11 @@ const OrderSchema = new mongoose.Schema({
   },
   paymentStatus: {
     type: String,
-required:true
+    required:true
+  },
+  couponCode: {
+    type: String,
+
   },
   orderDate: {
     type: Date,

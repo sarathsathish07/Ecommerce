@@ -1,7 +1,7 @@
 const Product = require("../models/products");
 const Category = require("../models/category");
 const Brand = require("../models/brands");
-const sharp = require("sharp");
+
 const fs = require('fs')
 const multer = require("multer");
 

@@ -21,7 +21,7 @@
             <span class="text">Dashboard</span>
           </a>
         </li>
-        <li class="menu-item ">
+        <li class="menu-item">
           <a class="menu-link" href="/userlist">
             <i class="icon material-icons md-person"></i>
             <span class="text">Users</span>
@@ -39,35 +39,35 @@
             <span class="text">Categories</span>
           </a>
         </li>
-        <li class="menu-item ">
+        <li class="menu-item">
           <a class="menu-link" href="/brands">
             <i class="icon material-icons md-store"></i>
             <span class="text">Brands</span>
           </a>
         </li>
-        <li class="menu-item ">
+        <li class="menu-item">
           <a class="menu-link" href="/orders">
             <i class="icon material-icons md-store"></i>
             <span class="text">Orders</span>
           </a>
         </li>
-        <li class="menu-item ">
+        <li class="menu-item">
           <a class="menu-link" href="/coupons">
             <i class="icon material-icons md-store"></i>
             <span class="text">Coupons</span>
           </a>
         </li>
         <li class="menu-item has-submenu active">
-          <a class="menu-link" href="page-orders-1.html"> <i class="icon material-icons md-star"></i>
-              <span class="text">Best Selling</span>
+          <a class="menu-link" href="page-orders-1.html">
+            <i class="icon material-icons md-star"></i>
+            <span class="text">Best Selling</span>
           </a>
           <div class="submenu">
-              <a href="/bestproducts">Products</a>
-              <a href="/bestcategories">Categories</a>
-              <a href="/bestbrands">Brands</a>
-            
+            <a href="/bestproducts">Products</a>
+            <a href="/bestcategories">Categories</a>
+            <a href="/bestbrands">Brands</a>
           </div>
-      </li>
+        </li>
       </ul>
     </nav>
   </aside>
@@ -202,7 +202,6 @@
     <section class="content-main">
       <div class="content-header">
         <h2 class="content-title">Best Selling Categories</h2>
-        
       </div>
       <div class="card mb-4">
         <div class="card-body">
@@ -212,34 +211,30 @@
               <thead>
                 <tr class="table-dark">
                   <th>ID</th>
-            <th>Category Title</th>
-            <th>Total Quantity Sold</th>
+                  <th>Category Title</th>
+                  <th>Total Quantity Sold</th>
                 </tr>
               </thead>
               <tbody>
                 <% bestSellingCategories.forEach((category ,index) => { %>
-                  <tr>
-                    <td><%= index+1 %></td>
-                    <td><%= category.category  %></td>
-                    <td><%= category .totalQuantity %></td>
-                  </tr>
+                <tr>
+                  <td><%= index+1 %></td>
+                  <td><%= category.category %></td>
+                  <td><%= category .totalQuantity %></td>
+                </tr>
                 <% }); %>
               </tbody>
-      
             </table>
             <% }else{ %>
-            <h1 class="text-center text-secondary mt-5">
-              No categories
-            </h1>
+            <h1 class="text-center text-secondary mt-5">No categories</h1>
 
             <% } %>
           </div>
         </div>
       </div>
-      
     </section>
   </main>
-    <!-- content-main end// -->
-    
-    <%- include('adminfooter') %>
- 
+  <!-- content-main end// -->
+
+  <%- include('adminfooter') %>
+</body>

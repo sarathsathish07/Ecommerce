@@ -101,11 +101,11 @@
                             </ul>
                             <% if (userCart && userCart.items.length==0) { %>
                                 <button style="display: none;">
-                                    <a href="/checkout?totalPrice=<%= userCart.totalPrice %>" class="primary-btn">Proceed to checkout</a>
+                                    <a href="/checkout" class="primary-btn">Proceed to checkout</a>
                                 </button>
                                 <% } else { %>
                                     <button >
-                                        <a href="/checkout?totalPrice=<%= userCart.totalPrice %>" class="primary-btn">Proceed to checkout</a>
+                                        <a href="/checkout" class="primary-btn">Proceed to checkout</a>
                                     </button>
                                     <% } %>
                         </div>
@@ -192,6 +192,33 @@
             </div>
         </div>
         <!-- Search End -->
+        <script>
+            $(document).ready(function () {
+    $("#proceedToCheckoutBtn").on("click", function (e) {
+        e.preventDefault();
+
+        // Perform AJAX request to calculate total price
+        $.ajax({
+            url: "/calculate-total-price",
+            type: "GET",
+            success: function (data) {
+                if (data.success) {
+                    // Redirect to checkout page with calculated total price
+                    window.location.href = "/checkout?totalPrice=" + data.totalPrice;
+                } else {
+                    // Handle error
+                    console.error("Failed to calculate total price.");
+                }
+            },
+            error: function () {
+                // Handle error
+                console.error("An error occurred while calculating total price.");
+            }
+        });
+    });
+});
+
+        </script>
   
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
         

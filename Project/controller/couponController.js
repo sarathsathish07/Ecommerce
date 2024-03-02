@@ -41,6 +41,7 @@ const couponController = {
   postAddCoupons: async (req, res) => {
     try {
         const { couponCode, description, discountPercentage, maxDiscountAmount, minAmount, expiry_date } = req.body;
+        console.log(expiry_date);
 
         const existingCoupon = await Coupon.findOne({ couponCode });
 
@@ -54,7 +55,7 @@ const couponController = {
             discountPercentage,
             maxDiscountAmount,
             minAmount,
-            expiryDate
+            expiryDate:expiry_date 
         });
 
         await newCoupon.save();
@@ -77,7 +78,7 @@ const couponController = {
       }
 
       res.render("admin/editcoupons", {
-        title: "Edit Category",
+        title: "Edit Coupons",
         coupon: coupon,
       });
     } catch (err) {
@@ -110,7 +111,9 @@ const couponController = {
 
   fetchCoupons: async (req, res) => {
     try {
+      console.log("6");
         const cartTotalPrice = req.query.totalPrice;
+        console.log(cartTotalPrice);
         const currentDate = new Date();
         const coupons = await Coupon.find({  
             minAmount: { $lte: cartTotalPrice },

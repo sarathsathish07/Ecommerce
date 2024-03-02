@@ -61,13 +61,13 @@ admin_router.get("/addcoupons",isAdmin, couponController.getAddCoupons);
 admin_router.post("/addcoupons",isAdmin, couponController.postAddCoupons);
 admin_router.get("/editcoupons/:id",isAdmin, couponController.getEditCoupons);
 admin_router.post("/updatecoupons/:id",isAdmin, couponController.postEditCoupons);
-admin_router.get("/getcoupons", couponController.fetchCoupons);
+
 admin_router.get("/listcoupon/:couponId",isAdmin, couponController.listCoupon);
 admin_router.get("/unlistcoupon/:couponId",isAdmin, couponController.unlistCoupon);
 
-admin_router.get("/bestproducts", adminController.bestProducts);
-admin_router.get("/bestcategories", adminController.bestCategories);
-admin_router.get("/bestbrands", adminController.bestBrands);
+admin_router.get("/bestproducts",isAdmin, adminController.bestProducts);
+admin_router.get("/bestcategories",isAdmin, adminController.bestCategories);
+admin_router.get("/bestbrands",isAdmin, adminController.bestBrands);
 
 
 

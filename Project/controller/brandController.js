@@ -46,7 +46,7 @@ const brandController = {
        const existingBrand = await Brand.findOne({ brand: { $regex: new RegExp('^' + brandName + '$', 'i') } });
       if (existingBrand) {
         res.render("admin/addbrands", {
-          title: "Add Brand",
+          title: "Add Brands",
           alert: "Brand already exists",
         });
       } else {
@@ -103,7 +103,7 @@ const brandController = {
     const existingBrand = await Brand.findOne({ brand: { $regex: new RegExp('^' + newBrandName + '$', 'i') }, _id: { $ne: id } });
     if (existingBrand) {
       res.render("admin/editbrands", {
-        title: "Add Brand",
+        title: "Edit Brand",
         alert: "Brand already exists",
         brand: brand
       });

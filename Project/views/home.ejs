@@ -284,38 +284,48 @@
   function addcart(_id) {
     event.preventDefault();
     $.ajax({
-      url: `/check-stock/${_id}`,
-      type: "GET",
-      success: function (response) {
-        console.log(response);
-        if (response.success) {
-          Swal.fire({
-            icon: "success",
-            title: "Added to cart successfully!",
-            showConfirmButton: true,
-          }).then((result) => {
-            if (result.isConfirmed) {
-              window.location.href = "/add-to-cart/" + _id;
+        url: `/check-stock/${_id}`,
+        type: "GET",
+        success: function (response) {
+            console.log(response);
+            if (response.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Added to cart successfully!",
+                    showConfirmButton: true,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: `/add-to-cart/${_id}`,
+                            type: "GET",
+                            success: function (response) {
+                                console.log("Item added to cart:", response);
+                            },
+                            error: function () {
+                                console.error("Failed to add item to cart");
+                            },
+                        });
+                    }
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Product is out of stock",
+                    showConfirmButton: true,
+                });
             }
-          });
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Product is out of stock",
-            showConfirmButton: true,
-          });
-        }
-      },
-      error: function () {
-        Swal.fire({
-          icon: "error",
-          title: "Error occurred",
-          text: "Failed to check stock availability",
-          showConfirmButton: true,
-        });
-      },
+        },
+        error: function () {
+            Swal.fire({
+                icon: "error",
+                title: "Error occurred",
+                text: "Failed to check stock availability",
+                showConfirmButton: true,
+            });
+        },
     });
-  }
+}
+
 </script>
 
 <%- include('userfooter') %>
