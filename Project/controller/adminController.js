@@ -263,7 +263,7 @@
     
     
 
-  generateReport : async (req, res) => {
+    generateReport: async (req, res) => {
       try {
           const { startDate, endDate } = req.body;
   
@@ -275,8 +275,7 @@
           const writeStream = fs.createWriteStream('./temp/report.pdf');
           doc.pipe(writeStream);
   
-          // Add content to the PDF
-          doc.fontSize(20).text('Order Details Report', { align: 'center' });
+          doc.fontSize(12).text('Order Details Report', { align: 'center' });
           doc.moveDown();
           doc.text(`Start Date: ${startDate}`);
           doc.text(`End Date: ${endDate}`);
@@ -286,23 +285,19 @@
               doc.fontSize(24).fillColor('#666666').text('No records found', { align: 'center' });
           } else {
               orders.forEach(order => {
-                  doc.text(`Order ID: ${order.trackingId}`);
-                  doc.text(`Order Date: ${order.orderDate.toDateString()}`);
-                  doc.text(`Status: ${order.status}`);
-                  doc.text(`Payment Status: ${order.paymentStatus}`);
+                  const orderDetails = `Order ID: ${order.trackingId}, Order Date: ${order.orderDate.toDateString()}, Status: ${order.status}, Payment Status: ${order.paymentStatus}`;
+  
+                  doc.text(orderDetails);
   
                   order.items.forEach(item => {
-                      doc.text(`Product: ${item.product.name}`);
-                      doc.text(`Quantity: ${item.quantity}`);
-                      doc.text(`Price: ${item.price}`);
-                      doc.moveDown();
+                      const itemDetails = `Product: ${item.product.name}, Quantity: ${item.quantity}, Price: ${item.price}`;
+                      doc.text(itemDetails);
                   });
   
                   doc.moveDown();
               });
           }
   
-          // Finalize the PDF
           doc.end();
   
           res.json({ reportUrl: './temp/report.pdf' });

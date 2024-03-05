@@ -257,68 +257,78 @@
 
     shopPage: async (req, res, next) => {
       try {
-        const perPage = 9;
-        const page = req.query.page || 1;
-        const { category, brand, sort } = req.query; 
-    
-        const categoriesQuery = Category.find({ isListed: true });
-        const brandsQuery = Brand.find({ isListed: true });
-    
-        let productQuery = Product.find({ isPublished: true });
-    
-        if (category) {
-          productQuery = productQuery.where('category').equals(category);
-        }
-    
-        if (brand) {
-          productQuery = productQuery.where('brand').equals(brand);
-        }
-    
-        if (sort === 'price') {
-          productQuery = productQuery.sort({ price: 1 }); 
-        } else if (sort === 'price-desc') {
-          productQuery = productQuery.sort({ price: -1 }); 
-        }
-    
-        const [categories, brands] = await Promise.all([
-          categoriesQuery.exec(),
-          brandsQuery.exec()
-        ]);
-    
-        const totalProductsCountQuery = Product.find({ isPublished: true });
-    
-        if (category) {
-          totalProductsCountQuery.where('category').equals(category);
-        }
-    
-        if (brand) {
-          totalProductsCountQuery.where('brand').equals(brand);
-        }
-    
-        const totalProductsCount = await totalProductsCountQuery.countDocuments();
-    
-        const products = await productQuery
-        .sort({ time: -1 })
-          .skip(perPage * (page - 1))
-          .limit(perPage)
-          .populate('category', 'isListed')
-          .populate('brand', 'isListed')
-          .exec();
-    
-        res.render("shop", {
-          title: "Shop",
-          products: products,
-          categories: categories,
-          brands: brands,
-          totalPages: Math.ceil(totalProductsCount / perPage),
-          currentPage: page,
-          perPage: perPage,
-          user: req.session.user
-        });
+          const perPage = 9;
+          const page = req.query.page || 1;
+          const { category, brand, sort } = req.query;
+  
+          const categoriesQuery = Category.find({ isListed: true });
+          const brandsQuery = Brand.find({ isListed: true });
+  
+          let productQuery = Product.find({ isPublished: true });
+  
+          if (category) {
+              productQuery = productQuery.where('category').equals(category);
+          }
+  
+          if (brand) {
+              productQuery = productQuery.where('brand').equals(brand);
+          }
+  
+          if (sort === 'price') {
+              productQuery = productQuery.sort({ price: 1 });
+          } else if (sort === 'price-desc') {
+              productQuery = productQuery.sort({ price: -1 });
+          }
+  
+          const [categories, brands] = await Promise.all([
+              categoriesQuery.exec(),
+              brandsQuery.exec()
+          ]);
+  
+          const totalProductsCountQuery = Product.find({ isPublished: true });
+  
+          if (category) {
+              totalProductsCountQuery.where('category').equals(category);
+          }
+  
+          if (brand) {
+              totalProductsCountQuery.where('brand').equals(brand);
+          }
+  
+          const totalProductsCount = await totalProductsCountQuery.countDocuments();
+  
+          const products = await productQuery
+              .populate({
+                  path: 'category',
+                  match: { isListed: true } 
+              })
+              .populate({
+                  path: 'brand',
+                  match: { isListed: true } 
+              })
+              .sort({ time: -1 })
+              .skip(perPage * (page - 1))
+              .limit(perPage)
+              .exec();
+  
+          const filteredProducts = products.filter(product => product.category !== null && product.brand !== null);
+  
+          res.render("shop", {
+              title: "Shop",
+              products: filteredProducts,
+              categories: categories,
+              brands: brands,
+              totalPages: Math.ceil(totalProductsCount / perPage),
+              currentPage: page,
+              perPage: perPage,
+              user: req.session.user
+          });
       } catch (err) {
-        next(err);
+          next(err);
       }
-    },
+  },
+  
+  
     
     getProductDetailsPage: async (req, res,next) => {
       try {
