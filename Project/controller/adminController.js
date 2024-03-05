@@ -4,6 +4,8 @@
   const Wallet = require("../models/wallet");  
   const fs = require('fs')
   const pdf = require('html-pdf');
+  const PDFDocument = require('pdfkit');
+  const path = require("path");
 
   const credentials = {
     email: process.env.ADMIN_EMAIL,
@@ -230,12 +232,10 @@
             if (!wallet) {
               return res.status(404).json({ error: 'Wallet not found for user' });
             }
-            // Refund the amount to the wallet
             wallet.balance += order.totalPrice;
             await wallet.save();
           }
     
-          // Increment stock for each product in the order
           for (const item of order.items) {
             const product = await Product.findById(item.product);
             if (product) {
@@ -263,72 +263,55 @@
     
     
 
-    generateReport: async (req, res) => {
+  generateReport : async (req, res) => {
       try {
-        const { startDate, endDate } = req.body;
-    
-        const orders = await Order.find({
-          orderDate: { $gte: new Date(startDate), $lte: new Date(endDate) }
-        }).populate('items.product');
-    
-        let html = `<html><head><style>
-                    table {
-                      width: 100%;
-                      border-collapse: collapse;
-                    }
-                    th, td {
-                      padding: 8px;
-                      text-align: left;
-                      border-bottom: 1px solid #ddd;
-                    }
-                    th {
-                      background-color: #f2f2f2;
-                    }
-                    .status-pending {
-                      color: orange;
-                    }
-                    .status-shipped {
-                      color: green;
-                    }
-                    .status-delivered {
-                      color: blue;
-                    }
-                    .status-cancelled {
-                      color: red;
-                    }
-                    </style></head><body><h1>Order Details Report</h1><p>Start Date: ${startDate}</p><p>End Date: ${endDate}</p>`;
-    
-        if (orders.length === 0) {
-          html += `<p style="font-size: 24px; font-weight: bold; color: #666666;">No records found</p>`;
-    
-        } else {
-          html += `<table><thead><tr><th>Order ID</th><th>Order Date</th><th>Status</th><th>Payment Status</th><th>Quantity</th><th>Price</th></tr></thead><tbody>`;
-    
-          orders.forEach(order => {
-            html += `<tr><td>${order.trackingId}</td><td>${order.orderDate.toDateString()}</td><td class="status-${order.status.toLowerCase()}">${order.status}</td>`;
-    
-    
-            order.items.forEach(item => {
-              html += `<td>${order.paymentStatus}</td><td>${item.quantity}</td><td>${item.price}</td></tr>`;
-            });
-          });
-    
-          html += `</tbody></table>`;
-        }
-    
-        html += `</body></html>`;
-    
-        pdf.create(html).toFile('./temp/report.pdf', (err, res) => {
-          if (err) throw err;
-          console.log(res);
-        });
-    
-        res.json({ reportUrl: './temp/report.pdf' });
+          const { startDate, endDate } = req.body;
+  
+          const orders = await Order.find({
+              orderDate: { $gte: new Date(startDate), $lte: new Date(endDate) }
+          }).populate('items.product');
+  
+          const doc = new PDFDocument();
+          const writeStream = fs.createWriteStream('./temp/report.pdf');
+          doc.pipe(writeStream);
+  
+          // Add content to the PDF
+          doc.fontSize(20).text('Order Details Report', { align: 'center' });
+          doc.moveDown();
+          doc.text(`Start Date: ${startDate}`);
+          doc.text(`End Date: ${endDate}`);
+          doc.moveDown();
+  
+          if (orders.length === 0) {
+              doc.fontSize(24).fillColor('#666666').text('No records found', { align: 'center' });
+          } else {
+              orders.forEach(order => {
+                  doc.text(`Order ID: ${order.trackingId}`);
+                  doc.text(`Order Date: ${order.orderDate.toDateString()}`);
+                  doc.text(`Status: ${order.status}`);
+                  doc.text(`Payment Status: ${order.paymentStatus}`);
+  
+                  order.items.forEach(item => {
+                      doc.text(`Product: ${item.product.name}`);
+                      doc.text(`Quantity: ${item.quantity}`);
+                      doc.text(`Price: ${item.price}`);
+                      doc.moveDown();
+                  });
+  
+                  doc.moveDown();
+              });
+          }
+  
+          // Finalize the PDF
+          doc.end();
+  
+          res.json({ reportUrl: './temp/report.pdf' });
       } catch (err) {
-        console.error('Error generating report:', err);
-        res.status(500).json({ error: 'Failed to generate report' });
+          console.error('Error generating report:', err);
+          res.status(500).json({ error: 'Failed to generate report' });
       }
-    },
+  },
+  
     
 
     report: (req, res) => {
