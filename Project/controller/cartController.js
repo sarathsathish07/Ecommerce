@@ -58,49 +58,54 @@ const cartController = {
 },
 
 checkStock: async (req, res, next) => {
-  try {
-    const productID = req.params.id;
-    const product = await Products.findById(productID);
+    try {
+        const productID = req.params.id;
+        const product = await Products.findById(productID);
+        console.log(product);
 
-    if (!product) {
-      console.log("1");
-      return res.status(404).json({ success: false, message: "Product not found." });
+        if (!product) {
+            console.log("1");
+            return res.status(404).json({ success: false, message: "Product not found." });
+        }
+
+        if (req.session.user == null) {
+            console.log("No user logged in");
+            return res.status(200).json({ success: false, message: "Please log in to add items to your cart." });
+        }
+
+        const userCart = await Cart.findOne({ userID: req.session.userID }).populate('items.product');
+
+        if (!userCart) {
+            console.log("2");
+            return res.status(200).json({ success: true, message: "Product is in stock." });
+        }
+
+        console.log("User Cart:", userCart);
+
+        const cartItem = userCart.items.find((item) => item.product._id.toString() === productID.toString());
+
+        console.log("Cart Item:", cartItem);
+
+        if (!cartItem) {
+            console.log("3");
+            return res.status(200).json({ success: true, message: "Product is in stock." });
+        }
+
+        const maxQuantity = product.stock;
+        const currentQuantity = cartItem.quantity;
+        console.log("Max Quantity:", maxQuantity);
+        console.log("Current Quantity:", currentQuantity);
+
+        if (currentQuantity >= maxQuantity) {
+            return res.status(200).json({ success: false, message: "Maximum quantity reached for this product." });
+        }
+
+        return res.status(200).json({ success: true, message: "Product is in stock." });
+    } catch (err) {
+        next(err);
     }
-
-    const userCart = await Cart.findOne({ userID: req.session.userID }).populate('items.product');
-
-    if (!userCart) {
-      console.log("2");
-      return res.status(200).json({ success: true, message: "Product is in stock." });
-    }
-
-    console.log("User Cart:", userCart);
-
-    const cartItem = userCart.items.find((item) => item.product._id.toString() === productID.toString());
-
-    
-
-    console.log("Cart Item:", cartItem);
-
-    if (!cartItem) {
-      console.log("3");
-      return res.status(200).json({ success: true, message: "Product is in stock." });
-    }
-
-    const maxQuantity = product.stock;
-    const currentQuantity = cartItem.quantity;
-    console.log("Max Quantity:", maxQuantity);
-    console.log("Current Quantity:", currentQuantity);
-
-    if (currentQuantity >= maxQuantity) {
-      return res.status(200).json({ success: false, message: "Maximum quantity reached for this product." });
-    }
-
-    return res.status(200).json({ success: true, message: "Product is in stock." });
-  } catch (err) {
-    next(err);
-  }
 },
+
 
 
 cartPage: async (req, res, next) => {

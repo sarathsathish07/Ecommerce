@@ -209,7 +209,7 @@
 
         const order = await Order.findById(orderId).populate("items.product");
 
-        res.render("admin/orderDetails", { title: "Order Details",order });
+        res.render("admin/orderdetails", { title: "Order Details",order });
       } catch (err) {
         next(err);
       }

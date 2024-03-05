@@ -24,8 +24,8 @@ router.post('/resendotp', userController.resendOTP);
 router.get("/shop", userController.shopPage);
 
 router.get("/productdetails/:id", userController.getProductDetailsPage);
-router.get("/add-to-cart/:id",isUser, cartController.addToCart);
-router.get("/check-stock/:id",isUser, cartController.checkStock);
+router.get("/add-to-cart/:id", cartController.addToCart);
+router.get("/check-stock/:id", cartController.checkStock);
 router.get("/cart",isUser, cartController.cartPage);
 router.delete("/remove-from-cart/:id",isUser, cartController.deleteCart);
 router.post('/update-cart',isUser, cartController.updateCart);

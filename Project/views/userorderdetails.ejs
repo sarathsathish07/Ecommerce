@@ -116,7 +116,6 @@
                   </td>
                   <td><%= item.price %></td>
                   <td><%= item.quantity %></td>
-
                   <td class="text-end"><%= item.price * item.quantity %></td>
                 </tr>
                 <% }); %>
@@ -124,16 +123,57 @@
             </table>
           </div>
           <div  style="background-color: rgba(8, 129, 120, 0.2); height: 80PX; display: flex; align-items: center; justify-content: center;">
-            <span style="font-size: 20px;"> SUB TOTAL : Amount + Delivery Charge(100) - Discount:  Rs <%= order.totalPrice.toFixed(2) %></span>
-           
+            <span style="font-size: 20px;"> SUB TOTAL : Amount + Delivery Charge(100) - Discount:  Rs <%= order.totalPrice.toFixed(2) %></span>           
           </div>
-          <div style="text-align: center; margin-top: 20px;">
-            <a href="/downloadinvoice/<%= order.id %>" class="btn btn-md">Download Invoice</a>
-          </div>
+          <% if (order.paymentStatus == "Paid") { %>
+            <div style="text-align: center; margin-top: 20px;">
+              <a href="/downloadinvoice/<%= order.id %>" class="btn btn-md">Download Invoice</a>
+            </div>
+          <% } %>
         </section>
       </div>
     </div>
   </div>
 </section>
+<footer class="footer">
+  <div class="container">
+      <div class="row ">
+          <div class="col-lg-5 col-md-6 col-sm-6">
+              <div class="footer__about">
+                  <p>Welcome to Football Arena - Your ultimate destination for football accessories.</p>
+                  <p>Explore our wide range of products designed to enhance your football experience.</p>
+              </div>
+          </div>
+          <div class="col-lg-4 col-md-3 col-sm-6">
+              <div class="footer__widget text-center">
+                  <h6>Categories</h6>
+                  <ul>
+                      <li><a href="/shop?category=65caf7b9bf2342cd4013027c">Footballs</a></li>
+                      <li><a href="/shop?category=65caf7d5bf2342cd40130283">Jerseys</a></li>
+                      <li><a href="/shop?category=65caf7e8bf2342cd40130288">Boots</a></li>
+                  </ul>
+              </div>
+          </div>
+          <div class="col-lg-3 col-md-3 col-sm-6">
+              <div class="footer__widget text-center">
+                  <h6>Brands</h6>
+                  <ul>
+                      <li><a href="/shop?brand=65d5a0145c27cadfa6ab83fa">Nike</a></li>
+                      <li><a href="/shop?brand=65d5a1bb738b83d0c844e1a5">Adidas</a></li>
+                      <li><a href="/shop?brand=65d5a60490137d5c6c24d393">Puma</a></li>
+                  </ul>
+              </div>
+          </div>
+       
+      </div>
+      <div class="row">
+          <div class="col-lg-12 text-center">
+              <div class="footer__copyright__text">
+                  <p>&copy; 2024 Football Arena. All rights reserved.</p>
+              </div>
+          </div>
+      </div>
+  </div>
+</footer>
 
 <%- include('userfooter') %>
