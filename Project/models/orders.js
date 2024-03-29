@@ -55,11 +55,11 @@ const OrderSchema = new mongoose.Schema({
   },
   paymentMethod: {
     type: String,
-    required: true,
+    
   },
   paymentStatus: {
     type: String,
-    required:true
+    
   },
   couponCode: {
     type: String,
