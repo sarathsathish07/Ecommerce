@@ -22,6 +22,8 @@ router.post("/verifyotp", userController.postVerifyOTP);
 router.post('/resendotp', userController.resendOTP);
 
 router.get("/shop", userController.shopPage);
+//Search Route
+router.get('/search', userController.searchProduct);
 
 router.get("/productdetails/:id", userController.getProductDetailsPage);
 router.get("/add-to-cart/:id", cartController.addToCart);

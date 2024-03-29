@@ -7,7 +7,6 @@
 
   async function chart() {
     try {
-      
       const ordersPie = await Order.find()
       const ordersCount = {
         pending: 0,

@@ -113,20 +113,29 @@
               style="width: 240px; height: 250px"
             />
 
-            <!-- <ul class="product__hover">
-              <li>
-                <a href="#"><img src="/static/img/heart.png" alt="" /></a>
-              </li>
-            </ul> -->
           </div>
           <div class="product__item__text">
             <h6><%= product.productTitle %></h6>
-            <a href="#" class="add-cart" onclick="addcart('<%= product._id %>')"
-              >+ Add To Cart</a
-            >
-            <a href="/productdetails/<%= product._id %>" class="view-details"
-              >+ View Details</a
-            >
+            <% if (product.stock==0) { %>
+              <p style="color: red;">Out of stock</p>
+              <a
+               href="/productdetails/<%= product._id %>"
+               class="view-details"
+               >+ View Details</a
+             >
+             <% }else{ %> 
+             <a
+               href="#"
+               class="add-cart"
+               onclick="addcart('<%= product._id %>')"
+               >+ Add To Cart</a
+             >
+             <a
+               href="/productdetails/<%= product._id %>"
+               class="view-details"
+               >+ View Details</a
+             >
+               <% } %>
            
             <h5>Rs <%= product.price %></h5>
           </div>

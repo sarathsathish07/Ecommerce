@@ -60,6 +60,9 @@
 
             <div class="product__details__option"></div>
             <div class="product__details__cart__option">
+              <% if (product.stock==0) { %>
+               <p style="font-size: 20px; color: red;">Out of Stock</p>
+              <% }else{%>
               <a
                 href="#"
                 class="primary-btn"
@@ -67,6 +70,7 @@
               >
                 Add To Cart</a
               >
+              <% } %>
             </div>
             <div class="product__details__btns__option">
               

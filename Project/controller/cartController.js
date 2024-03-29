@@ -81,7 +81,7 @@ checkStock: async (req, res, next) => {
         }
 
         console.log("User Cart:", userCart);
-
+        
         const cartItem = userCart.items.find((item) => item.product._id.toString() === productID.toString());
 
         console.log("Cart Item:", cartItem);
@@ -196,8 +196,6 @@ updateCart: async (req, res, next) => {
       next(err);
   }
 },
-
-
 
 
 deleteCart: async (req, res) => {

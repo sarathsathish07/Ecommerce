@@ -45,7 +45,6 @@
                         <% }); %>
                       </ul>
                     </div>
-                    
                   </div>
                 </div>
               </div>
@@ -118,6 +117,9 @@
               </div>
               <div class="product__item__text">
                 <h6><%= product.productTitle %></h6>
+                <% if (product.stock==0) { %>
+                 <p style="color: red;">Out of stock</p>
+                <% }else{ %>
                 <a
                   href="#"
                   class="add-cart"
@@ -129,7 +131,7 @@
                   class="view-details"
                   >+ View Details</a
                 >
-
+                  <% } %>
                 <h5>Rs <%= product.price %></h5>
                 
               </div>
